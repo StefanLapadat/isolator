@@ -1,4 +1,4 @@
-use crate::general_geometry::Point;
+use crate::general_geometry::{Point, Polygon};
 use earcutr::earcut;
 
 #[derive(Debug)]
@@ -102,63 +102,10 @@ impl Simmilar for f64 {
     }
 }
 
-pub fn triangulate_3d(points: &Vec<Point>) -> Option<Vec<usize>> {
-    let data: Option<Vec<f64>> = flatten_points(points);
-    match data {
-        Option::None => Option::None,
-        Option::Some(flattened_data) => {
-            let triangles = earcut(&flattened_data, &vec![], 2);
-            Option::Some(triangles)
-        }
-    }
+pub fn triangulate_3d(polygon: &PolygonForTriangulation) -> Vec<usize> {
+    return earcut(&PolygonForTriangulation::flatten_points(&polygon.points), &polygon.holes, 2);
 }
 
-fn flatten_points(points: &Vec<Point>) -> Option<Vec<f64>> {
-    let plane = crate::triangulation::Plane::from_points_vector(points);
-
-    match plane {
-        Option::None => Option::None,
-        Option::Some(plane) => {
-            let new_coordinate_system = plane.coordinate_system_normal_to_plane();
-
-            for p in points {
-                let new_coordinates = p.coordinates_in_different_coordinate_system(&new_coordinate_system);
-            }
-
-            let res = remove_constant_coordinate(points);
-        
-            Option::Some(res)
-        }
-    }
-}
-
-fn remove_constant_coordinate(points: &Vec<Point>) -> Vec<f64> {
-    let mut res = vec![];
-
-    let constant_coordinate = find_constant_coordinate(points);
-    match constant_coordinate {
-        Coordinate::X => {
-            for p in points {
-                res.push(p.y);
-                res.push(p.z);
-            }
-        },
-        Coordinate::Y => {
-            for p in points {
-                res.push(p.x);
-                res.push(p.z);
-            }
-        },
-        Coordinate::Z => {
-            for p in points {
-                res.push(p.x);
-                res.push(p.y);
-            }
-        }
-    }
-
-    res
-}
 
 pub enum Coordinate {
     X,
@@ -174,4 +121,103 @@ fn find_constant_coordinate(points: &Vec<Point>) -> Coordinate {
     }
 
     Coordinate::Z
+}
+
+
+pub struct PolygonForTriangulation { 
+    points: Vec<Point>,
+    holes: Vec<usize>
+}
+
+impl PolygonForTriangulation {
+    pub fn from_polygon(polygon: &Polygon) -> PolygonForTriangulation{
+        PolygonForTriangulation {
+            holes: PolygonForTriangulation::indices_of_holes_in_merged_points_and_holes(polygon),
+            points: PolygonForTriangulation::merge_points_and_holes(polygon)
+        }
+    }
+
+    pub fn points<'a>(&'a self) -> &'a Vec<Point> {
+        &self.points
+    }
+
+    fn merge_points_and_holes(polygon: &Polygon) -> Vec<Point> {
+        let mut res: Vec<Point> = vec![];
+    
+        for point in polygon.points() {
+            res.push(Point::copy_new(point));
+        }
+    
+        for hole in polygon.holes() {
+            for hole_point in hole {
+                res.push(Point::copy_new(hole_point));
+            }
+        }
+    
+        res
+    }
+
+    fn indices_of_holes_in_merged_points_and_holes(polygon: &Polygon) -> Vec<usize> {
+        let mut res = vec![];
+    
+        let mut acc: usize = 0;
+    
+        for hole in polygon.holes() {
+            res.push(polygon.points().len() + acc);
+            acc+=hole.len();
+        }
+    
+        res
+    }
+
+    fn flatten_points(points: &Vec<Point>) -> Vec<f64> {
+        if points.is_empty() {
+            panic!("greska teska 1!");
+        }
+    
+        let plane = crate::triangulation::Plane::from_points_vector(points);
+    
+        match plane {
+            Option::None => panic!("greska teska 2"),
+            Option::Some(plane) => {
+                let new_coordinate_system = plane.coordinate_system_normal_to_plane();
+    
+                for p in points {
+                    let new_coordinates = p.coordinates_in_different_coordinate_system(&new_coordinate_system);
+                }
+    
+                let res = PolygonForTriangulation::remove_constant_coordinate(points);
+            
+                res
+            }
+        }
+    }
+
+    fn remove_constant_coordinate(points: &Vec<Point>) -> Vec<f64> {
+        let mut res = vec![];
+    
+        let constant_coordinate = find_constant_coordinate(points);
+        match constant_coordinate {
+            Coordinate::X => {
+                for p in points {
+                    res.push(p.y);
+                    res.push(p.z);
+                }
+            },
+            Coordinate::Y => {
+                for p in points {
+                    res.push(p.x);
+                    res.push(p.z);
+                }
+            },
+            Coordinate::Z => {
+                for p in points {
+                    res.push(p.x);
+                    res.push(p.y);
+                }
+            }
+        }
+    
+        res
+    }
 }

@@ -44,8 +44,11 @@ class App {
         camera.setTarget(new BABYLON.Vector3(20, 0, 30));
         camera.attachControl(canvas, true);
 
-        var light = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-        light.intensity = 0.7;
+        var hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.5;
+
+        var spotLight = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(10, 100, 10), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, scene);
+        spotLight.intensity = 0.2;
 
         let totalTriangles = [];
         let indices = [];
@@ -75,7 +78,7 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         customMesh.material = mat;
-``
+
         let wireframe = [];
 
         for(let lineSeq of data.building.wireframe) {
@@ -89,6 +92,8 @@ class App {
     
         const linesystem = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: wireframe}, scene); 
         linesystem.color = BABYLON.Color3.Black();
+
+        // const ground = BABYLON.MeshBuilder.CreateGround("ground", {height: 100, width: 100, subdivisions: 4});
 
         var showAxis = function(size: number) {
             var makeTextPlane = function(text: any, color: any, size: any) {

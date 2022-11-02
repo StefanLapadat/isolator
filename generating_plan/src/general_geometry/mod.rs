@@ -62,3 +62,25 @@ impl Point {
         }
     }
 }
+
+pub struct Polygon {
+    points: Vec<Point>,
+    holes: Vec<Vec<Point>>
+}
+
+impl Polygon {
+    pub fn new(points: Vec<Point>, holes: Vec<Vec<Point>>) -> Polygon {
+        Polygon {
+            points: points,
+            holes: holes
+        }
+    }
+
+    pub fn points<'a>(&'a self) -> & 'a Vec<Point> {
+        &self.points
+    }
+
+    pub fn holes<'a>(&'a self) -> & 'a Vec<Vec<Point>> {
+        &self.holes
+    }
+}
