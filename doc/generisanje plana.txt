@@ -1,0 +1,26 @@
+Nervira me opet nacin komunikacije izmedju ovoga sto napravim u rustu i 3 d rendering engine - a.Ono u sta smo sigurni je da se meni generalno promene ne generisu u view - u;
+Mozda ce biti nesto u smislu pauziranja, vracanja filma itd..To bi moglo da bude, ali to mogu da budu jednostavne poruke.Sta jos moze da bude ? E pa mozemo da imamo zahtev za milion nekih nebitnih meshova.. ? Tipa prasina i tako dalje.. ? Da li bih ja onda zapravo imao bas milion meshova ? Mozda hiljadu ? Sta znam, svakom bih dao id, mozda bi ih ucitavao iz nekih fajlova i prosto bi ih kontrolisao preko animacije ?
+
+Ono sto je recimo bitno napomenuti je da bih ja tu animaciju, odnosno plan za poplocavanje svakako trebalo da mogu da stavim u fajl.Ovo bi bilo tacno cak i ukoliko bih imao 3 D engine u rustu.Znaci neophodno mi je da postoji nekakva serijalizacija plana u txt.To je sustina plana..E sad, pitanje je da li plan moze da sadrzi i neke dinamicke elemente ?
+
+Ti mozes na toj zgradi da imas milion nekih stvari koje su nebitne, neka slobodna cigla, neka zaostala krpa na ogradi terase i tako dalje..A to se mozda utvrdi tek naknadno ? Ljudi znaju da iskuliraju te detalje, ali da li bi ovaj sistem umeo po istom principu da se ponasa ? I kako ti detalji uticu na pracenje plana ? Recimo, ja bih mozda mogao da napravim plan koji se odnosi na idealnu zgradu bez ikakvih gluposti.I mogao bih da pokazem simulaciju rada;
+
+A da ukoliko se u vremenu postavljanja izolacije pojavi neki razlog iz kojeg se od plana mora malo odstupiti, da se namesti da to odstupanje ipak bude takvo da se plan ipak moze posle nastaviti.Znaci plan je sustinski prekinut, nesto je u njega umetnuto i posle je plan nastavljen.Naravno, plan nije linearan;
+On moze da ima svoje 'threadove'
+koji mogu biti nezavisni i ako su nezavisni, nezavisno mogu biti i prekinuti. A koji su ti potencijalni 'threadovi'? Pa ocito svaki uredjaj koji postoji u tom planu;
+Dakle plan je u stvari unija uredjaja koji su medjusobno parcijalno zavisni u svom radu i od kojih svaki ima svoj neki 'mini plan' koji moze biti prekinut; 
+
+S tim svim u vezi, plan treba da bude hijerarhijski rekao bih; Dakle, plan je na prvom mestu da se zgrada izoluje.  ...U stvari, mozda ne mora da bude hijerarhijski, mada ce verovatno na kraju biti svakako - kakav drugaciji da bude, ali treba da bude radjen po nekom savrsenom modelu. Odnosno, roboti se spustaju po savrseno pravim linijama, koturi su savrseno obli, sve je perfektno, nema vetra itd.. A onda u vremenu izvrsavanja, treba da se vodi racuna o tome da u svakom trenutku budemo u nekim prihvatljivim okvirima odstupanja od tog savrsenog modela. Ok, ovo je super stvar :) Vrlo interesantan problem :) 
+
+Prvi korak bi svakako trebalo da nam bude poplocavanje povrsina. Za ovo verovatno postoji biblioteka.. Mogu mozda da zamislim da su odredjena poplocavanja bolja za samu postavku.. ali bi to zahtevalo da se upetljaju raznorazne stvari, za koje bas i nisam zainteresovan :) Idemo jednostavno - na raspolaganju imam nekakve pravougaonike i mogu da ih secem; I pomocu tih elemenata mogu da poplocam poligon. Pri tome, poligon se nalazi u nekakvom koordinatnom sistemu, jel tako. E pa mogao bih ovako; Uzmem jedan veliku pravougaonik koji opisem oko tog poligona; Poplocam taj poligon i samo uzmem presek izmedju poligona i tog poplocavanja..
+
+Ok, ovo je relativno jednostavno. Mozda nije bas bas optimalno, mozda to moze i bolje, ali ko ga j sad, za pocetak ovako. 
+
+Znaci dobro, sta mi je sada cilj? Cilj mi je da uradim ovako nesto; Saljem iz rusta na iscrtavanje jedan objekat koji predstavlja zgradu; U okviru tog objekta mogu da imam triangulaciju kako bi iscrtavanje bilo jednostavnije. Takodje, saljem niz ploca koje predstavljaju poplocavanje tih poligona. Poligoni ne moraju biti vertikalni, ali svaki od njih mora biti zaista poligon, znaci nista nije van ravni, rekli smo, sa nesavrsenostima se nosimo kasnije. 
+
+Dakle, tu vec imamo jedan deo plana. Kako se radi poplocavanje. Podrazumevamo da imamo specificirano na neki nacin sta treba biti poplocano. Posle idemo dalje - pronalazenje povrsina koje koriscenjem odredjenih mehanizama mogu biti poplocane - znaci sta je dostupno sta ne - ovo cisto geometrijski, ukoliko se mogu postaviti odredjene linije do odredjene ploce, onda je ok. A sto se tice konretne simulacije, to naknadno. 
+
+====================================================================================================================================
+
+Dobro pitanje bi bilo da li se ovo moze odraditi pomocu neke varijante alpha zero-a itd? Mislim, ukoliko moze da se napravi autonomna voznja, valjda moze da se napravi i ovako nesto..? No, dobro, ne bih se sad za prvo vreme zamarao sa tim, mozda kasnije, kada malo razradim pricu :)
+

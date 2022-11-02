@@ -1,0 +1,16 @@
+Znaci, ja hocu da napravim neku logiku - nekakvu obradu zgrade. 
+
+Sta imam na raspolaganju? 
+
+Neprecizan ali obiman point-cloud iz iphone-a; 
+Vrlo precizan, ali malog obima point-cloud daljinometra; 
+Opciono plan zgrade; 
+Coveka koji moze da uredjuje ove podatke na osnovu onoga sto vidi - prepoznaje prozore, terase, vrata, ulaze itd.. Moze rucno da unese stvari u model (ukoliko ima dobar softver). 
+
+Na osnovu ovih podataka, ja moram da napravim obradu zgrade, odnosno kreiranje plana po kojem se izvrsava postavljanje fasade. Vazno pitanje koje se na ovom mestu postavlja je da li ja od tih oblaka tacaka treba da pravim neke strukture viseg nivoa? Da li da uocavam neke ravni, neke krugove, itd, i da u predstavama zgrade koristim te elemente viseg nivoa? Deluje da bi zaista trebalo. Kada ljudi posmatraju zgradu, ne gledaju je kao 'oblak tacaka'. O zgradi se razgovara u terminima zidova, prozora, vrata, ulaza, terasa i tako dalje. 
+
+Sve ovo i ne bi bilo toliko tesko kada bi ta predstava zgrade bila kontinualna i skroz precizna - dakle da smo sigurni da nema nekih velikih odstupanja u realnosti i podacima; E sad, to je pomalo zajebano.. Nisam sasvim siguran da mozemo da racunamo na to. Mislim, mozda i mozemo, mozda mozemo da namestimo tako nesto, i jos uz pomoc coveka, da nekako namesti i kaze - hej ovo je prozor, hej ovo je terasa itd.. Mada, mada, mada, sta ce meni uopste informacija da je nesto prozor? Odnosno da je nesto rupa za buduci prozor? Da li je dovoljno da se kaze samo - hej, ovo je rupa? U rupu necemo stavljati stiropor, samo do ivica; Znaci i to je sad isto pitanje da li moramo prepoznavati tako razlicite stvarcice.. 
+
+I takodje je veliko pitanje - kako da covek oznaci tacke gde je taj prozor. Ono ili nekako mora samo da se prepozna za sta nam trebaju skroz precizni podaci. Iz tih preciznih podataka mozemo da zakljucimo gde je rupa, sta je ravan itd itd.. A ukoliko nemamo precizne podatke, recimo imamo neki iphone point cloud koji je sa dosta odstupanja, sta onda mozemo? 
+
+Mada, znas kako, s obzirom da kazem, sve je to napravljeno poprilicno po merama, nema tu previse zajebancije, ja mogu dosta lako da dobijem taj model. Nije to bas tako zajebano.. Tako da ponavljam, racunam da imam uglavnom ravne povrsine, uglavnom lepe rupe u tim povrsinama i tako dalje. Znaci ne bavim se previse time kako dobijam model. Racunam da mogu da ga dobijem. Ok, super. Znaci sta mi je sada bitno? Znaci na zgradi pretpostavljamo da nema nekih random sranja, vec su sve stvari pravilne i da se mogu predstaviti nekim objektima viseg nivoa. Ok, kul. 

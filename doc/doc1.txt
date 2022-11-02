@@ -1,0 +1,38 @@
+Znaci koje su faze?
+
+    - Dobijanje nekog grubog modela pomocu iphone-a;
+    - Mergovanje podataka dobijenih kroz daljinometar i kroz iphone - dobijanje preciznog modela;
+    - Kreiranje plana postavke;
+
+A moglo bi da bude i da dobijem sve sto mi treba od gazde jer vec postoji 3D model zgrade unapred :D Znaci da ne moram nikakva merenja da radim :) Sustinski, trebalo bi da imam import tih nekih eksternih predstava.. Ali dobro, sad radimo kao da ta opcija ne postoji.
+
+
+
+Za pocetak, mogu da racunam da imam sve lepo predstavljeno - i povrsine koje treba da budu pod izolacijom, i sve ostale povrsine na zgradi; Otvore, terase itd.. I da je sve ravno. Malo je zajebano sto nisam sasvim siguran kako da hendlujem 'konveksnost/konkavnost' - sta ako stvari upadaju u zgradu? Prosto, moram da u tom 3D prikazu zgrade odaberem one ravni koje su zapravo relevantne. A to su one koje treba pokriti stiroporom i one koje mogu da 'smetaju' prilikom postavke. Nista osim toga nije bitno. Nije bitno da li se kroz vrata na balkonu moze uci u kupatilo koje ima kadu nepravilnog oblika. Iako se do te kade moze doci od spolja, ona naprosto ne sme biti deo price. 
+
+Hm, vidis, na ravnim zgradama mi uz dobar daljinometar iphone mozda ni ne treba? Mada mada mada.. ne bi bilo lose imati ga na raspolaganju. 
+
+Komplikujem bez potrebe, ovo ne sme da bude tako zajebano. Jednostavno ne sme biti tako zeznuto. Mada bi bilo izuzetno kul da imam neki algoritam koji automatski radi ove stvari o kojima pricam.. Znaci da ne moram da radim to sve rucno.. Treba mi neki algoritam za dobijanje ravni iz oblaka tacaka.. Ma jok, ne treba mi iphone uopste; Samo sa zemlje da mogu da lepo gadjam sve sto mi treba i to je to. Mooozda, mozda u nekim komplikovanim situacijama mi treba i iphone, ali ono.. A zapravo, najjaca fora je sto su te zgrade proste do jaja i sto dobijes plan zgrade unapred sa detaljima u milimetar.. Nema tu puno filozofije. E, a kad dobijes sve to, onda mozes da radis. Znaci da kazemo da na neku foru (iphone + daljinomer, plan zgrade, samo daljinomer, samo iphone... sta god) imamo plan zgrade. Sledeca stvar koja nam je bitna je da napravimo algoritam koji nam daje kako izgleda proces postavljanja stiropora; Uz sve potrebne masine itd i sve moguce tehnologije. Sta imamo za sada na zgradi? Koji su elementi zgrade? 
+
+Vertikalni zidovi; 
+Terase - mogu biti raznoraznih oblika; obicno se ne rade stiropori na njima? 
+Prozori; 
+Vrata; 
+Ulazi u zgradu itd; 
+Tavanski zidovi; 
+
+Kako ja predstavljam sve ove stvari? Kako predstavljam vertikalne zidove, kako horizontalne? Da li pomocu ravni i nekih granica? Tako mi ima smisla.. A sta onda radim, triangulaciju toga? Pa predstavljam kao mash? Dosta je ovo zajebano algoritamski, ali je uradivo. I dobro je da nije trivijalno! 
+
+Znaci ja moram da imam nekakvu predstavu zgrade koja lici na ovo od gore. Zgrada je skup nekakvih elemenata; Mada je jebeno to - kako parsirati, kako odvojiti? Prema ravnima - ok, ima smisla. Neki elementi moraju postojati. Tu gde su uglovi, tu gde su coskovi, tu odvajamo. Dobro, prva neka predstava moze biti point cloud? Da li to ima smisla? Kako da znam da li je nesto.. 
+
+HAJDE OPET! PUSTI TO, KRENI NAJOCIGLEDNIJIM PUTEM. IMAS RAVNI I U NJIMA NEKAKVE OTVORE ITD.. ZATIM MOZES IMATI NEKE NEPRAVILNE STVARI (TERASE UGLAVNOM). IMAS TAVAN KOJI JE ISTO SACINJEN IZ VISE RAVNI. I TO TREBA DA IZANALIZIRAS GDE STA DA STAVIS OD ALATA, KAKO, DA BI SE DOBILO POPLOCANO SA STIROPOROM SVE STO TREBA. TO JE PRVI KORAK I GOTOVA PRICA! I TO SAMO ZA SEBE NIJE TRIVIJALNO! 
+
+
+
+Bilo bi poprilicno kul da wrappujem babylon sa rustom i da tako radim. Da to sve bude u jednom procesu. Ali ok, to nije bitno za sada. 
+
+Malo deluje zajebano dobacivati stiropor na neka tesko pristupacna mesta.. Mada moram to resiti. Sigurno se moze nesto sa kanapima sa nekim sranjima.. Mora da moze! :) 
+
+
+
+
