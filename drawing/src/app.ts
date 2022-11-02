@@ -12,42 +12,40 @@ class App {
 
         let that = this;
 
-        document.getElementById('render-stuff')?.addEventListener('click', function() {
+        var scene: any;
 
-            var scene: any;
+        fetch('http://localhost:8080/abc.json')
+        .then((response) => response.json())
+        .then((data) => {
 
-            fetch('http://localhost:8080/abc.json')
-            .then((response) => response.json())
-            .then((data) => {
+            scene = that.createScene(engine, canvas, data);
 
-                scene = that.createScene(engine, canvas, data);
-
-                engine.runRenderLoop(() => {
-                    scene.render();
-                });
-
-                window.addEventListener("keydown", (ev) => {
-                    if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
-                        if (scene.debugLayer.isVisible()) {
-                            scene.debugLayer.hide();
-                        } else {
-                            scene.debugLayer.show();
-                        }
-                    }
-                });
+            engine.runRenderLoop(() => {
+                scene.render();
             });
-        })
+
+            window.addEventListener("keydown", (ev) => {
+                if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+                    if (scene.debugLayer.isVisible()) {
+                        scene.debugLayer.hide();
+                    } else {
+                        scene.debugLayer.show();
+                    }
+                }
+            });
+        });
     }
 
     createScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement, data: any) {
         var scene = new BABYLON.Scene(engine);
+
         var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-20, 30, -40), scene);
         camera.invertRotation = true;
         camera.setTarget(new BABYLON.Vector3(20, 0, 30));
         camera.attachControl(canvas, true);
 
-        var light2 = new BABYLON.HemisphericLight("hemiLight2", new BABYLON.Vector3(10, 40, 0), scene);
-        light2.intensity = 0.7;
+        var light = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        light.intensity = 0.7;
 
         let totalTriangles = [];
         let indices = [];
@@ -65,12 +63,10 @@ class App {
 
         var customMesh = new BABYLON.Mesh("custom", scene);
 
-        //Create a vertexData object
         var vertexData = new BABYLON.VertexData();
 
-        //Assign positions and indices to vertexData
         vertexData.positions = totalTriangles;
-        vertexData.indices = indices;	
+        vertexData.indices = indices;
 
         vertexData.applyToMesh(customMesh);
         
@@ -79,17 +75,21 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         customMesh.material = mat;
+``
+        let wireframe = [];
 
-        // var mat = new BABYLON.StandardMaterial("mat", scene);
-        // mat.diffuseColor = BABYLON.Color3.Blue();
-        // mat.alpha = 0.8;
-        // mat.backFaceCulling = false;
-        // customMesh.material = mat;
+        for(let lineSeq of data.building.wireframe) {
+            let lineSeqFront = [];
+            for (let point of lineSeq) {
+                console.log(point.x, point.z, point.y);
+                lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
+            }
+            wireframe.push(lineSeqFront);
+        }
+    
+        const linesystem = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: wireframe}, scene); 
+        linesystem.color = BABYLON.Color3.Black();
 
-        // const axes = new BABYLON.AxesViewer(scene, 100);
-
-
-        // show axis
         var showAxis = function(size: number) {
             var makeTextPlane = function(text: any, color: any, size: any) {
                 var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
