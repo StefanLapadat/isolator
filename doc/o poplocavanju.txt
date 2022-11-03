@@ -1,0 +1,9 @@
+- Specifikacija zidova za poplocavanje; 
+- Specifikacija debljine stiropora;     
+========================================
+
+- Pronalazenje stranica zidova na kojima treba da bude stiropor; Da li ovo mozda treba da bude ulazni parametar? Da li je u opstem slucaju moguce uopste pronaci koji zidovi su okrenuti ka spolja, a koji ka unutra? Pretpostavljam da bismo mogli da, ukoliko se neki zid specificira kao zid za postavljanje, zaista pronadjemo stranicu koja je zapravo spoljasnjost, medjutim, benefit pronalaska tog algoritma ne deluje prevelik; A takodje, taj algoritam se uvek moze naknadno dodati, tako da ga necemo sad implementirati. Sta jos? 
+
+Necemo implentirati neko previse sofisticirano poplocavanje. Prosto, na uglovima cemo odabrati nasumicno koji zid ce ici 'preko coska' a koji ce se zadrzati do svojih granica. Zapravo odabir nece biti bas nasumican, zelimo da algoritam bude deterministicki kako bi bio ponovljiv, laksi za testiranje itd.. 
+
+
