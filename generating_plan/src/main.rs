@@ -42,6 +42,7 @@ fn create_building() -> BuildingWithPolygonWalls {
         Polygon::from_triplets(vec![(5.,-2.,15.), (5.,-2.,17.), (5.,0.,17.), (5.,0.,15.)], vec![]),
         Polygon::from_triplets(vec![(10.,-2.,15.), (10.,-2.,17.), (10.,0.,17.), (10.,0.,15.)], vec![]),
         Polygon::from_triplets(vec![(5.,-2.,15.), (10.,-2.,15.), (10.,0.,15.), (5.,0.,15.)], vec![]),
+        Polygon::from_triplets(vec![(0.,0.,0.), (1.,1.,0.), (1.,1.,1.), (0.,0.,1.)], vec![]),
     ];
 
     BuildingWithPolygonWalls::new(walls)

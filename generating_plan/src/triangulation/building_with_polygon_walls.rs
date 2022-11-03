@@ -1,6 +1,6 @@
 
 use crate::general_geometry::{Point, Polygon, Triangle};
-use crate::triangulation::building_with_triangulized_walls::{TriangulizedWall, BuildingWithTrianguizedWalls};
+use crate::triangulation::building_with_triangulized_walls::{TriangulizedWall};
 use crate::triangulation::PolygonForTriangulation;
 
 pub struct BuildingWithPolygonWalls {

@@ -185,12 +185,13 @@ impl PolygonForTriangulation {
             Option::None => panic!("greska teska 2"),
             Option::Some(plane) => {
                 let new_coordinate_system = plane.coordinate_system_normal_to_plane();
-    
+                let mut new_coordinates: Vec<Point> = vec![];
+
                 for p in points {
-                    let new_coordinates = p.coordinates_in_different_coordinate_system(&new_coordinate_system);
+                    new_coordinates.push(p.coordinates_in_different_coordinate_system(&new_coordinate_system));
                 }
     
-                let res = PolygonForTriangulation::remove_constant_coordinate(points);
+                let res = PolygonForTriangulation::remove_constant_coordinate(&new_coordinates);
             
                 res
             }
