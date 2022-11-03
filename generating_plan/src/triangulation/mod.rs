@@ -1,6 +1,10 @@
 use crate::general_geometry::{Point, Polygon};
 use earcutr::earcut;
 
+pub mod building_with_polygon_walls;
+pub mod building_with_triangulized_walls;
+
+
 #[derive(Debug)]
 pub struct Plane { //ax + by + cz + d = 0
     a: f64,

@@ -76,11 +76,51 @@ impl Polygon {
         }
     }
 
+    pub fn from_triplets(points: Vec<(f64, f64, f64)>, holes: Vec<Vec<(f64, f64, f64)>>) -> Polygon {
+        let mut points_vec: Vec<Point> = vec![];
+        let mut holes_vec: Vec<Vec<Point>> = vec![];
+        let mut i: usize = 0;
+        while i < points.len() {
+            points_vec.push(Point::new(points[i].0, points[i].1, points[i].2));
+            i+=1;
+        }
+        i = 0;
+        let mut j: usize = 0;
+        while i < holes.len() {
+            holes_vec.push(vec![]);
+            while j < holes[i].len(){
+                holes_vec[i].push(Point::new(holes[i][j].0,holes[i][j].1,holes[i][j].2));
+                j+=1;
+            }
+
+            i+=1;
+        }
+
+        Polygon::new(points_vec, holes_vec)
+    }
+
     pub fn points<'a>(&'a self) -> & 'a Vec<Point> {
         &self.points
     }
 
     pub fn holes<'a>(&'a self) -> & 'a Vec<Vec<Point>> {
         &self.holes
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Triangle {
+    t1: Point,
+    t2: Point,
+    t3: Point
+}
+
+impl Triangle {
+    pub fn new(t1: &Point, t2: &Point, t3: &Point) -> Triangle {
+        Triangle {
+            t1: Point::copy_new(t1),
+            t2: Point::copy_new(t2),
+            t3: Point::copy_new(t3)
+        }
     }
 }

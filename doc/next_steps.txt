@@ -2,9 +2,13 @@ Ok, sta mi treba?
 
     - iscrtavanje zgrade tako da se vide terase itd, neki bolji materijal - nije do materijala, iscrtacemo linije i to je to :) 
     - podrzavanje prozora
+
     - neki laksi nacin specificiranja zgrade sa prozorima, terasama itd 
+
     - pronalazak poplocavanja 
     - iscrtavanje poplocavanja 
-    - provera i iscrtavanje ploca koje se mogu poplocati i prikaz plana kako se to radi
+    
+    - provera i iscrtavanje ploca koje se mogu poplocati i prikaz plana kako se to radig  gytdt65r3wwqq2
+
 
 I bukvalno to je to za prvu fazu; Ono sto bi bilo jaaako dobro je da taj algoritam pronalaska ploca koje se mogu poplocati bude vrlo robustan da moze da podrzi prosirivanje i ukljucivanje raznih elemenata i nacina pronalaska puta. 
