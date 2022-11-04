@@ -1,6 +1,9 @@
 import * as BABYLON from '@babylonjs/core';
 import * as earcut from "earcut";
 
+import (("./index.js") as any)
+.catch(e => console.error("Error importing `index.js`:", e));
+
 class App {
     constructor() {
 
@@ -14,7 +17,7 @@ class App {
 
         var scene: any;
 
-        fetch('http://localhost:8080/abc.json')
+        fetch('http://localhost:8090/abc.json')
         .then((response) => response.json())
         .then((data) => {
 

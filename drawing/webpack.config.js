@@ -21,6 +21,9 @@ module.exports = {
             publicPath: "/",
         }
     },
+    experiments: {
+        asyncWebAssembly: true
+    },
     module: {
         rules: [{
             test: /\.tsx?$/,
