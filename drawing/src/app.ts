@@ -1,41 +1,39 @@
 import * as BABYLON from '@babylonjs/core';
 import * as earcut from "earcut";
 
-import (("./index.js") as any)
-.catch(e => console.error("Error importing `index.js`:", e));
+import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
+    () => {
+        setTimeout(() => {new App();}, 200);
+    }
+)
 
 class App {
     constructor() {
 
         (window as any).earcut = earcut.default;
 
+        let backend = (window as any).wasm as Backend;
+
+        let data = JSON.parse(backend.get_plan());
+
         let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
         const engine = new BABYLON.Engine(canvas, true);
 
-        let that = this;
+        var scene = this.createScene(engine, canvas, data);
 
-        var scene: any;
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
 
-        fetch('http://localhost:8090/abc.json')
-        .then((response) => response.json())
-        .then((data) => {
-
-            scene = that.createScene(engine, canvas, data);
-
-            engine.runRenderLoop(() => {
-                scene.render();
-            });
-
-            window.addEventListener("keydown", (ev) => {
-                if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
-                    if (scene.debugLayer.isVisible()) {
-                        scene.debugLayer.hide();
-                    } else {
-                        scene.debugLayer.show();
-                    }
+        window.addEventListener("keydown", (ev) => {
+            if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+                if (scene.debugLayer.isVisible()) {
+                    scene.debugLayer.hide();
+                } else {
+                    scene.debugLayer.show();
                 }
-            });
+            }
         });
     }
 
@@ -87,7 +85,6 @@ class App {
         for(let lineSeq of data.building.wireframe) {
             let lineSeqFront = [];
             for (let point of lineSeq) {
-                console.log(point.x, point.z, point.y);
                 lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
             }
             wireframe.push(lineSeqFront);
@@ -139,4 +136,6 @@ class App {
     }
 }
 
-new App();
+interface Backend {
+    get_plan(): string
+}

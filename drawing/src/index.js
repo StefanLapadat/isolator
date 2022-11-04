@@ -1,3 +1,3 @@
 import * as wasm from "wasm-builder";
 
-wasm.greeeet(58);
+window.wasm = wasm;

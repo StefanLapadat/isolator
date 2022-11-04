@@ -8,7 +8,5 @@ edition = "2021"
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tessellation = "0.8.2"
-nalgebra = "0.22.*"
 earcutr = "0.3.0"
 cgmath="0.18.*"

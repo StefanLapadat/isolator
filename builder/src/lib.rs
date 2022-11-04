@@ -1,6 +1,7 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
+use generating_plan;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -14,6 +15,7 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn greeeet(num: f64) {
-    alert(format!("Hello, builder! {}", num));
+pub fn get_plan() -> String {
+    let plan = generating_plan::create_plan();
+    serde_json::to_string(&plan).unwrap()
 }

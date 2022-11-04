@@ -4,8 +4,8 @@ use std::io::prelude::*;
 use crate::general_geometry::{Polygon};
 use crate::triangulation::{building_with_polygon_walls::BuildingWithPolygonWalls, building_with_triangulized_walls::BuildingWithTrianguizedWalls};
 
-mod triangulation;
-mod general_geometry;
+pub mod triangulation;
+pub mod general_geometry;
 
 fn main() -> std::io::Result<()> {
     let plan: Plan = create_plan();
@@ -19,7 +19,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn create_plan() -> Plan {
+pub fn create_plan() -> Plan {
     let building = create_building();
 
     Plan {
@@ -48,6 +48,6 @@ fn create_building() -> BuildingWithPolygonWalls {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Plan {
+pub struct Plan {
     building: BuildingWithTrianguizedWalls
 }
