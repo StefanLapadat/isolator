@@ -8,18 +8,6 @@ pub mod triangulation;
 pub mod general_geometry;
 pub mod building_representations;
 
-fn main() -> std::io::Result<()> {
-    let plan: Plan = create_plan();
-
-    let mut file = File::create("/home/stefan/Documents/cia/projects/isolator/drawing/public/abc.json")?;
-
-    let serialized_points = serde_json::to_string(&plan).unwrap();
-
-    file.write(serialized_points.as_bytes())?;
-
-    Ok(())
-}
-
 pub fn create_plan() -> Plan {
     let building = create_building();
 
