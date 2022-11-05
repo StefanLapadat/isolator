@@ -1,16 +1,16 @@
 use serde::{Serialize, Deserialize};
 use crate::general_geometry::{Point, Triangle};
-use crate::triangulation::building_with_polygon_walls::BuildingWithPolygonWalls;
+use crate::building_representations::polygon_walls::PolygonWalls;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct BuildingWithTrianguizedWalls {
+pub struct TrianguizedWalls {
     walls: Vec<TriangulizedWall>,
     wireframe: Vec<Vec<Point>>
 }
 
-impl BuildingWithTrianguizedWalls {
-    pub fn from_building(building: BuildingWithPolygonWalls) -> BuildingWithTrianguizedWalls {
-        BuildingWithTrianguizedWalls {
+impl TrianguizedWalls {
+    pub fn from_building(building: PolygonWalls) -> TrianguizedWalls {
+        TrianguizedWalls {
              walls: building.triangulation(),
              wireframe: building.wireframe()
         }

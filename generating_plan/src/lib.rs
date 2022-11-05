@@ -2,10 +2,11 @@ use serde::{Serialize, Deserialize};
 use std::fs::File;
 use std::io::prelude::*;
 use crate::general_geometry::{Polygon};
-use crate::triangulation::{building_with_polygon_walls::BuildingWithPolygonWalls, building_with_triangulized_walls::BuildingWithTrianguizedWalls};
+use crate::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls};
 
 pub mod triangulation;
 pub mod general_geometry;
+pub mod building_representations;
 
 fn main() -> std::io::Result<()> {
     let plan: Plan = create_plan();
@@ -23,11 +24,11 @@ pub fn create_plan() -> Plan {
     let building = create_building();
 
     Plan {
-        building: BuildingWithTrianguizedWalls::from_building(building)
+        building: TrianguizedWalls::from_building(building)
     }
 }
 
-fn create_building() -> BuildingWithPolygonWalls {
+fn create_building() -> PolygonWalls {
     let house_whl = 25.0;
 
     let walls: Vec<Polygon> = vec![
@@ -44,10 +45,10 @@ fn create_building() -> BuildingWithPolygonWalls {
         Polygon::from_triplets(vec![(5.,-2.,15.), (10.,-2.,15.), (10.,0.,15.), (5.,0.,15.)], vec![]),
     ];
 
-    BuildingWithPolygonWalls::new(walls)
+    PolygonWalls::new(walls)
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Plan {
-    building: BuildingWithTrianguizedWalls
+    building: TrianguizedWalls
 }

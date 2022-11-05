@@ -1,9 +1,6 @@
 use crate::general_geometry::{Point, Polygon, Plane};
 use earcutr::earcut;
 
-pub mod building_with_polygon_walls;
-pub mod building_with_triangulized_walls;
-
 pub struct PolygonForTriangulation { 
     points: Vec<Point>,
     holes: Vec<usize>

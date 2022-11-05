@@ -1,16 +1,15 @@
-
 use crate::general_geometry::{Point, Polygon, Triangle};
-use crate::triangulation::building_with_triangulized_walls::{TriangulizedWall};
+use crate::building_representations::triangulized_walls::{TriangulizedWall};
 use crate::triangulation::PolygonForTriangulation;
 
-pub struct BuildingWithPolygonWalls {
+pub struct PolygonWalls {
     walls: Vec<Polygon>
 }
 
-impl BuildingWithPolygonWalls {
+impl PolygonWalls {
 
-    pub fn new(walls: Vec<Polygon>) -> BuildingWithPolygonWalls {
-        BuildingWithPolygonWalls {
+    pub fn new(walls: Vec<Polygon>) -> PolygonWalls {
+        PolygonWalls {
             walls
         }
     }

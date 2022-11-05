@@ -162,7 +162,6 @@ impl Plane {
         if points.len() < 3 {
             return Option::None;
         } else {
-            let res = Option::Some((&points[0], &points[1], &points[2]));
             let mut i = 2;
 
             while i < points.len() {
