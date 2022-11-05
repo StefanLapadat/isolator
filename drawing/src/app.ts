@@ -1,141 +1,199 @@
 import * as BABYLON from '@babylonjs/core';
-import * as earcut from "earcut";
 
 import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
     () => {
-        setTimeout(() => {new App();}, 200);
+        setTimeout(() => {
+            new App();
+        }, 100);
     }
-)
+);
 
 class App {
+    private readonly plan: Plan;
+    private readonly backend: Backend;
+    private readonly canvas: HTMLCanvasElement;
+    private readonly engine: BABYLON.Engine;
+    private readonly scene: BABYLON.Scene;
+    private readonly buildingMeshVertexData: BABYLON.VertexData;
+    private readonly buildingWireframeData: BABYLON.Vector3[][];
+
     constructor() {
+        this.canvas = this.getCanvas();
+        this.engine = new BABYLON.Engine(this.canvas, true);
 
-        (window as any).earcut = earcut.default;
+        this.backend = (window as any).wasm as Backend;
+        this.plan = JSON.parse(this.backend.get_plan());
 
-        let backend = (window as any).wasm as Backend;
+        this.buildingMeshVertexData = this.getBuildingMeshVertexData();
+        this.buildingWireframeData = this.getBuildingWireframeData();
 
-        let data = JSON.parse(backend.get_plan());
+        this.scene = this.createScene();
 
-        let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+        this.connectCamera();
+        this.connectLights();
+        this.showBuilding();
 
-        const engine = new BABYLON.Engine(canvas, true);
-
-        var scene = this.createScene(engine, canvas, data);
-
-        engine.runRenderLoop(() => {
-            scene.render();
-        });
-
-        window.addEventListener("keydown", (ev) => {
-            if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
-                if (scene.debugLayer.isVisible()) {
-                    scene.debugLayer.hide();
-                } else {
-                    scene.debugLayer.show();
-                }
-            }
-        });
+        this.initGeneralGameStuff();
     }
 
-    createScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement, data: any) {
-        var scene = new BABYLON.Scene(engine);
+    getCanvas(): HTMLCanvasElement {
+        return document.getElementById("canvas") as HTMLCanvasElement;
+    }
 
-        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-20, 30, -40), scene);
+    createScene() {
+        return new BABYLON.Scene(this.engine)
+    }
+
+    connectCamera() {
+        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-20, 30, -40), this.scene);
         camera.invertRotation = true;
         camera.setTarget(new BABYLON.Vector3(20, 0, 30));
-        camera.attachControl(canvas, true);
+        camera.attachControl(this.canvas, true);
 
-        var hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+    }
+
+    connectLights() {
+        var hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), this.scene);
         hemiLight.intensity = 0.5;
 
-        var spotLight = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(10, 100, 10), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, scene);
+        var spotLight = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(10, 100, 10), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, this.scene);
         spotLight.intensity = 0.2;
+    }
+
+    showBuilding() {
+        var buildingMesh = new BABYLON.Mesh("custom", this.scene);
+        this.buildingMeshVertexData.applyToMesh(buildingMesh);
+
+        const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
+        buildingWireframe.color = BABYLON.Color3.Black();
+
+
+        var mat = new BABYLON.StandardMaterial("mat", this.scene);
+        mat.wireframe = false;
+        mat.backFaceCulling = false;
+        mat.transparencyMode = 0;
+        buildingMesh.material = mat;
+    }
+
+    getBuildingMeshVertexData(): BABYLON.VertexData {
+        var vertexData = new BABYLON.VertexData();
 
         let totalTriangles = [];
         let indices = [];
         let i = 0;
 
-        for(let wall of data.building.walls) {
-            let wallTriangles: [] = wall.triangles;
-            let wallTriangle: any;
-            for(wallTriangle of wallTriangles){
-                let wt = wallTriangle;
+        for(let wall of this.plan.building.walls) {
+            for(let wt of wall.triangles){
                 totalTriangles.push(...[wt.t1.x, wt.t1.z, wt.t1.y, wt.t2.x, wt.t2.z, wt.t2.y, wt.t3.x, wt.t3.z, wt.t3.y]);
                 indices.push(...[i++, i++, i++]);
             }
         }
 
-        var customMesh = new BABYLON.Mesh("custom", scene);
-
-        var vertexData = new BABYLON.VertexData();
-
         vertexData.positions = totalTriangles;
         vertexData.indices = indices;
 
-        vertexData.applyToMesh(customMesh);
-        
-        var mat = new BABYLON.StandardMaterial("mat", scene);
-        mat.wireframe = false;
-        mat.backFaceCulling = false;
-        mat.transparencyMode = 0;
-        customMesh.material = mat;
+        return vertexData;
+    }
 
-        let wireframe = [];
+    getBuildingWireframeData(): BABYLON.Vector3[][] {
+        let wireframe: BABYLON.Vector3[][] = [];
 
-        for(let lineSeq of data.building.wireframe) {
+        for(let lineSeq of this.plan.building.wireframe) {
             let lineSeqFront = [];
             for (let point of lineSeq) {
                 lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
             }
             wireframe.push(lineSeqFront);
         }
-    
-        const linesystem = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: wireframe}, scene); 
-        linesystem.color = BABYLON.Color3.Black();
 
-        // const ground = BABYLON.MeshBuilder.CreateGround("ground", {height: 100, width: 100, subdivisions: 4});
+        return wireframe;
+    }
 
-        var showAxis = function(size: number) {
-            var makeTextPlane = function(text: any, color: any, size: any) {
-                var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
-                dynamicTexture.hasAlpha = true;
-                dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
-                var plane = BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
-                plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
-                plane.material.backFaceCulling = false;
-                // plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
-                // plane.material.diffuseTexture = dynamicTexture;
-                return plane;
-            };
-    
-            var axisX = BABYLON.Mesh.CreateLines("axisX", [ 
-                BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
-                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-            ], scene, true);
-            axisX.color = new BABYLON.Color3(1, 0, 0);
-            var xChar = makeTextPlane("X", "red", size / 10);
-            xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
-            var axisY = BABYLON.Mesh.CreateLines("axisY", [
-                BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
-                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-            ], scene, true);
-            axisY.color = new BABYLON.Color3(0, 1, 0);
-            var yChar = makeTextPlane("Y", "green", size / 10);
-            yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
-            var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-                BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-            ], scene, true);
-            axisZ.color = new BABYLON.Color3(0, 0, 1);
-            var zChar = makeTextPlane("Z", "blue", size / 10);
-            zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+    showAxis(size: number) {
+        var scene = this.scene;
+        var makeTextPlane = function(text: any, color: any, size: any) {
+            var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
+            dynamicTexture.hasAlpha = true;
+            dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
+            var plane = BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+            plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
+            plane.material.backFaceCulling = false;
+            // plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+            // plane.material.diffuseTexture = dynamicTexture;
+            return plane;
         };
-	
-	    // showAxis(100);
-        return scene; 
+
+        var axisX = BABYLON.Mesh.CreateLines("axisX", [ 
+            BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+            new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+        ], scene, true);
+        axisX.color = new BABYLON.Color3(1, 0, 0);
+        var xChar = makeTextPlane("X", "red", size / 10);
+        xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
+        var axisY = BABYLON.Mesh.CreateLines("axisY", [
+            BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
+            new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
+        ], scene, true);
+        axisY.color = new BABYLON.Color3(0, 1, 0);
+        var yChar = makeTextPlane("Y", "green", size / 10);
+        yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
+        var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+            BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+            new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+        ], scene, true);
+        axisZ.color = new BABYLON.Color3(0, 0, 1);
+        var zChar = makeTextPlane("Z", "blue", size / 10);
+        zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+    }
+
+    showGround() {
+        BABYLON.MeshBuilder.CreateGround("ground", {height: 100, width: 100, subdivisions: 4});
+    }
+
+    initGeneralGameStuff() {
+            this.engine.runRenderLoop(() => {
+            this.scene.render();
+        });
+
+        window.addEventListener("keydown", (ev) => {
+            if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+                if (this.scene.debugLayer.isVisible()) {
+                    this.scene.debugLayer.hide();
+                } else {
+                    this.scene.debugLayer.show();
+                }
+            }
+        });
     }
 }
 
+
+
 interface Backend {
     get_plan(): string
+}
+
+interface Building {
+    walls: Wall[],
+    wireframe: Point [][] 
+}
+
+interface Point {
+    x: number, 
+    y: number,
+    z: number
+}
+
+interface Wall {
+    triangles: Triangle[]
+}
+
+interface Triangle {
+    t1: Point,
+    t2: Point,
+    t3: Point
+}
+
+interface Plan {
+    building: Building
 }

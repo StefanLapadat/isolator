@@ -1,0 +1,14 @@
+Dobro, ovo sto radim trenutno je u sustini dosta slicno onome sto bih radio kada bi mi rust bio na serveru a babylon u browseru i kada bih konstantno komunicirao preko nekog websocketa ili cak pomocu http-a. Medjutim, to je sporije (sto nije neki poseban faktor ovde, ali ipak..) a i nekako je tupsonski, wasm mi ima malo vise smisla i malo manje pokretnih delova u runtime-u. Jedna browserska aplikacija i to je to.. Sve je u browseru, na backendu nema gotovo nicega, osim mozda cuvanja stvari u fajlove i ponesto u bazu, ali ono.. fat client da ne moze biti deblji :D 
+
+Ali je ok stvar, jer cak i ukoliko nekad pozelim da stvari izbacim iz kljenta na server zbog ne znam ni ja cega, mogu to da uradim jer ce server biti rust i sve ce raditi kao zmaj :) Tako da je to skroz ok :) Jeeeej :) 
+
+E jedna stvar je malkice nezgodna.. Ukoliko bih komunicirao izmedju dve aplikacije, mogao bih da u jednoj drzim nekakav state kao neki objekat. A ovamo bih morao da imam neku globalnu promenljivu koju bih editovao.. To nije bas neka praksa za biblioteku.. Za biblioteku je vise da u aplikaciji imas neki objekat na koji onda iterativno apliciras metode iz biblioteke.. Medjutim, problem je malo sto wasm nije bas klasicna biblioteka.. 
+
+E majku mu, dodje mi da zabatalim babylon i da prosto koristim neki rust 3d engine.. I to sam i trebao da uradim :( Jer postoji!! 
+
+I jebes mi sve, to cu i da uradim, preci cu na taj https://github.com/FyroxEngine/Fyrox :) 
+
+Mislim nemam pojma, mozda prvo namestim ove stvari sto sam hteo, medjutim, taj editor mi nije bas lako portovati posle.. Lakse mi je da ga od nule napravim u rustu.. Da da, prelazim na Fyrox! :) 
+
+Imacu poprilicno jednostavniju situaciju i custo rust resenje nego sto imam trenutno! :) Kako se nisam ranije setio ovoga.. 
+

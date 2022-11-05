@@ -43,11 +43,11 @@ impl BuildingWithPolygonWalls {
 
         for wall in &self.walls {
             let mut seq: Vec<Point> = vec![];
-            for point in wall.points() {
+            for point in wall.rim() {
                 seq.push(Point::copy_new(point));
             }
-            if !wall.points().is_empty() {
-                seq.push(Point::copy_new(&wall.points()[0]));
+            if !wall.rim().is_empty() {
+                seq.push(Point::copy_new(&wall.rim()[0]));
             }
             res.push(seq);
             for hole in wall.holes() {
