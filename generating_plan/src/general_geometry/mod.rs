@@ -76,12 +76,12 @@ impl Polygon {
         }
     }
 
-    pub fn from_triplets(points: Vec<(f64, f64, f64)>, holes: Vec<Vec<(f64, f64, f64)>>) -> Polygon {
+    pub fn from_triplets(rim: Vec<(f64, f64, f64)>, holes: Vec<Vec<(f64, f64, f64)>>) -> Polygon {
         let mut points_vec: Vec<Point> = vec![];
         let mut holes_vec: Vec<Vec<Point>> = vec![];
         let mut i: usize = 0;
-        while i < points.len() {
-            points_vec.push(Point::new(points[i].0, points[i].1, points[i].2));
+        while i < rim.len() {
+            points_vec.push(Point::new(rim[i].0, rim[i].1, rim[i].2));
             i+=1;
         }
         i = 0;
@@ -97,6 +97,21 @@ impl Polygon {
         }
 
         Polygon::new(points_vec, holes_vec)
+    }
+
+    pub fn in_xy_plane_no_holes_from_increments(start_rim: (f64, f64), increments_rim: Vec<(f64, f64)>) -> Polygon {
+        let holes: Vec<Vec<(f64, f64, f64)>> = vec![];
+        let mut rim: Vec<(f64, f64, f64)> = vec![];
+
+        let mut temp: (f64, f64, f64) = (start_rim.0, start_rim.1, 0.);
+        rim.push(temp);
+
+        for inc in increments_rim {
+            temp = (temp.0 + inc.0, temp.1 + inc.1, 0.);
+            rim.push(temp);
+        }
+
+        Self::from_triplets(rim, holes)
     }
 
     pub fn rim<'a>(&'a self) -> & 'a Vec<Point> {

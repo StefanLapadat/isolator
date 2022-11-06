@@ -1,22 +1,18 @@
 use serde::{Serialize, Deserialize};
-use std::fs::File;
-use std::io::prelude::*;
 use crate::general_geometry::{Polygon};
-use crate::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls};
+use crate::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls, levels::Levels, levels::Level, converters};
 
 pub mod triangulation;
 pub mod general_geometry;
 pub mod building_representations;
 
 pub fn create_plan() -> Plan {
-    let building = create_building();
-
     Plan {
-        building: TrianguizedWalls::from_building(building)
+        building: create_building()
     }
 }
 
-fn create_building() -> PolygonWalls {
+fn create_building1() -> TrianguizedWalls {
     let house_whl = 25.0;
 
     let walls: Vec<Polygon> = vec![
@@ -33,7 +29,25 @@ fn create_building() -> PolygonWalls {
         Polygon::from_triplets(vec![(5.,-2.,15.), (10.,-2.,15.), (10.,0.,15.), (5.,0.,15.)], vec![]),
     ];
 
-    PolygonWalls::new(walls)
+    TrianguizedWalls::from_building(PolygonWalls::new(walls))
+}
+
+fn create_building() -> TrianguizedWalls {
+
+    let right = (5.0, 0.0);
+    let up = (0.0, 5.0);
+    let down = (0., -5.);
+    let left = (-5., 0.);
+
+    let levels: Levels = Levels::new(vec![
+        Level::new(7., Polygon::in_xy_plane_no_holes_from_increments((-10., -10.), 
+        vec![right, up, right, down, right, up, right, down, right, up, up, up, up, left, down, left, up, left, down, left, up, left ])),
+        Level::new(5., Polygon::from_triplets(vec![(0.,0.,0.), (10., 0., 0.), (10., 10., 0.), (0., 10., 0.)], vec![])),
+        Level::new(8., Polygon::from_triplets(vec![(5.,0.,0.), (10., 5., 0.), (5., 10., 0.), (0., 5., 0.)], vec![])),
+        Level::new(3., Polygon::from_triplets(vec![(-5.,-5.,0.), (15., -5., 0.), (15., 15., 0.), (-5., 15., 0.)], vec![])),
+    ]);
+
+    TrianguizedWalls::from_building(converters::levels_to_polygon_walls(levels))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
