@@ -1,7 +1,9 @@
 use crate::general_geometry::{Point, Polygon, Triangle};
 use crate::building_representations::triangulized_walls::{TriangulizedWall};
 use crate::triangulation::PolygonForTriangulation;
+use serde::{Serialize, Deserialize};
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PolygonWalls {
     walls: Vec<Polygon>
 }
@@ -12,6 +14,10 @@ impl PolygonWalls {
         PolygonWalls {
             walls
         }
+    }
+
+    pub fn walls(&self) -> &Vec<Polygon> {
+        &self.walls
     }
 
     pub fn triangulation(&self) -> Vec<TriangulizedWall> {
@@ -43,19 +49,19 @@ impl PolygonWalls {
         for wall in &self.walls {
             let mut seq: Vec<Point> = vec![];
             for point in wall.rim() {
-                seq.push(Point::copy_new(point));
+                seq.push(point.clone());
             }
             if !wall.rim().is_empty() {
-                seq.push(Point::copy_new(&wall.rim()[0]));
+                seq.push(wall.rim()[0].clone());
             }
             res.push(seq);
             for hole in wall.holes() {
                 let mut seq_hole:Vec<Point> = vec![];
                 for point in hole {
-                    seq_hole.push(Point::copy_new(point));
+                    seq_hole.push(point.clone());
                 }
                 if !hole.is_empty() {
-                    seq_hole.push(Point::copy_new(&hole[0]));
+                    seq_hole.push(hole[0].clone());
                 }
                 res.push(seq_hole);
             }

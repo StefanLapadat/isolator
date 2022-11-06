@@ -24,6 +24,8 @@ class App {
         this.backend = (window as any).wasm as Backend;
         this.plan = JSON.parse(this.backend.get_plan());
 
+        console.log(this.backend.get_request());
+    
         this.buildingMeshVertexData = this.getBuildingMeshVertexData();
         this.buildingWireframeData = this.getBuildingWireframeData();
 
@@ -32,6 +34,7 @@ class App {
         this.connectCamera();
         this.connectLights();
         this.showBuilding();
+        // this.showAxis(100);
 
         this.initGeneralGameStuff();
     }
@@ -49,7 +52,6 @@ class App {
         camera.invertRotation = true;
         camera.setTarget(new BABYLON.Vector3(20, 0, 30));
         camera.attachControl(this.canvas, true);
-
     }
 
     connectLights() {
@@ -70,7 +72,7 @@ class App {
 
         var mat = new BABYLON.StandardMaterial("mat", this.scene);
         mat.wireframe = false;
-        mat.backFaceCulling = false;
+        mat.backFaceCulling = true;
         mat.transparencyMode = 0;
         buildingMesh.material = mat;
     }
@@ -170,7 +172,11 @@ class App {
 
 
 interface Backend {
-    get_plan(): string
+    get_plan(): string,
+    get_building_levels(): string,
+    get_building_polygon_walls(): string,
+    get_building_triangulized(): string,
+    get_request(): string
 }
 
 interface Building {

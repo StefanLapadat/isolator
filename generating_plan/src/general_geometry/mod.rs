@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
@@ -10,10 +10,6 @@ pub struct Point {
 impl Point {
     pub fn new(x: f64, y: f64, z: f64) -> Point {
         Point { x, y, z }
-    }
-
-    pub fn copy_new(point: &Point) -> Point {
-        Point::new(point.x, point.y, point.z)
     }
 
     pub fn subtract(&self, point: &Point) -> Point {
@@ -63,6 +59,7 @@ impl Point {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Polygon {
     rim: Vec<Point>,
     holes: Vec<Vec<Point>>
@@ -133,9 +130,9 @@ pub struct Triangle {
 impl Triangle {
     pub fn new(t1: &Point, t2: &Point, t3: &Point) -> Triangle {
         Triangle {
-            t1: Point::copy_new(t1),
-            t2: Point::copy_new(t2),
-            t3: Point::copy_new(t3)
+            t1: t1.clone(),
+            t2: t2.clone(),
+            t3: t3.clone()
         }
     }
 }
@@ -212,7 +209,7 @@ impl Plane {
         (t2.x / t1.x).simmilar_to(ratio, epsilon) && (t2.y / t1.y).simmilar_to(ratio, epsilon) && (t2.z / t1.z).simmilar_to(ratio, epsilon)
     }
 
-    fn normal_vector(&self) -> Point {
+    pub fn normal_vector(&self) -> Point {
         Point {
             x: self.a, 
             y: self.b,
@@ -230,7 +227,7 @@ impl Plane {
     }
 }
 
-trait Simmilar {
+pub trait Simmilar {
     fn simmilar_to(&self, other: Self, epsilon: f64) -> bool;
 }
 

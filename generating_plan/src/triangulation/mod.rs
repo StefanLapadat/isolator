@@ -22,12 +22,12 @@ impl PolygonForTriangulation {
         let mut res: Vec<Point> = vec![];
     
         for point in polygon.rim() {
-            res.push(Point::copy_new(point));
+            res.push(point.clone());
         }
     
         for hole in polygon.holes() {
             for hole_point in hole {
-                res.push(Point::copy_new(hole_point));
+                res.push(hole_point.clone());
             }
         }
     

@@ -2,6 +2,7 @@
 
 use crate::building_representations::levels::Levels;
 use crate::building_representations::polygon_walls::PolygonWalls;
+use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::general_geometry::{Polygon, Point};
 
 pub fn levels_to_polygon_walls(levels: Levels) -> PolygonWalls {
@@ -33,4 +34,8 @@ pub fn levels_to_polygon_walls(levels: Levels) -> PolygonWalls {
     }
 
     PolygonWalls::new(walls)
+}
+
+pub fn polygon_walls_to_triangulized_walls(polygon_walls: PolygonWalls) -> TrianguizedWalls {
+    TrianguizedWalls::new(polygon_walls.triangulation(), polygon_walls.wireframe())
 }

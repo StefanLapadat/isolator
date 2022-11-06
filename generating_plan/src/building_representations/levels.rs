@@ -1,5 +1,7 @@
 use crate::general_geometry::Polygon;
+use serde::{Serialize, Deserialize};
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Levels {
     levels: Vec<Level>
 }
@@ -16,6 +18,7 @@ impl Levels {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Level {
     height: f64,
     rim: Polygon
