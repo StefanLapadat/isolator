@@ -72,7 +72,7 @@ class App {
 
         var mat = new BABYLON.StandardMaterial("mat", this.scene);
         mat.wireframe = false;
-        mat.backFaceCulling = true;
+        mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         buildingMesh.material = mat;
     }
