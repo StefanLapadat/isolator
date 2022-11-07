@@ -1,10 +1,14 @@
-use serde::{Serialize, Deserialize};
 use crate::general_geometry::{Polygon};
-use crate::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls, levels::Levels, levels::Level, converters, request_for_isolation::Request};
+use crate::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls, levels::Levels, levels::Level, converters};
+use crate::request_for_isolation::Request;
+use crate::plan_generation::Plan;
 
 pub mod triangulation;
 pub mod general_geometry;
 pub mod building_representations;
+pub mod request_for_isolation;
+pub mod tile;
+pub mod plan_generation;
 
 fn create_building1() -> TrianguizedWalls {
     let house_whl = 25.0;
@@ -53,7 +57,7 @@ pub fn create_request() -> Request {
     Request::from_polygon_walls_building(&create_building_polygon_walls(), 2.)
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Plan {
-    pub building: TrianguizedWalls
+pub fn create_plan(request: Request) -> Plan {
+    plan_generation::generate_plan(request)
 }
+

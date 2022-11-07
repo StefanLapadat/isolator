@@ -19,7 +19,8 @@ extern {
 #[wasm_bindgen]
 pub fn get_plan() -> String {
     let plan = Plan {
-        building: generating_plan::create_building_triangulized()
+        building: generating_plan::create_building_triangulized(),
+        tiles: generating_plan::
     };
 
     serde_json::to_string(&plan).unwrap()
