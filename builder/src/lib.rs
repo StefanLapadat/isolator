@@ -2,8 +2,6 @@ mod utils;
 
 use wasm_bindgen::prelude::*;
 use generating_plan;
-use generating_plan::{Plan};
-use generating_plan::building_representations::polygon_walls::PolygonWalls;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -18,11 +16,7 @@ extern {
 
 #[wasm_bindgen]
 pub fn get_plan() -> String {
-    let plan = Plan {
-        building: generating_plan::create_building_triangulized(),
-        tiles: generating_plan::
-    };
-
+    let plan = generating_plan::create_plan(generating_plan::create_request());
     serde_json::to_string(&plan).unwrap()
 }
 
