@@ -4,7 +4,7 @@ import (("./index.js") as any).catch(e => console.error("Error importing `index.
     () => {
         setTimeout(() => {
             new App();
-        }, 100);
+        }, 300);
     }
 );
 
@@ -16,6 +16,8 @@ class App {
     private readonly scene: BABYLON.Scene;
     private readonly buildingMeshVertexData: BABYLON.VertexData;
     private readonly buildingWireframeData: BABYLON.Vector3[][];
+    private readonly isolationMeshVertexData: BABYLON.VertexData;
+    private readonly isolationWireframeData: BABYLON.Vector3[][];
 
     constructor() {
         this.canvas = this.getCanvas();
@@ -23,17 +25,19 @@ class App {
 
         this.backend = (window as any).wasm as Backend;
         this.plan = JSON.parse(this.backend.get_plan());
-
-        console.log(this.backend.get_request());
     
         this.buildingMeshVertexData = this.getBuildingMeshVertexData();
         this.buildingWireframeData = this.getBuildingWireframeData();
+
+        this.isolationMeshVertexData = this.getIsolationMeshVertexData();
+        this.isolationWireframeData = this.getIsolationWireframeData();
 
         this.scene = this.createScene();
 
         this.connectCamera();
         this.connectLights();
-        this.showBuilding();
+        //this.showBuilding();
+        this.showIsolation();
         // this.showAxis(100);
 
         this.initGeneralGameStuff();
@@ -63,18 +67,33 @@ class App {
     }
 
     showBuilding() {
-        var buildingMesh = new BABYLON.Mesh("custom", this.scene);
+        var buildingMesh = new BABYLON.Mesh("buildingMesh", this.scene);
         this.buildingMeshVertexData.applyToMesh(buildingMesh);
 
         const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
         buildingWireframe.color = BABYLON.Color3.Black();
 
+        var mat = new BABYLON.StandardMaterial("matBuildingMesh", this.scene);
+        mat.wireframe = false;
+        mat.backFaceCulling = false;
+        mat.transparencyMode = 0;
+        buildingMesh.material = mat;
+    }
+
+    showIsolation() {
+        var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
+        this.isolationMeshVertexData.applyToMesh(isolationMesh);
+
+        const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
+        isolationWireframe.color = BABYLON.Color3.Black();
 
         var mat = new BABYLON.StandardMaterial("mat", this.scene);
         mat.wireframe = false;
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
-        buildingMesh.material = mat;
+        mat.alpha = 1;
+        mat.diffuseColor = BABYLON.Color3.Red();
+        isolationMesh.material = mat;
     }
 
     getBuildingMeshVertexData(): BABYLON.VertexData {
@@ -101,6 +120,40 @@ class App {
         let wireframe: BABYLON.Vector3[][] = [];
 
         for(let lineSeq of this.plan.building.wireframe) {
+            let lineSeqFront = [];
+            for (let point of lineSeq) {
+                lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
+            }
+            wireframe.push(lineSeqFront);
+        }
+
+        return wireframe;
+    }
+
+    getIsolationMeshVertexData(): BABYLON.VertexData {
+        var vertexData = new BABYLON.VertexData();
+
+        let totalTriangles = [];
+        let indices = [];
+        let i = 0;
+
+        for(let tile of this.plan.tiles.tiles) {
+            for(let wt of tile.triangles){
+                totalTriangles.push(...[wt.t1.x, wt.t1.z, wt.t1.y, wt.t2.x, wt.t2.z, wt.t2.y, wt.t3.x, wt.t3.z, wt.t3.y]);
+                indices.push(...[i++, i++, i++]);
+            }
+        }
+
+        vertexData.positions = totalTriangles;
+        vertexData.indices = indices;
+
+        return vertexData;
+    }
+
+    getIsolationWireframeData(): BABYLON.Vector3[][] {
+        let wireframe: BABYLON.Vector3[][] = [];
+
+        for(let lineSeq of this.plan.tiles.wireframe) {
             let lineSeqFront = [];
             for (let point of lineSeq) {
                 lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
@@ -179,9 +232,27 @@ interface Backend {
     get_request(): string
 }
 
+interface Plan {
+    building: Building,
+    tiles: Tiles
+}
+
 interface Building {
-    walls: Wall[],
+    walls: TriangulizedWall[],
     wireframe: Point [][] 
+}
+
+interface Tiles {
+    tiles: TriangulizedTile[],
+    wireframe: Point [][] 
+}
+
+interface TriangulizedWall {
+    triangles: Triangle[]
+}
+
+interface TriangulizedTile {
+    triangles: Triangle[]
 }
 
 interface Point {
@@ -190,16 +261,8 @@ interface Point {
     z: number
 }
 
-interface Wall {
-    triangles: Triangle[]
-}
-
 interface Triangle {
     t1: Point,
     t2: Point,
     t3: Point
-}
-
-interface Plan {
-    building: Building
 }

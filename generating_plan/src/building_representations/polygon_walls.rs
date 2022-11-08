@@ -24,47 +24,18 @@ impl PolygonWalls {
         let mut res: Vec<TriangulizedWall> = vec![];
 
         for wall in &self.walls {
-            let poly_tri = PolygonForTriangulation::from_polygon(wall);
-
-            let tri = crate::triangulation::triangulate_3d(&poly_tri);
-            
-            let mut triangles: Vec<Triangle> = vec![];
-            
-            let mut i = 0;
-            while i<tri.len() {
-                let pts = poly_tri.points();
-                triangles.push(Triangle::new(&pts[tri[i]], &pts[tri[i+1]], &pts[tri[i+2]]));
-                i += 3;
-            }
-
-            res.push(TriangulizedWall::new(triangles));
+            res.push(TriangulizedWall::new(PolygonForTriangulation::from_polygon(wall).triangulate_3d()));
         }
     
         res
     }
 
     pub fn wireframe(&self) -> Vec<Vec<Point>> {
-        let mut res = vec![];
+        let mut res: Vec<Vec<Point>>  = vec![];
 
         for wall in &self.walls {
-            let mut seq: Vec<Point> = vec![];
-            for point in wall.rim() {
-                seq.push(point.clone());
-            }
-            if !wall.rim().is_empty() {
-                seq.push(wall.rim()[0].clone());
-            }
-            res.push(seq);
-            for hole in wall.holes() {
-                let mut seq_hole:Vec<Point> = vec![];
-                for point in hole {
-                    seq_hole.push(point.clone());
-                }
-                if !hole.is_empty() {
-                    seq_hole.push(hole[0].clone());
-                }
-                res.push(seq_hole);
-            }
+            let mut wall_wireframe = wall.wireframe();
+            res.append(&mut wall_wireframe);
         }
 
         res

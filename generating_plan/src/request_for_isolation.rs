@@ -7,6 +7,12 @@ pub struct Request {
     data: Vec<PolygonWithIsolationDetails>
 }
 
+impl Request {
+    pub fn data(&self) -> &Vec<PolygonWithIsolationDetails> {
+        &self.data
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PolygonWithIsolationDetails {
     polygon: Polygon,
@@ -14,9 +20,29 @@ pub struct PolygonWithIsolationDetails {
     isolation: Option<IsolationDetails>
 }
 
+impl PolygonWithIsolationDetails {
+    pub fn polygon(&self) -> &Polygon {
+        &self.polygon
+    }
+
+    pub fn isolation(&self) -> &Option<IsolationDetails> {
+        &self.isolation
+    }
+
+    pub fn polygon_normal(&self) -> &Point {
+        &self.polygon_normal
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct IsolationDetails {
     width: f64,
+}
+
+impl IsolationDetails {
+    pub fn width(&self) -> f64{
+        self.width
+    }
 }
 
 impl Request {

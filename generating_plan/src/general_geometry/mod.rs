@@ -20,7 +20,7 @@ impl Point {
         Point::new(self.x + point.x, self.y + point.y, self.z + point.z)
     }
 
-    fn multiply(&self, scalar: f64) -> Point {
+    pub fn multiply(&self, scalar: f64) -> Point {
         Point::new(self.x * scalar, self.y * scalar, self.z * scalar)
     }
 
@@ -117,6 +117,53 @@ impl Polygon {
 
     pub fn holes<'a>(&'a self) -> & 'a Vec<Vec<Point>> {
         &self.holes
+    }
+
+    pub fn wireframe(&self) -> Vec<Vec<Point>> {
+        let mut res: Vec<Vec<Point>> = vec![];
+
+        let mut seq: Vec<Point> = vec![];
+        for point in self.rim() {
+            seq.push(point.clone());
+        }
+        if !self.rim().is_empty() {
+            seq.push(self.rim()[0].clone());
+        }
+        res.push(seq);
+        for hole in self.holes() {
+            let mut seq_hole:Vec<Point> = vec![];
+            for point in hole {
+                seq_hole.push(point.clone());
+            }
+            if !hole.is_empty() {
+                seq_hole.push(hole[0].clone());
+            }
+            res.push(seq_hole);
+        }
+
+        res
+    }
+
+    pub fn translate(&self, inc: &Point) -> Polygon {
+        let mut rim: Vec<Point> = vec![];
+        let mut holes: Vec<Vec<Point>> = vec![];
+
+        for point in self.rim() {
+            rim.push(point.add(&inc));
+        }
+
+        for hole in self.holes() {
+            let mut new_hole: Vec<Point> = vec![];
+            for point in hole {
+                new_hole.push(point.add(&inc));
+            }
+            holes.push(new_hole);
+        }
+
+        Polygon {
+            rim,
+            holes
+        }
     }
 }
 

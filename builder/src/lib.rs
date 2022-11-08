@@ -16,7 +16,7 @@ extern {
 
 #[wasm_bindgen]
 pub fn get_plan() -> String {
-    let plan = generating_plan::create_plan(generating_plan::create_request());
+    let plan = generating_plan::create_plan(&generating_plan::create_request());
     serde_json::to_string(&plan).unwrap()
 }
 

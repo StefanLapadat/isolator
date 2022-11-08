@@ -1,4 +1,4 @@
-use crate::general_geometry::{Point, Polygon, Plane};
+use crate::general_geometry::{Point, Polygon, Plane, Triangle};
 use earcutr::earcut;
 
 pub struct PolygonForTriangulation { 
@@ -98,11 +98,28 @@ impl PolygonForTriangulation {
     
         res
     }
+
+    fn triangulate_3d_indices_result(&self) -> Vec<usize> {
+        return earcut(&PolygonForTriangulation::flatten_points(&self.points), &self.holes, 2);
+    }
+
+    pub fn triangulate_3d(&self) -> Vec<Triangle>{
+        let tri = self.triangulate_3d_indices_result();
+            
+        let mut triangles: Vec<Triangle> = vec![];
+        
+        let mut i = 0;
+        while i<tri.len() {
+            let pts = self.points();
+            triangles.push(Triangle::new(&pts[tri[i]], &pts[tri[i+1]], &pts[tri[i+2]]));
+            i += 3;
+        }
+
+        triangles
+    }
 }
 
-pub fn triangulate_3d(polygon: &PolygonForTriangulation) -> Vec<usize> {
-    return earcut(&PolygonForTriangulation::flatten_points(&polygon.points), &polygon.holes, 2);
-}
+
 
 
 pub enum Coordinate {

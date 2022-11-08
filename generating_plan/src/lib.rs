@@ -54,10 +54,10 @@ pub fn create_building_levels() -> Levels {
 }
 
 pub fn create_request() -> Request {
-    Request::from_polygon_walls_building(&create_building_polygon_walls(), 2.)
+    Request::from_polygon_walls_building(&create_building_polygon_walls(), 0.5)
 }
 
-pub fn create_plan(request: Request) -> Plan {
+pub fn create_plan(request: &Request) -> Plan {
     plan_generation::generate_plan(request)
 }
 
