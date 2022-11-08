@@ -10,24 +10,30 @@ pub mod request_for_isolation;
 pub mod tile;
 pub mod plan_generation;
 
-fn create_building1() -> TrianguizedWalls {
+fn create_building_triangulized_1() -> TrianguizedWalls {
+    converters::polygon_walls_to_triangulized_walls(create_building_polygon_walls_1())
+}
+
+fn create_building_polygon_walls_1() -> PolygonWalls {
     let house_whl = 25.0;
 
     let walls: Vec<Polygon> = vec![
         Polygon::from_triplets(vec![(0.,0.,0.), (10.,0.,0.), (10.,0.,10.), (15.,0.,10.), (15.,0.,0.), (house_whl,0.,0.), (house_whl,0.,house_whl), (0.,0.,house_whl)], 
             vec![vec![(5.,0.,15.), (10.,0.,15.), (10.,0.,19.), (5.,0.,19.)]]),
-        Polygon::from_triplets(vec![(house_whl,0.,0.), (house_whl,0.,house_whl), (house_whl,house_whl,house_whl), (house_whl,house_whl,0.)], vec![]),
+        Polygon::from_triplets(vec![(house_whl,0.,0.),  (house_whl,house_whl,0.), (house_whl,house_whl,house_whl),(house_whl,0.,house_whl)], vec![]),
+
         Polygon::from_triplets(vec![(0.,0.,0.), (0.,0.,25.), (0.,25.,25.), (0.,25.,0.)], vec![]),
-        Polygon::from_triplets(vec![(0.,house_whl,0.), (house_whl,house_whl,0.), (house_whl,house_whl,house_whl), (0.,house_whl,house_whl)], vec![]),
+        Polygon::from_triplets(vec![(0.,house_whl,0.),(0.,house_whl,house_whl),(house_whl,house_whl,house_whl), (house_whl,house_whl,0.)], vec![]),
         Polygon::from_triplets(vec![(0.,0.,0.), (0.,house_whl,0.), (house_whl,house_whl,0.), (house_whl,0.,0.)], vec![]),
         Polygon::from_triplets(vec![(0.,0.,house_whl), (house_whl,0.,house_whl), (house_whl,house_whl,house_whl), (0.,house_whl,house_whl)], vec![]),
+       
         Polygon::from_triplets(vec![(5.,-2.,15.), (10.,-2.,15.), (10.,-2.,17.), (5.,-2.,17.)], vec![]),
         Polygon::from_triplets(vec![(5.,-2.,15.), (5.,-2.,17.), (5.,0.,17.), (5.,0.,15.)], vec![]),
-        Polygon::from_triplets(vec![(10.,-2.,15.), (10.,-2.,17.), (10.,0.,17.), (10.,0.,15.)], vec![]),
+        Polygon::from_triplets(vec![(10.,-2.,15.), (10.,0.,15.), (10.,0.,17.), (10.,-2.,17.)], vec![]),
         Polygon::from_triplets(vec![(5.,-2.,15.), (10.,-2.,15.), (10.,0.,15.), (5.,0.,15.)], vec![]),
     ];
 
-    converters::polygon_walls_to_triangulized_walls(PolygonWalls::new(walls))
+    PolygonWalls::new(walls)
 }
 
 pub fn create_building_triangulized() -> TrianguizedWalls {
@@ -54,10 +60,9 @@ pub fn create_building_levels() -> Levels {
 }
 
 pub fn create_request() -> Request {
-    Request::from_polygon_walls_building(&create_building_polygon_walls(), 0.5)
+    Request::from_polygon_walls_building(&create_building_polygon_walls_1(), 0.5)
 }
 
 pub fn create_plan(request: &Request) -> Plan {
     plan_generation::generate_plan(request)
 }
-

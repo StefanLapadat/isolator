@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
-use crate::general_geometry::{Polygon, Point};
+use crate::general_geometry::{Polygon};
 use crate::building_representations::converters;
 use crate::tile::{Tile, TriangulizedTiles};
 

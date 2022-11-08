@@ -1,0 +1,16 @@
+- coskovi
+- nemergovani zidovi
+- nemam jos algoritam za poplocavanje
+
+Ok, kad budem imao ovo, imam poplocavanje. 
+
+Onda mi treba jos algoritam za pronalazak ploca koje se mogu poplocati i prikazivanje poplocavanja.. Ne bi trebalo da bude pretesko :) 
+
+I naravno, polishing u smislu refaktorisanja ovog sranja sto sam napravio, kao i dodavanja funkcionalnosti, ali to moze malo i da saceka.. Refaktor ne, ali dodavanje funkcionalnosti da. 
+
+Deluje da sam relativno blizu od kraja softverskog resenja; Onda mogu da predjem na hardver, mada u stvari, bolje da kroz simulacije prvo malo doteram softver do nekog pristojnog nivoa pa da se posle zajebavam sa detaljima. 
+
+=========================================
+
+Hajd, videcemo sta se moze uraditi do nove godine, pa ako ne ide dovoljno brzo i dobro, mogu da probam da nekako nesto ubrzam, da mozda zajmim pare, nemam pojma.. Recimo kada bih ne radio 2 meseca, to ne bi bilo tako lose.. Uzmem kredit, dam otkaz pa isplacujem kredit od para od kredita, a .. mada je to poprilicno skup sport.. Nisam siguran da bih se tako igrao. 
+

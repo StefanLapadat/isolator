@@ -165,6 +165,52 @@ impl Polygon {
             holes
         }
     }
+
+    pub fn rim_extrusion(&self, inc: &Point) -> Vec<Polygon> {
+        let mut res: Vec<Polygon> = vec![];
+
+        let mut i: usize = 0;
+        let rl = self.rim().len();
+
+        while i < rl {
+            res.push(Polygon::from_triplets(vec![
+                (self.rim()[i].x, self.rim()[i].y, self.rim()[i].z), 
+                (self.rim()[(i+1) % rl].x, self.rim()[(i+1) % rl].y, self.rim()[(i+1) % rl].z), 
+                (self.rim()[(i+1) % rl].x + inc.x, self.rim()[(i+1) % rl].y + inc.y, self.rim()[(i+1) % rl].z + inc.z), 
+                (self.rim()[i].x + inc.x, self.rim()[i].y + inc.y, self.rim()[i].z + inc.z)] ,vec![]));
+            i+=1;
+        }
+
+        res
+    }
+
+    pub fn holes_extrusion(&self, inc: &Point) -> Vec<Polygon> {
+        let mut res: Vec<Polygon> = vec![];
+
+        for hole in self.holes() {
+            res.append(&mut Polygon::hole_extrusion(hole, inc));
+        }
+
+        res
+    }
+
+    pub fn hole_extrusion(hole: &Vec<Point>, inc: &Point) -> Vec<Polygon> {
+        let mut res: Vec<Polygon> = vec![];
+
+        let mut i: usize = 0;
+        let rl = hole.len();
+
+        while i < rl {
+            res.push(Polygon::from_triplets(vec![
+                (hole[i].x, hole[i].y, hole[i].z), 
+                (hole[(i+1) % rl].x, hole[(i+1) % rl].y, hole[(i+1) % rl].z), 
+                (hole[(i+1) % rl].x + inc.x, hole[(i+1) % rl].y + inc.y, hole[(i+1) % rl].z + inc.z), 
+                (hole[i].x + inc.x, hole[i].y + inc.y, hole[i].z + inc.z)] ,vec![]));
+            i+=1;
+        }
+
+        res
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

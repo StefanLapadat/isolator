@@ -71,7 +71,12 @@ fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
     let inc = tile.normal().normalize().multiply(tile.width());
 
     let base_polygon = tile.polygon().clone();
+
     res.push(base_polygon.translate(&inc));
+    res.append(&mut base_polygon.rim_extrusion(&inc));
+    res.append(&mut base_polygon.holes_extrusion(&inc));
+    
+
     res.push(base_polygon);
 
     res
