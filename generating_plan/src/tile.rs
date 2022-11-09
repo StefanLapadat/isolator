@@ -75,7 +75,7 @@ fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
     res.push(base_polygon.translate(&inc));
     res.append(&mut base_polygon.rim_extrusion(&inc));
     res.append(&mut base_polygon.holes_extrusion(&inc));
-    
+
 
     res.push(base_polygon);
 
@@ -96,5 +96,4 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
 
     (TriangulizedTile::new(triangles), wireframe)
 }
-
 

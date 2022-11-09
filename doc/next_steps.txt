@@ -1,10 +1,17 @@
-- iscrtavanje zgrade tako da se vide terase itd, neki bolji materijal - nije do materijala, iscrtacemo linije i to je to :) 
-- podrzavanje prozora
+- bez lepka
+- individualne ploce
+- prozori, vrata i terase na levels
 
-- neki laksi nacin specificiranja zgrade sa prozorima, terasama itd 
-    - fale mi jos prozori, vrata balkoni itd na ovom sto sad imam 
-    - fali mi jos neki nacin za specificiranje nehorizontalnih (ravnih) povrsina 
+- refaktor 
 
-- pronalazak poplocavanja 
-- iscrtavanje poplocavanja 
-- provera i iscrtavanje ploca koje se mogu poplocati i prikaz plana kako se to radi
+- sa lepkom 
+- refaktor 
+
+===========================
+
+Necu nikakve graficke editore, picke materine, ovo sto imam sa levels je apsolutno dovoljno, za sada; trebalo bi podrzati i kose zidove kroz levels, ali to cemo naknadno; ionako je to retkost.. mada kazem, trebalo bi podrzati.
+
+Kada uradim ove stvari od gore, racunacu da sam zavrsio fazu 1; Mogu da predjem na fazu 2 a to je simulacija postavljanja, a zatim i na fazu 3 koja je pravo izvodjenje na modelima zgrada. Faza 4 je eksperiment na pravoj gradjevini. 
+
+Sve posle toga zahteva dodatnu lovu i postaje vec ozbiljna prica.. Videcemo. 
+
