@@ -24,7 +24,7 @@ class App {
         this.engine = new BABYLON.Engine(this.canvas, true);
 
         this.backend = (window as any).wasm as Backend;
-        this.plan = JSON.parse(this.backend.get_plan());
+        this.plan = JSON.parse(this.backend.get_plan(2));
     
         this.buildingMeshVertexData = this.getBuildingMeshVertexData();
         this.buildingWireframeData = this.getBuildingWireframeData();
@@ -92,7 +92,7 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         mat.alpha = 1;
-        mat.diffuseColor = BABYLON.Color3.Yellow();
+        mat.diffuseColor = BABYLON.Color3.Red();
         isolationMesh.material = mat;
     }
 
@@ -225,11 +225,7 @@ class App {
 
 
 interface Backend {
-    get_plan(): string,
-    get_building_levels(): string,
-    get_building_polygon_walls(): string,
-    get_building_triangulized(): string,
-    get_request(): string
+    get_plan(request_id: number): string,
 }
 
 interface Plan {

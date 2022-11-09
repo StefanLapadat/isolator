@@ -13,6 +13,7 @@ default = ["console_error_panic_hook"]
 [dependencies]
 wasm-bindgen = "0.2.63"
 generating_plan = { path = "../generating_plan" }
+request_generation = { path = "../request_generation" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
