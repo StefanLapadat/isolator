@@ -12,6 +12,7 @@ pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
 fn create_building_levels() -> Levels {
     let right0 = (5.0, 0.0);
     let up0 = (0.0, 5.0);
+    let waaay_up0 = (0.0, 20.0);
     let down0 = (0., -5.);
     let left0 = (-5., 0.);
 

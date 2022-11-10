@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use nalgebra::Matrix3;
+use crate::general_geometry::Simmilar;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Point {
@@ -66,5 +67,38 @@ impl Point {
             y: self.y / modulo,
             z: self.z / modulo
         }
+    }
+
+    pub fn are_points_colinear(t1: &Point, t2: &Point, t3: &Point) -> bool {
+        t2.subtract(t1).are_vectors_colinear(&t3.subtract(t1))
+    }
+
+    pub fn are_vectors_colinear(&self, t2: &Point) -> bool {
+        if self.modulo().simmilar_to(0.0, 0.0001) || t2.modulo().simmilar_to(0.0, 0.0001) {
+             return true;
+        }
+
+        let ratio;
+        if self.x != 0. {
+            ratio = t2.x / self.x;
+        } else {
+            if self.y != 0. {
+                ratio = t2.y / self.y;
+            } else {
+                ratio = t2.z / self.z;
+            }
+        }
+
+        let epsilon = 0.01;
+
+        if(self.x.simmilar_to(0., 0.0001) && !t2.x.simmilar_to(0., 0.0001)) || 
+        (self.y.simmilar_to(0., 0.0001) && !t2.y.simmilar_to(0., 0.0001)) || 
+        (self.z.simmilar_to(0., 0.0001) && !t2.z.simmilar_to(0., 0.0001)) {
+            return false;
+        }
+
+        (self.x == 0. || (t2.x / self.x).simmilar_to(ratio, epsilon)) && 
+        (self.y == 0. || (t2.y / self.y).simmilar_to(ratio, epsilon)) && 
+        (self.z == 0. || (t2.z / self.z).simmilar_to(ratio, epsilon))
     }
 }

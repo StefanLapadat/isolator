@@ -10,10 +10,12 @@ pub struct Polygon {
 
 impl Polygon {
     pub fn new(rim: Vec<Point>, holes: Vec<Vec<Point>>) -> Polygon {
-        Polygon {
+        let temp = Polygon {
             rim: rim,
             holes: holes
-        }
+        };
+
+        temp.remove_points_not_on_corners()
     }
 
     pub fn from_triplets(rim: Vec<(f64, f64, f64)>, holes: Vec<Vec<(f64, f64, f64)>>) -> Polygon {
@@ -155,11 +157,9 @@ impl Polygon {
         res
     }
 
-    pub fn merge_geo_polygons(geo_poly1: &old_geo_types::Polygon<f32>, geo_poly2: old_geo_types::Polygon<f32>) -> old_geo_types::Polygon<f32> {
+    pub fn merge_geo_polygons(geo_poly1: &old_geo_types::Polygon<f64>, geo_poly2: old_geo_types::Polygon<f64>) -> old_geo_types::Polygon<f64> {
         let mut union = geo_poly1.union(&geo_poly2).into_iter();
         let res = union.next().unwrap();
-        println!("{:?}", res);
-        // println!("{:?}", union.next().unwrap());
         res
     }
 
@@ -167,9 +167,8 @@ impl Polygon {
         let geo_poly1 = poly1.polygon_to_geo_polygon();
         let geo_poly2 = poly2.polygon_to_geo_polygon();
 
-        println!("geopoly1: {:?}", geo_poly1);
-        println!("geopoly2: {:?}", geo_poly2);
-
+        let (geo_poly1, geo_poly2) = Self::prepare_geo_polygons_for_merging(&geo_poly1, &geo_poly2);
+        
         let flat_points_first_stage = Self::flatten_points_no_removal(poly1.rim());
         let constant_coord = find_constant_coordinate(&flat_points_first_stage);
 
@@ -191,23 +190,119 @@ impl Polygon {
         Polygon::new(Self::geo_polygon_to_polygon(&merged_geo_poly, new_coordinate_system, constant_coord.0, constant_coord.1), holes)
     }
 
-    fn polygon_to_geo_polygon(&self) -> old_geo_types::Polygon<f32> {
-        let mut rim_coordinates: Vec<old_geo_types::Coordinate<f32>> = vec![];
+    fn prepare_geo_polygons_for_merging(geo_poly1: &old_geo_types::Polygon<f64>, geo_poly2: &old_geo_types::Polygon<f64>) ->  (old_geo_types::Polygon<f64>, old_geo_types::Polygon<f64>){
+        let mut rim_coordinates11: Vec<(f64, f64)> = vec![];
+        let mut rim_coordinates21: Vec<(f64, f64)> = vec![];
+
+        for point in &geo_poly1.exterior().0 {
+            match Self::simmilar_point_in_geo_poly(point.x, point.y, geo_poly2) {
+                Option::Some(pt) => {
+                    rim_coordinates11.push((pt.0, pt.1));
+                },
+                Option::None => {
+                    rim_coordinates11.push((point.x, point.y));
+                }
+            }
+        }
+
+        for point in &geo_poly2.exterior().0 {
+            rim_coordinates21.push((point.x, point.y));
+        }
+
+        let mut rim_coordinates12: Vec<old_geo_types::Coordinate<f64>> = vec![];
+        let mut rim_coordinates22: Vec<old_geo_types::Coordinate<f64>> = vec![];
+
+        for rc in &rim_coordinates11 {
+            rim_coordinates12.push(old_geo_types::Coordinate::from(Self::modify_coord_to_fall_into_another_poly(*rc, &rim_coordinates21)));
+        }
+
+        for rc in &rim_coordinates21 {
+            rim_coordinates22.push(old_geo_types::Coordinate::from(Self::modify_coord_to_fall_into_another_poly(*rc, &rim_coordinates11)));
+        }
+
+        let geo_poly1_new = old_geo_types::Polygon::new(old_geo_types::LineString(rim_coordinates12), vec![]);
+        let geo_poly2_new = old_geo_types::Polygon::new(old_geo_types::LineString(rim_coordinates22), vec![]);
+
+        (geo_poly1_new, geo_poly2_new)
+    }
+
+    fn modify_coord_to_fall_into_another_poly(point: (f64, f64),  rim: &Vec<(f64, f64)>) -> (f64, f64) {
+        let mut i = 0;
+        while i < rim.len() {
+            let pt: Point = Point::new(point.0, point.1, 0.);
+            let seg0: Point = Point::new(rim[i].0, rim[i].1, 0.);
+            let seg1: Point = Point::new(rim[(i+1)%rim.len()].0, rim[(i+1)%rim.len()].1, 0.);
+
+            if Self::point_near_line_segment(&pt, &seg0, &seg1) {
+                
+                if Self::point_right_of_line(&pt, &seg0, &seg1) {
+                    let sym_p = Self::point_symetric_to_line(&pt, &seg0, &seg1);
+                    return (sym_p.x, sym_p.y);
+                }
+            }
+            i+=1;
+        }
+
+        point
+    }
+
+    fn point_right_of_line(pt: &Point, seg0: &Point, seg1: &Point) -> bool {
+        let v1 = seg1.subtract(&seg0);
+        let v2 = pt.subtract(&seg0);
+
+        v1.x * v2.y * v1.y.signum() * v2.y.signum() > v2.x * v1.y * v1.y.signum() * v2.y.signum() 
+    }
+
+    fn point_symetric_to_line(pt: &Point, seg0: &Point, seg1: &Point) -> Point {
+        // not really symetric, just moved along the normal on the segment, towards the segment
+        pt.add(&(Self::normal_to_2d_line(seg0, seg1).multiply(0.00001)))
+    }
+
+    fn normal_to_2d_line(seg0: &Point, seg1: &Point) -> Point {
+        Point::new(seg0.y-seg1.y, seg1.x-seg0.x, 0.)
+    }
+
+    pub fn point_near_line_segment(pt: &Point, seg0: &Point, seg1: &Point) -> bool  {
+        if (pt.x == seg0.x && pt.y == seg0.y) || (pt.x == seg1.x && pt.y == seg1.y) {
+            false
+        } else {
+            let v1 = seg1.subtract(&seg0);
+            let v2 = pt.subtract(&seg0);
+
+            if v1.are_vectors_colinear(&v2) && v1.modulo() > v2.modulo() {
+                return true;
+            }
+
+            false
+        }
+    }
+
+    fn simmilar_point_in_geo_poly(x: f64, y: f64, geo_poly: &old_geo_types::Polygon<f64>) -> Option<(f64, f64)> {
+        for point in &geo_poly.exterior().0 {
+            if point.x.simmilar_to(x, 0.001) && point.y.simmilar_to(y, 0.001) {
+                return Option::Some((point.x, point.y));
+            }
+        }
+
+        Option::None
+    }
+
+    fn polygon_to_geo_polygon(&self) -> old_geo_types::Polygon<f64> {
+        let mut rim_coordinates: Vec<old_geo_types::Coordinate<f64>> = vec![];
 
         let flat_points_first_stage = Self::flatten_points_no_removal(self.rim());
-        let constant_coord = find_constant_coordinate(&flat_points_first_stage);
         let flat_points: Vec<f64> = Self::remove_constant_coordinate(&flat_points_first_stage);
 
         let mut i = 0;
         while i<flat_points.len() {
-            rim_coordinates.push(old_geo_types::Coordinate::from((flat_points[i] as f32, flat_points[i+1] as f32)));
+            rim_coordinates.push(old_geo_types::Coordinate::from((flat_points[i] as f64, flat_points[i+1] as f64)));
             i+=2;
         }
         
         old_geo_types::Polygon::new(old_geo_types::LineString(rim_coordinates), vec![])
     }
 
-    fn geo_polygon_to_polygon(poly: &old_geo_types::Polygon<f32>, coordinate_system: Vec<Point>, coord_to_insert: Coordinate, value_to_insert: f64) -> Vec<Point> {
+    fn geo_polygon_to_polygon(poly: &old_geo_types::Polygon<f64>, coordinate_system: Vec<Point>, coord_to_insert: Coordinate, value_to_insert: f64) -> Vec<Point> {
         let mut res: Vec<Point> = vec![];
         let invers_coordinate_system = Point::inverse_mat(&coordinate_system);
         
@@ -240,7 +335,7 @@ impl Polygon {
         let plane = Plane::from_points_vector(points);
     
         match plane {
-            Option::None => panic!("greska teska 2"),
+            Option::None => panic!("greska teska 2 {:?}", points),
             Option::Some(plane) => {
                 let new_coordinate_system = plane.coordinate_system_normal_to_plane();
                 let mut new_coordinates: Vec<Point> = vec![];
@@ -286,6 +381,29 @@ impl Polygon {
         res
     }
 
+    fn remove_points_not_on_corners(&self) -> Polygon {
+        let rim: Vec<Point> = Self::remove_points_not_on_corners_one_ring(self.rim());
+        let holes: Vec<Vec<Point>> = self.holes().into_iter().map(|hole| Self::remove_points_not_on_corners_one_ring(hole)).collect::<Vec<_>>();
+
+        Polygon{rim, holes}
+    }
+
+    fn remove_points_not_on_corners_one_ring(rim: &Vec<Point>) -> Vec<Point> {
+        let mut res: Vec<Point> = vec![];
+        let mut i: usize = 0;
+        let rl = rim.len();
+
+        while i < rl {
+            let next = &rim[(i+1)%rl];
+            let prev = &rim[(i + rl -1)%rl];
+            if !Point::are_points_colinear(prev, &rim[i], next) {
+                res.push(rim[i].clone());
+            }
+            i+=1;
+        }
+
+        res        
+    }
 
 
 }

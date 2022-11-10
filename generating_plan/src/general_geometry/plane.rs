@@ -1,5 +1,4 @@
 use crate::general_geometry::Point;
-use crate::general_geometry::Simmilar;
 
 #[derive(Debug)]
 pub struct Plane {
@@ -36,41 +35,20 @@ impl Plane {
 
     fn get_three_noncolinear_points_from_vector_of_points<'a>(points: &'a Vec<Point>) -> Option<(&'a Point, &'a Point, &'a Point)> {
         if points.len() < 3 {
-            return Option::None;
+            Option::None
         } else {
             let mut i = 2;
 
             while i < points.len() {
-                if !Plane::are_points_colinear(&points[0], &points[1], &points[i]) {
+                if !Point::are_points_colinear(&points[0], &points[1], &points[i]) {
                     return Option::Some((&points[0], &points[1], &points[i]));
                 }
 
                 i = i + 1;
             }
         
-            return Option::None;
+            Option::None
         }
-    }
-
-    fn are_points_colinear(t1: &Point, t2: &Point, t3: &Point) -> bool {
-        Plane::are_vectors_colinear(&t2.subtract(t1), &t3.subtract(t1))
-    }
-
-    fn are_vectors_colinear(t1: &Point, t2: &Point) -> bool {
-        let ratio;
-        if t1.x != 0. {
-            ratio = t2.x / t1.x;
-        } else {
-            if t1.y != 0. {
-                ratio = t2.y / t1.y;
-            } else {
-                ratio = t2.z / t1.z;
-            }
-        }
-
-        let epsilon = 0.01;
-
-        (t2.x / t1.x).simmilar_to(ratio, epsilon) && (t2.y / t1.y).simmilar_to(ratio, epsilon) && (t2.z / t1.z).simmilar_to(ratio, epsilon)
     }
 
     pub fn normal_vector(&self) -> Point {
