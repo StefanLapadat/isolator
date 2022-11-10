@@ -1,11 +1,11 @@
+
+- mergovanje zidova  - moracemo ovo sranje da zanemarimo za sada; Mnogo je zajebano, potrosio sam ceo dan a nista nisam zavrsio. Uradivo je, ali smara. 
+- refaktor           - ni ovo necemo raditi sada, kako god ga zbudzim da radi, to je to za fazu 1;
+
 - bez lepka
 - individualne ploce
 - prozori, vrata i terase na levels
-
-- refaktor 
-
 - sa lepkom 
-- refaktor 
 
 ===========================
 
@@ -14,4 +14,5 @@ Necu nikakve graficke editore, picke materine, ovo sto imam sa levels je apsolut
 Kada uradim ove stvari od gore, racunacu da sam zavrsio fazu 1; Mogu da predjem na fazu 2 a to je simulacija postavljanja, a zatim i na fazu 3 koja je pravo izvodjenje na modelima zgrada. Faza 4 je eksperiment na pravoj gradjevini. 
 
 Sve posle toga zahteva dodatnu lovu i postaje vec ozbiljna prica.. Videcemo. 
+
 

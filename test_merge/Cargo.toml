@@ -1,15 +1,12 @@
 [package]
-name = "generating_plan"
+name = "test_merge"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-earcutr = "0.3.0"
-cgmath="0.18.*"
+generating_plan = { path = "../generating_plan" }
 old-geo-types = { package = "geo-types", version = "0.6.2" }
 geo-types = "0.7.3"
 geo-booleanop = "0.3.2"

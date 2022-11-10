@@ -4,6 +4,10 @@ import (("./index.js") as any).catch(e => console.error("Error importing `index.
     () => {
         setTimeout(() => {
             new App();
+            document.getElementById("request-id")?.addEventListener('input', (event) => {
+                localStorage.setItem("requestId", (event as any).data);
+                location.reload();
+            })
         }, 300);
     }
 );
@@ -24,7 +28,7 @@ class App {
         this.engine = new BABYLON.Engine(this.canvas, true);
 
         this.backend = (window as any).wasm as Backend;
-        this.plan = JSON.parse(this.backend.get_plan(2));
+        this.plan = JSON.parse(this.backend.get_plan(this.getRequestId()));
     
         this.buildingMeshVertexData = this.getBuildingMeshVertexData();
         this.buildingWireframeData = this.getBuildingWireframeData();
@@ -41,6 +45,10 @@ class App {
         // this.showAxis(100);
 
         this.initGeneralGameStuff();
+    }
+
+    getRequestId(): number {
+        return parseInt((document.getElementById('request-id') as any)?.value ?? localStorage.getItem('requestId') ?? '1');
     }
 
     getCanvas(): HTMLCanvasElement {
