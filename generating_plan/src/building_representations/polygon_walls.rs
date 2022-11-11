@@ -1,4 +1,4 @@
-use crate::general_geometry::{Point, Polygon, Triangle};
+use crate::general_geometry::{Point, Polygon};
 use crate::building_representations::triangulized_walls::{TriangulizedWall};
 use crate::triangulation::PolygonForTriangulation;
 use serde::{Serialize, Deserialize};
@@ -12,7 +12,8 @@ impl PolygonWalls {
 
     pub fn new(walls: Vec<Polygon>) -> PolygonWalls {
         PolygonWalls {
-            walls
+            walls: Polygon::merge_multiple_polygons(&walls)
+            // walls
         }
     }
 

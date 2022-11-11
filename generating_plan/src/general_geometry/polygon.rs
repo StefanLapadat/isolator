@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 use crate::general_geometry::{Point, Plane, Simmilar};
 use geo_booleanop::boolean::BooleanOp;
+use petgraph::graph::{NodeIndex, UnGraph};
+use petgraph::algo;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Polygon {
@@ -157,8 +159,10 @@ impl Polygon {
         res
     }
 
-    pub fn merge_geo_polygons(geo_poly1: &old_geo_types::Polygon<f64>, geo_poly2: old_geo_types::Polygon<f64>) -> old_geo_types::Polygon<f64> {
-        let mut union = geo_poly1.union(&geo_poly2).into_iter();
+    pub fn merge_geo_polygons(geo_poly1: &old_geo_types::Polygon<f64>, geo_poly2: &old_geo_types::Polygon<f64>) -> old_geo_types::Polygon<f64> {
+        println!("Geopolygons: {:?} {:?}", geo_poly1, geo_poly2);
+
+        let mut union = geo_poly1.union(geo_poly2).into_iter();
         let res = union.next().unwrap();
         res
     }
@@ -175,7 +179,10 @@ impl Polygon {
         let plane = Plane::from_points_vector(poly1.rim()).unwrap();
         let new_coordinate_system = plane.coordinate_system_normal_to_plane();
 
-        let merged_geo_poly = Self::merge_geo_polygons(&geo_poly1, geo_poly2);
+        let merged_geo_poly = Self::merge_geo_polygons(&geo_poly1, &geo_poly2);
+
+        println!("Merged {:?} ", merged_geo_poly);
+
 
         let mut holes: Vec<Vec<Point>> = vec![];
 
@@ -263,13 +270,13 @@ impl Polygon {
     }
 
     pub fn point_near_line_segment(pt: &Point, seg0: &Point, seg1: &Point) -> bool  {
-        if (pt.x == seg0.x && pt.y == seg0.y) || (pt.x == seg1.x && pt.y == seg1.y) {
+        if (pt.x == seg0.x && pt.y == seg0.y && pt.z == seg0.z) || (pt.x == seg1.x && pt.y == seg1.y && pt.z == seg1.z) {
             false
         } else {
             let v1 = seg1.subtract(&seg0);
             let v2 = pt.subtract(&seg0);
 
-            if v1.are_vectors_colinear(&v2) && v1.modulo() > v2.modulo() {
+            if v1.are_vectors_colinear(&v2) && v1.same_oktant(&v2) && v1.modulo() > v2.modulo() {
                 return true;
             }
 
@@ -306,9 +313,17 @@ impl Polygon {
         let mut res: Vec<Point> = vec![];
         let invers_coordinate_system = Point::inverse_mat(&coordinate_system);
         
-        for coord in &poly.exterior().0 {
+        let mut i = 0;
+        while i < poly.exterior().0.len() - 1 {
+            let coord = poly.exterior().0[i];
+            
             res.push(Self::widen_coordinate(coord.x as f64, coord.y as f64, coord_to_insert.clone(), value_to_insert).coordinates_in_different_coordinate_system(&invers_coordinate_system));
+            i+=1;
         }
+
+        // for coord in &poly.exterior().0 {
+        //     res.push(Self::widen_coordinate(coord.x as f64, coord.y as f64, coord_to_insert.clone(), value_to_insert).coordinates_in_different_coordinate_system(&invers_coordinate_system));
+        // }
 
         res
     }
@@ -405,7 +420,100 @@ impl Polygon {
         res        
     }
 
+    pub fn merge_multiple_polygons(polygons: &Vec<Polygon>) -> Vec<Polygon> {
+        println!("There is {} polygons", polygons.len());
 
+        let mut res = vec![];
+        let groups: Vec<Vec<usize>> = Self::get_connected_groups(polygons);
+        for group in &groups {
+            res.push(Self::merge_group_of_neighbouring_polygons(group, polygons));
+        }
+
+        println!("There is {} result polygons", res.len());
+
+        res
+    }
+
+    fn get_connected_groups(polygons: &Vec<Polygon>) -> Vec<Vec<usize>> {
+        let connections = Self::get_connections(polygons);
+        let g = UnGraph::<u32, ()>::from_edges(&connections);
+        let connected_components = algo::kosaraju_scc(&g);
+        let res = connected_components.into_iter().map(|x| x.into_iter().map(|y| y.index()).collect::<Vec<_>>()).collect::<Vec<_>>();
+        println!("{:?}", res);
+        res
+    }
+
+    fn get_connections(polygons: &Vec<Polygon>) -> Vec<(u32, u32)> {
+        let mut res: Vec<(u32, u32)> = vec![((polygons.len() - 1) as u32, (polygons.len() - 1) as u32)];
+        
+        let mut i: u32 = 0;
+        while i < polygons.len() as u32 - 1 {
+            let mut j: u32 = i + 1;
+
+            while j < polygons.len() as u32 {
+                if Self::are_neighbours(&polygons[i as usize], &polygons[j as usize]) {
+                    println!("********* {:?} {:?}", polygons[i as usize], polygons[j as usize]);
+                    res.push((i, j));
+                }
+
+                j+=1;
+            }
+            
+            i+=1;
+        }
+
+        res
+    }
+
+    fn are_neighbours(poly1: &Polygon, poly2: &Polygon) -> bool {
+        let normal1 = poly1.normal();
+        let normal2 = poly2.normal();
+        if !normal1.are_vectors_colinear(&normal2) || !normal1.same_oktant(&normal2) {
+            false 
+        } else {
+            Self::is_poly1_close_to_poly2(poly1, poly2) || Self::is_poly1_close_to_poly2(poly2, poly1)
+        }
+    }
+
+    fn is_poly1_close_to_poly2(poly1: &Polygon, poly2: &Polygon) -> bool {
+        for point in poly1.rim() {
+            let mut i = 0;
+            let rl = poly2.rim().len();
+            while i < rl {
+                if point.x.simmilar_to(poly2.rim()[i].x, 0.0001) && point.y.simmilar_to(poly2.rim()[i].y, 0.0001) && 
+                point.z.simmilar_to(poly2.rim()[i].z, 0.0001) {
+                    println!("Simmilar corners {:?} {:?}", point, poly2.rim()[i]);
+                    return true;
+                }
+
+                let prev = &poly2.rim()[(i + rl -1) % rl];
+                if Self::point_near_line_segment(point, prev, &poly2.rim()[i]) {
+                    println!("Near the line {:?} {:?} {:?}", point, poly2.rim()[i], prev);
+
+                    return true;
+                }
+
+                i+=1;
+            }
+        }
+        false
+    }
+
+    fn normal(&self) -> Point {
+        Plane::from_points_vector(self.rim()).unwrap().normal_vector()
+    }
+
+    fn merge_group_of_neighbouring_polygons(group: &Vec<usize>, polygons: &Vec<Polygon>) -> Polygon {
+        let mut res = polygons[group[0]].clone();
+        let mut i = 1;
+
+        while i < group.len() {
+            res = Self::merge_polygons(&res, &polygons[group[i]]);
+            i+=1;
+        }
+
+        res
+    }
 }
 
 #[derive(Clone)]

@@ -42,7 +42,7 @@ class App {
         this.connectLights();
         this.showBuilding();
         this.showIsolation();
-        // this.showAxis(100);
+        this.showAxis(100);
 
         this.initGeneralGameStuff();
     }

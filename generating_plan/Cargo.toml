@@ -14,3 +14,4 @@ old-geo-types = { package = "geo-types", version = "0.6.2" }
 geo-types = "0.7.3"
 geo-booleanop = "0.3.2"
 nalgebra = "0.31.3"
+petgraph = "0.6.2"

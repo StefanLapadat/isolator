@@ -52,11 +52,7 @@ impl Plane {
     }
 
     pub fn normal_vector(&self) -> Point {
-        Point {
-            x: self.a, 
-            y: self.b,
-            z: self.c
-        }
+        Point::new(self.a, self.b, self.c)
     }
 
     pub fn coordinate_system_normal_to_plane(&self) -> Vec<Point> {

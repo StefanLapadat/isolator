@@ -73,6 +73,14 @@ impl Point {
         t2.subtract(t1).are_vectors_colinear(&t3.subtract(t1))
     }
 
+    pub fn same_oktant(&self, t2: &Point) -> bool {
+        if self.modulo().simmilar_to(0., 0.0001) || t2.modulo().simmilar_to(0., 0.0001) {
+            true
+        } else {
+            self.x.signum() == t2.x.signum() && self.y.signum() == t2.y.signum() && self.z.signum() == t2.z.signum()
+        }
+    }
+
     pub fn are_vectors_colinear(&self, t2: &Point) -> bool {
         if self.modulo().simmilar_to(0.0, 0.0001) || t2.modulo().simmilar_to(0.0, 0.0001) {
              return true;
