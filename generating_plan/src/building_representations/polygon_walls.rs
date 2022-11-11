@@ -13,7 +13,6 @@ impl PolygonWalls {
     pub fn new(walls: Vec<Polygon>) -> PolygonWalls {
         PolygonWalls {
             walls: Polygon::merge_multiple_polygons(&walls)
-            // walls
         }
     }
 
