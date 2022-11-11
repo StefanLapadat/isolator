@@ -248,19 +248,16 @@ impl Polygon {
             i+=1;
         }
 
-        res        
+        res
     }
 
     pub fn merge_multiple_polygons(polygons: &Vec<Polygon>) -> Vec<Polygon> {
-        println!("There is {} polygons", polygons.len());
-
         let mut res = vec![];
         let groups: Vec<Vec<usize>> = Self::get_connected_groups(polygons);
+
         for group in &groups {
             res.push(Self::merge_group_of_neighbouring_polygons(group, polygons));
         }
-
-        println!("There is {} result polygons", res.len());
 
         res
     }
@@ -270,7 +267,6 @@ impl Polygon {
         let g = UnGraph::<u32, ()>::from_edges(&connections);
         let connected_components = algo::kosaraju_scc(&g);
         let res = connected_components.into_iter().map(|x| x.into_iter().map(|y| y.index()).collect::<Vec<_>>()).collect::<Vec<_>>();
-        println!("{:?}", res);
         res
     }
 
@@ -283,7 +279,6 @@ impl Polygon {
 
             while j < polygons.len() as u32 {
                 if Self::are_neighbours(&polygons[i as usize], &polygons[j as usize]) {
-                    println!("********* {:?} {:?}", polygons[i as usize], polygons[j as usize]);
                     res.push((i, j));
                 }
 
@@ -312,14 +307,11 @@ impl Polygon {
             let rl = poly2.rim().len();
             while i < rl {
                 if Point::are_points_simmilar(&point, &poly2.rim()[i]) {
-                    println!("Simmilar corners {:?} {:?}", point, poly2.rim()[i]);
                     return true;
                 }
 
                 let prev = &poly2.rim()[(i + rl -1) % rl];
                 if Self::point_near_line_segment(point, prev, &poly2.rim()[i]) {
-                    println!("Near the line {:?} {:?} {:?}", point, poly2.rim()[i], prev);
-
                     return true;
                 }
 
@@ -339,6 +331,7 @@ impl Polygon {
 
         while i < group.len() {
             res = Self::merge_polygons(&res, &polygons[group[i]]);
+            println!("{:?} {:?}", group, res);
             i+=1;
         }
 
