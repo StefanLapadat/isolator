@@ -1,0 +1,29 @@
+Sta ukoliko poligoni zajedno daju novi poligon sa rupom? Katastrofa. Treba mi jebeni algoritam koji radi posao. Nema gotovog resenja u rustu - jedno je nekorektno, drugo je wrapper oko C++a i ne mogu da ga ubacim kod sebe a implementacija ja previse zajebana.. Ok, mogu da kazem da ne podrzavam ovaj neki slucaj.. Samo sto je to sranje, taj slucaj mi je bas bitan.. Zbog terasa.. Sta znam, mogao bih za sada da zajebem tu varijantu i da ne podrzavam terase bas na taj nacin.. Katastrofa bukvalno. Koliko su lose biblioteke u ovom domenu.. Neverovatno. Ali dobro. Mozda cu ja to malo popraviti :) Jebi ga, to je to sto kazem, niko ne radi ove stvari u rustu i ljude prosto boli uvo.. sto je i ok.. Ko ce sad da napise 8000 linija rust koda (koliko ima c++-a) da dobije clipper tool da spoji polygone.. Mislim stvarno..
+
+Nista, za sada cu ovako kako kazem - zanemariti taj slucaj i raditi ovako kako sam radio. 
+
+A sto se tice rusta.. neko mora da ulozi lovu. Tezak je slicno kao i C i C++, samo sto kad ulozis taj napor, na kraju dobijes nesto sto zapravo radi posao, a ne shit. Zbog te jednake tezine a cinjenice da se ne uci na fakultetima i da ima mnogo manje napisanog koda na njemu, mozemo ocekivati da ce ga koristiti znacajno manji broj inzenjera i naucnika nego sto je to slucaj sa C-om i Cpp-om. 
+
+AI ljudi ga nece koristiti.
+Nauka i inzenjeri takodje ne.
+Front end (web i ostali) isto tesko da ce ga koristiti.
+
+Enterprise..? Nemam pojma, iskreno, verovatno da i ne bas.
+
+U igrice bi mogao da udje, tu ima smisla.
+
+Sistemski softver hoce i to poprilicno.
+Cryptovalute, web3 ga koriste iskljucivo.
+
+
+Znaci ko je tu ostao da pise biblioteke? 
+
+Jebi ga, rade ljudi python, typescript, javascript i javu.. I to je to.. C# je tu negde i onda ovi svi novi zajedno imaju 20% - 
+Go, Haskell, Kotlin, Clojure, Elm, Elixir, Dart, Swift, pa i Rust. 
+
+Jebem li ga, bilo bi dobro da se probije u enterprise i da to neko podrzi. Ukoliko bi bilo tako, onda bi mozda bilo vise biblioteka i onda bi bio pretpostavljam svuda osim tamo gde sad nisu ni java ni c ni cpp ni go itd - u frontendu, u ai-u i u inzenjerstvu. Ali ko ih jebe.. Ja se ionako time nikad necu ni baviti. Bice ili nesto moje gde ja diktiram, ili ce biti enterprise. 
+
+
+
+
+

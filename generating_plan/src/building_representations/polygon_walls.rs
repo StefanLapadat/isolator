@@ -11,8 +11,12 @@ pub struct PolygonWalls {
 impl PolygonWalls {
 
     pub fn new(walls: Vec<Polygon>) -> PolygonWalls {
+        let walls_merged = Polygon::merge_multiple_polygons(&walls);
+        // println!("{:?}", walls_merged);
+
         PolygonWalls {
-            walls: Polygon::merge_multiple_polygons(&walls)
+            walls: walls_merged
+            // walls
         }
     }
 

@@ -279,7 +279,10 @@ impl Polygon {
 
             while j < polygons.len() as u32 {
                 if Self::are_neighbours(&polygons[i as usize], &polygons[j as usize]) {
+                    println!("true");
                     res.push((i, j));
+                } else {
+                    println!("false");
                 }
 
                 j+=1;
@@ -297,27 +300,44 @@ impl Polygon {
         if !normal1.are_vectors_colinear(&normal2) || !normal1.same_oktant(&normal2) {
             false 
         } else {
+            println!("else");
             Self::is_poly1_close_to_poly2(poly1, poly2) || Self::is_poly1_close_to_poly2(poly2, poly1)
         }
     }
 
     fn is_poly1_close_to_poly2(poly1: &Polygon, poly2: &Polygon) -> bool {
-        for point in poly1.rim() {
+        let mut j = 0;
+        while j < poly1.rim().len() {
+            let point = &poly1.rim()[j];
+            let rl1 = poly1.rim().len();
+            let prev_poly1 = &poly1.rim()[(j + rl1 - 1)%rl1];
+            let next_poly1 = &poly1.rim()[(j +  1)%rl1];
+            
             let mut i = 0;
             let rl = poly2.rim().len();
             while i < rl {
-                if Point::are_points_simmilar(&point, &poly2.rim()[i]) {
+                let tmp = &poly2.rim()[i];
+                let prev = &poly2.rim()[(i + rl -1) % rl];
+                let next = &poly2.rim()[(i+1)%rl];
+                
+                if Point::are_points_simmilar(point, tmp) && 
+                    ((Point::are_points_simmilar(&next_poly1, prev) || 
+                    Self::point_near_line_segment(&next_poly1, prev, tmp)
+                    ) || ((Point::are_points_simmilar(&prev_poly1, next) || 
+                    Self::point_near_line_segment(&prev_poly1, tmp, next))))
+                {
                     return true;
                 }
 
-                let prev = &poly2.rim()[(i + rl -1) % rl];
                 if Self::point_near_line_segment(point, prev, &poly2.rim()[i]) {
                     return true;
                 }
 
                 i+=1;
             }
-        }
+
+            j+=1;
+        }   
         false
     }
 
@@ -331,7 +351,6 @@ impl Polygon {
 
         while i < group.len() {
             res = Self::merge_polygons(&res, &polygons[group[i]]);
-            println!("{:?} {:?}", group, res);
             i+=1;
         }
 
@@ -341,13 +360,23 @@ impl Polygon {
     fn merge_polygons(poly1: &Polygon, poly2: &Polygon) -> Polygon {
         let mut result_rim: Vec<Point> = vec![];
         let start = Self::pick_starting_point_for_merging(&poly1, &poly2);
+
         let mut tmp = start;
         let start_poly = if start.0 { poly1 } else { poly2 };
-        let tmp_poly = start_poly;
+        let mut tmp_poly = start_poly;
+
+        println!("{:?} {:?}", poly1, poly2);
 
         loop {
             result_rim.push(tmp_poly.rim()[tmp.1].clone());
-            tmp = Self::pick_next_point_for_merging(tmp, poly1, poly2);
+            println!("{:?} {:?}", tmp_poly.rim()[tmp.1], tmp.0);
+
+
+            tmp = Self::pick_next_point_for_merging(tmp, poly1, poly2, &result_rim);
+            tmp_poly = if tmp.0 { poly1 } else { poly2 };
+            
+
+            // std::thread::sleep(std::time::Duration::new(1,0));
             
             if Point::are_points_simmilar(&tmp_poly.rim()[tmp.1], &start_poly.rim()[start.1]) {
                 break;
@@ -358,6 +387,8 @@ impl Polygon {
 
         result_holes.append(&mut poly1.holes().clone());
         result_holes.append(&mut poly2.holes().clone());
+
+        // println!("{:?} {:?} {:?}", poly1.rim(), poly2.rim(), result_rim);
         
         Polygon::new(result_rim, result_holes)
     }
@@ -391,15 +422,35 @@ impl Polygon {
         true
     }
 
-    fn pick_next_point_for_merging<'a>(current_tmp: (bool, usize), poly1: &'a Polygon, poly2: &'a Polygon) -> (bool, usize) {
+    fn pick_next_point_for_merging<'a>(current_tmp: (bool, usize), poly1: &'a Polygon, poly2: &'a Polygon, current_result_rim: &Vec<Point>) -> (bool, usize) {
         let (current_poly, not_current_poly) = if current_tmp.0 { (poly1, poly2) } else { (poly2, poly1)};
         let current_point = &current_poly.rim()[current_tmp.1];
         let next_point = &current_poly.rim()[(current_tmp.1 + 1) % current_poly.rim().len()];
 
-        let point_from_not_current_poly_on_segment: Option<(usize)> = Self::point_from_poly_on_segment(current_point, next_point, not_current_poly);
-        match point_from_not_current_poly_on_segment {
-            Some(next_point_ind) => (!current_tmp.0, next_point_ind),
-            None => (current_tmp.0, current_tmp.1 + 1)
+        let segment_on_which_point_lies = Self::segment_on_which_point_lies(current_point, not_current_poly);
+        match segment_on_which_point_lies {
+            Some(segment) => {
+                match current_result_rim.into_iter().find(|pt| Point::are_points_simmilar(&not_current_poly.rim()[segment.0], &pt)) {
+                    Some(_) =>  (current_tmp.0, (current_tmp.1 + 1) % current_poly.rim().len()),
+                    None => {println!("Jebem ti mater! {:?} {:?}", not_current_poly.rim()[segment.0], not_current_poly.rim()[segment.1]); (!current_tmp.0, segment.1) }
+                }
+            },
+            None => {
+                let point_from_not_current_poly_on_segment: Option<usize> = Self::point_from_poly_on_segment(current_point, next_point, not_current_poly);
+
+                match point_from_not_current_poly_on_segment {
+                    Some(next_point_ind) => { 
+                        match current_result_rim.into_iter().find(|pt| Point::are_points_simmilar(&not_current_poly.rim()[next_point_ind], &pt)) {
+                            Some(_) => (!current_tmp.0, (next_point_ind + 1) % not_current_poly.rim().len()),
+                            None => (!current_tmp.0, next_point_ind)
+                        }
+                    },
+
+                    None => {
+                        (current_tmp.0, (current_tmp.1 + 1) % current_poly.rim().len())
+                    } 
+                }
+            }
         }
     }
 
@@ -408,7 +459,7 @@ impl Polygon {
         let mut points_on_segment: Vec<usize> = vec![];
         while i < poly.rim().len() {
             let tmp = &poly.rim()[i];
-            if Point::are_points_simmilar(tmp, seg0) || Point::are_points_simmilar(tmp, seg1) || 
+            if Point::are_points_simmilar(tmp, seg1) || 
             Self::point_near_line_segment(tmp, seg0, seg1) {
                 points_on_segment.push(i);
             }
@@ -429,6 +480,22 @@ impl Polygon {
 
             Option::Some(points_on_segment[min_modulo_ind])
         }
+    }
+
+    fn segment_on_which_point_lies(point: &Point, poly: &Polygon) -> Option<(usize, usize)> {
+        let mut i = 0; 
+        while i < poly.rim().len() {
+            let tmp = &poly.rim()[i];
+            let next = &poly.rim()[(i+1) % poly.rim().len()];
+
+            if Point::are_points_simmilar(point, next) || Self::point_near_line_segment(point, tmp, next) {
+                return Option::Some((i, (i+1) % poly.rim().len()))
+            }
+
+            i+=1;
+        }
+
+        Option::None
     }
 }
 
