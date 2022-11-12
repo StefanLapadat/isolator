@@ -319,7 +319,7 @@ impl Polygon {
                 let tmp = &poly2.rim()[i];
                 let prev = &poly2.rim()[(i + rl -1) % rl];
                 let next = &poly2.rim()[(i+1)%rl];
-                
+
                 if Point::are_points_simmilar(point, tmp) && 
                     ((Point::are_points_simmilar(&next_poly1, prev) || 
                     Self::point_near_line_segment(&next_poly1, prev, tmp)
@@ -341,7 +341,7 @@ impl Polygon {
         false
     }
 
-    fn normal(&self) -> Point {
+    pub fn normal(&self) -> Point {
         Plane::from_points_vector(self.rim()).unwrap().normal_vector()
     }
 

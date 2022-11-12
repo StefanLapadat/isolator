@@ -35,7 +35,7 @@ fn triangulized_tiles_from_request(request: &Request) -> TriangulizedTiles {
     for wall in request.data() {
         match wall.isolation() {
             Option::Some(detail) => {
-                tiles.push(Tile::new(wall.polygon().clone(),wall.polygon_normal().clone(), detail.width()))
+                tiles.push(Tile::new(wall.polygon().clone(), wall.polygon().normal(), detail.width()))
             },
             Option::None => {
 

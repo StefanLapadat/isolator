@@ -16,7 +16,6 @@ impl Request {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PolygonWithIsolationDetails {
     polygon: Polygon,
-    polygon_normal: Point,
     isolation: Option<IsolationDetails>
 }
 
@@ -27,10 +26,6 @@ impl PolygonWithIsolationDetails {
 
     pub fn isolation(&self) -> &Option<IsolationDetails> {
         &self.isolation
-    }
-
-    pub fn polygon_normal(&self) -> &Point {
-        &self.polygon_normal
     }
 }
 
@@ -50,12 +45,10 @@ impl Request {
         let mut data: Vec<PolygonWithIsolationDetails> = vec![];
 
         for p in building.walls() {
-            let normal = Plane::from_points_vector(p.rim()).unwrap().normal_vector();
-            let plane_is_horizontal = normal.x.simmilar_to(0., 0.001) && normal.y.simmilar_to(0., 0.001);
+            let plane_is_horizontal = p.normal().x.simmilar_to(0., 0.001) && p.normal().y.simmilar_to(0., 0.001);
 
             data.push(PolygonWithIsolationDetails {
                 polygon: p.clone(),
-                polygon_normal: normal,
                 isolation: if plane_is_horizontal { Option::None } else { Option::Some(IsolationDetails {
                     width: width
                 })}
