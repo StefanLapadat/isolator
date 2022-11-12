@@ -4,7 +4,7 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
 use crate::general_geometry::{Polygon};
 use crate::building_representations::converters;
-use crate::tile::{Tile, TriangulizedTiles};
+use crate::tiling::{Tile, TriangulizedTiles};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Plan {
@@ -13,35 +13,62 @@ pub struct Plan {
 }
 
 pub fn generate_plan(request: &Request) -> Plan {
+    let building: PolygonWalls = polygon_walls_from_request(request);
+
     Plan {
-        building: triangulized_wall_building_from_request(request),
-        tiles: triangulized_tiles_from_request(request)
+        building: converters::polygon_walls_to_triangulized_walls(building),
+        tiles: triangulized_tiles(get_tiling(request))
     }
 }
 
-fn triangulized_wall_building_from_request(request: &Request) -> TrianguizedWalls {
+fn polygon_walls_from_request(request: &Request) -> PolygonWalls {
     let mut walls: Vec<Polygon> = vec![];
 
     for wall in request.data() {
         walls.push(wall.polygon().clone())
     }
     
-    let poly_walls = PolygonWalls::new(walls);
-    converters::polygon_walls_to_triangulized_walls(poly_walls)
+    PolygonWalls::new(walls)
 }
 
-fn triangulized_tiles_from_request(request: &Request) -> TriangulizedTiles {
+fn triangulized_tiles(tiles: Vec<Tile>) -> TriangulizedTiles {
+    TriangulizedTiles::from_tiles(tiles)
+}
+
+fn get_tiling(request: &Request) -> Vec<Tile> {
     let mut tiles: Vec<Tile> = vec![];
-    for wall in request.data() {
-        match wall.isolation() {
+    let mut i: usize = 0;
+
+    let building = polygon_walls_from_request(request);
+
+    while i < request.data().len() {
+        match request.data()[i].isolation() {
             Option::Some(detail) => {
-                tiles.push(Tile::new(wall.polygon().clone(), wall.polygon().normal(), detail.width()))
+                tiles.append(&mut get_tiles_from_wall_in_building(i, request));
             },
             Option::None => {
 
             }
         }
+
+        i+=1;
+    }
+    tiles
+}
+
+fn get_tiles_from_wall_in_building(ind: usize, request: &Request) -> Vec<Tile> {
+    let res: Vec<Tile> = vec![];
+
+    let mut i = 0;
+    let rim = request.data()[i].polygon().rim();
+    let rl = rim.len();
+
+    while i < rl {
+        let tmp = &rim[i];
+        let next = &rim[(i+1)%rl];
+
+        i+=1;
     }
 
-    TriangulizedTiles::from_tiles(tiles)
+    res
 }

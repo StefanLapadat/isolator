@@ -5,7 +5,7 @@ pub mod triangulation;
 pub mod general_geometry;
 pub mod building_representations;
 pub mod request_for_isolation;
-pub mod tile;
+pub mod tiling;
 pub mod plan_generation;
 
 pub fn create_plan(request: &Request) -> Plan {

@@ -3,28 +3,23 @@ use crate::general_geometry::{Point, Triangle, Polygon};
 use crate::triangulation::PolygonForTriangulation;
 
 pub struct Tile {
-    polygon: Polygon,
-    normal: Point,
-    width: f64
+    base_polygon: Polygon,
+    surface_polygon: Polygon,
 }
 
 impl Tile {
-    pub fn new(polygon: Polygon, normal: Point, width: f64) -> Tile {
+    pub fn new(base_polygon: Polygon, surface_polygon: Polygon) -> Tile {
         Tile {
-            polygon, normal: normal, width
+            base_polygon, surface_polygon
         }
     }
 
-    fn polygon(&self) -> &Polygon {
-        &self.polygon
+    fn base_polygon(&self) -> &Polygon {
+        &self.base_polygon
     }
 
-    fn normal(&self) -> &Point {
-        &self.normal
-    }
-
-    fn width(&self) -> f64 {
-        self.width
+    fn surface_polygon(&self) -> &Polygon {
+        &self.surface_polygon
     }
 }
 
@@ -68,16 +63,31 @@ impl TriangulizedTiles {
 fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
     let mut res = vec![];
 
-    let inc = tile.normal().normalize().multiply(tile.width());
+    res.append(&mut parallel_rims_to_polygons(tile.base_polygon().rim(), tile.surface_polygon().rim()));
+    let mut i = 0;
+    while i < tile.base_polygon().holes().len() {
+        res.append(&mut parallel_rims_to_polygons(&tile.base_polygon().holes()[i], &tile.surface_polygon().holes()[i]));
+    }
 
-    let base_polygon = tile.polygon().clone();
+    res
+}
 
-    res.push(base_polygon.translate(&inc));
-    res.append(&mut base_polygon.rim_extrusion(&inc));
-    res.append(&mut base_polygon.holes_extrusion(&inc));
+fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) -> Vec<Polygon> {
+    let mut res = vec![];
 
+    let mut i: usize = 0;
+    let rl = base_rim.len();
 
-    res.push(base_polygon);
+    while i < rl {
+        let tmp_b = base_rim[i].clone();
+        let next_b = base_rim[(i+1)%rl].clone();
+        let tmp_s = surface_rim[i].clone();
+        let next_s = surface_rim[(i+1)%rl].clone();
+
+        res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
+
+        i+=1;
+    }
 
     res
 }
