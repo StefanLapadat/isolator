@@ -11,7 +11,7 @@ pub struct Tile {
 impl Tile {
     pub fn new(polygon: Polygon, normal: Point, width: f64) -> Tile {
         Tile {
-            polygon, normal: polygon.normal(), width
+            polygon, normal: normal, width
         }
     }
 
