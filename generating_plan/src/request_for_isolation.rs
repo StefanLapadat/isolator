@@ -1,4 +1,4 @@
-use crate::general_geometry::{Polygon, Point, Plane, Simmilar};
+use crate::general_geometry::{Polygon, Simmilar};
 use serde::{Serialize, Deserialize};
 use crate::building_representations::polygon_walls::PolygonWalls;
 

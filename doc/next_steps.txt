@@ -1,11 +1,18 @@
 
-- mergovanje zidova  - moracemo ovo sranje da zanemarimo za sada; Mnogo je zajebano, potrosio sam ceo dan a nista nisam zavrsio. Uradivo je, ali smara. 
+- mergovanje zidova  - moracemo ovo sranje da zanemarimo za sada; Mnogo je zajebano, potrosio sam ceo dan a nista nisam zavrsio. Uradivo je, ali smara. Uradio sam polovicno, za ovo sto meni treba je kao ok. Mada je opstije resenje koje stvarno radi posao zapravo prava stvar.. Prava stvar bi bilo da predjem sa babylona na ovaj rust djavo i da ukljucim i clang i tu clipper biblioteku i aj u kurac. Jebem ti wasm. Isuvise je komplikovano ovako koristiti wasm kako ja hocu.. 
+
+Morao bih da ubacim sve biblioteke da budu wasm.. sto bih u sustini i mogao mozda?? Ali hajde videcemo, za sada imam ovo sranje, moram da pazim samo da mi se rupe ne zatvore kada se prave zgrade. Bice rucnog posla, ali ok, hajde.. guram ovako nekako. Protraceno mi je ovo vreme malo, ali sam video koliko sam glup jeeee, naucio sam kao nesto.. 
+
 - refaktor           - ni ovo necemo raditi sada, kako god ga zbudzim da radi, to je to za fazu 1;
 
-- bez lepka
-- individualne ploce
-- prozori, vrata i terase na levels
-- sa lepkom 
+
+- bez lepka, individualne ploce
+
+- prozori, vrata i terase na levels.. ok.. 
+
+- sa lepkom
+
+Jos ove tri stvari gore i to je to za fazu 1; To za jedno 4-5 dana. Do tad samo angular :( 
 
 ===========================
 

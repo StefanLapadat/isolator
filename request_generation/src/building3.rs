@@ -3,9 +3,21 @@ use generating_plan::building_representations::{polygon_walls::PolygonWalls};
 
 pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
 
+    // let walls: Vec<Polygon> = vec![
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (0.0, 10.0, 0.0)], vec![]),
+    //     Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (20.0, 0.0, 0.0), (20.0, 10.0, 0.0), (10.0, 10.0, 0.0)], vec![]),
+    // ];
+
+    let right0 = (5.0, 0.0);
+    let up0 = (0.0, 5.0);
+    let down0 = (0., -5.);
+    let left0 = (-5., 0.);
+
     let walls: Vec<Polygon> = vec![
-        Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (0.0, 10.0, 0.0)], vec![]),
-        Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (20.0, 0.0, 0.0), (20.0, 10.0, 0.0), (10.0, 10.0, 0.0)], vec![]),
+        Polygon::in_xy_plane_no_holes_from_increments((-10., -10.), 
+        vec![right0, up0, right0, down0, right0, up0, right0, down0, right0, up0, up0, up0, up0, left0, down0, left0, up0, left0, down0, left0, up0, left0 ]),
+        Polygon::in_xy_plane_no_holes_from_increments((-12., 10.), 
+        vec![right0, up0, right0, down0, right0, up0, right0, down0, right0, up0, up0, up0, up0, left0, down0, left0, up0, left0, down0, left0, up0, left0 ]),
     ];
 
     // let walls: Vec<Polygon> = vec![
