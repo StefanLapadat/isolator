@@ -19,7 +19,6 @@ impl PolygonPointsOnSides {
         let mut i = 1;
         let mut res: Vec<Point> = vec![rim[0].clone()];
         let mut prev = &rim[0];
-        println!("before {}", rim.len());
 
         while i < rim.len() {
             while i< rim.len() && Point::are_points_simmilar(prev, &rim[i]) {
@@ -36,7 +35,6 @@ impl PolygonPointsOnSides {
             res.pop();
         }
 
-        println!("after {}", res.len());
         res
     }
 

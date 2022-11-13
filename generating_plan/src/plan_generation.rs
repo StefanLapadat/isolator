@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
-use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides};
+use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner};
 use crate::building_representations::converters;
 use crate::tiling::{Tile, TriangulizedTiles};
 
@@ -60,6 +60,8 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
 fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_width: f64) -> Vec<Tile> {
     let mut res: Vec<Tile> = vec![];
 
+    println!("{}", ind);
+
     let borders = get_borders_for_wall(ind, request);
     let wall = request.data()[ind].polygon();
 
@@ -70,10 +72,10 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
         match border.wall_ind {
             Some(val) => {},
             None => {
-                surface_rim.push(border.pointA.add(&wall.normal().normalize().multiply(isolation_width)));
-                surface_rim.push(border.pointB.add(&wall.normal().normalize().multiply(isolation_width)));
-                base_rim.push(border.pointA);
-                base_rim.push(border.pointB);
+                surface_rim.push(border.point_a.add(&wall.normal().normalize().multiply(isolation_width)));
+                surface_rim.push(border.point_b.add(&wall.normal().normalize().multiply(isolation_width)));
+                base_rim.push(border.point_a);
+                base_rim.push(border.point_b);
             }
         }
     }
@@ -83,7 +85,7 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
     res
 }
 
-fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Border> {
+fn get_borders_for_wall2(ind: usize, request: &Request) -> Vec<Border> {
     let mut res = vec![];
 
     let mut i = 0;
@@ -93,9 +95,10 @@ fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Border> {
     while i < rl {
         let tmp = &rim[i];
         let next = &rim[(i+1)%rl];
-        res.push(Border { 
-            pointA: tmp.clone(),
-            pointB: next.clone(),
+
+        res.push(Border {
+            point_a: tmp.clone(),
+            point_b: next.clone(),
             wall_ind: None
         });
 
@@ -105,8 +108,43 @@ fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Border> {
     res
 }
 
+fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Border> {
+    let walls = request.data().into_iter().map(|a| a.polygon().clone()).collect::<Vec<_>>();
+
+    let corners = Polygon::get_all_corners_on_polygon(ind, &walls);
+    corners_to_borders(&corners, &walls[ind])
+}
+
+fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Border> {
+    let mut res = vec![];
+
+    let rl = wall.rim().len();
+    let mut i = 0;
+
+    while i < rl {
+        let tmp = &wall.rim()[i];
+        let next = &wall.rim()[(i+1)%rl];
+        let corners_on_this_side: Vec<Corner> = corners.into_iter().filter(|corner| corner.ind_of_side_in_this_polygon == i).map(|corner| corner.clone()).collect::<Vec<Corner>>();
+
+        res.append(&mut corners_on_one_side_to_borders(&corners_on_this_side, tmp, next));
+        i+=1;
+    }
+
+    res
+}
+
+fn corners_on_one_side_to_borders(corners: &Vec<Corner>, start: &Point, end: &Point) -> Vec<Border> {
+    vec![
+        Border {
+            point_a: start.clone(),
+            point_b: end.clone(), 
+            wall_ind: None
+        }
+    ]
+}
+
 struct Border {
-    pointA: Point,
-    pointB: Point, 
+    point_a: Point,
+    point_b: Point, 
     wall_ind: Option<usize>
 }

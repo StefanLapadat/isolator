@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Plane, Simmilar, PolygonPointsOnSides};
+use crate::general_geometry::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment};
 use petgraph::graph::{UnGraph};
 use petgraph::algo;
 
@@ -134,21 +134,6 @@ impl Polygon {
         res
     }
 
-    pub fn point_near_line_segment(pt: &Point, seg0: &Point, seg1: &Point) -> bool  {
-        if (pt.x == seg0.x && pt.y == seg0.y && pt.z == seg0.z) || (pt.x == seg1.x && pt.y == seg1.y && pt.z == seg1.z) {
-            false
-        } else {
-            let v1 = seg1.subtract(&seg0);
-            let v2 = pt.subtract(&seg0);
-
-            if v1.are_vectors_colinear(&v2) && v1.same_oktant(&v2) && v1.modulo() > v2.modulo() {
-                return true;
-            }
-
-            false
-        }
-    }
-
     pub fn flatten_points_no_removal(points: &Vec<Point>) -> Vec<Point> {
         if points.is_empty() {
             panic!("greska teska 1!");
@@ -247,6 +232,7 @@ impl Polygon {
     fn are_neighbours(poly1: &Polygon, poly2: &Polygon) -> bool {
         let normal1 = poly1.normal();
         let normal2 = poly2.normal();
+
         if !normal1.are_vectors_colinear(&normal2) || !normal1.same_oktant(&normal2) {
             false 
         } else {
@@ -271,14 +257,15 @@ impl Polygon {
 
                 if Point::are_points_simmilar(point, tmp) && 
                     ((Point::are_points_simmilar(&next_poly1, prev) || 
-                    Self::point_near_line_segment(&next_poly1, prev, tmp)
+                    LineSegment::new(prev.clone(), tmp.clone()).point_on_a_line_segment_excluding_end_points(&next_poly1)
                     ) || ((Point::are_points_simmilar(&prev_poly1, next) || 
-                    Self::point_near_line_segment(&prev_poly1, tmp, next))))
+                    LineSegment::new(next.clone(), tmp.clone()).point_on_a_line_segment_excluding_end_points(&prev_poly1)
+                )))
                 {
                     return true;
                 }
 
-                if Self::point_near_line_segment(point, prev, &poly2.rim()[i]) {
+                if LineSegment::new(prev.clone(), poly2.rim()[i].clone()).point_on_a_line_segment_excluding_end_points(point) {
                     return true;
                 }
 
@@ -353,7 +340,7 @@ impl Polygon {
         while i < poly.rim().len() {
             let tmp = &poly.rim()[i];
             let next = &poly.rim()[(i + 1) % poly.rim().len()];
-            if Point::are_points_simmilar(point, tmp) || Self::point_near_line_segment(point, tmp, next) {
+            if Point::are_points_simmilar(point, tmp) || LineSegment::new(tmp.clone(), next.clone()).point_on_a_line_segment_excluding_end_points(&point) {
                 return false;
             }
             i+=1;
@@ -400,7 +387,7 @@ impl Polygon {
         while i < poly.rim().len() {
             let tmp = &poly.rim()[i];
             if Point::are_points_simmilar(tmp, seg1) || 
-            Self::point_near_line_segment(tmp, seg0, seg1) {
+            LineSegment::new(seg0.clone(), seg1.clone()).point_on_a_line_segment_excluding_end_points(tmp) {
                 points_on_segment.push(i);
             }
             i+=1;
@@ -428,7 +415,7 @@ impl Polygon {
             let tmp = &poly.rim()[i];
             let next = &poly.rim()[(i+1) % poly.rim().len()];
 
-            if Point::are_points_simmilar(point, next) || Self::point_near_line_segment(point, tmp, next) {
+            if Point::are_points_simmilar(point, next) || LineSegment::new(tmp.clone(), next.clone()).point_on_a_line_segment_excluding_end_points(point) {
                 return Option::Some((i, (i+1) % poly.rim().len()))
             }
 
@@ -441,6 +428,67 @@ impl Polygon {
     pub fn to_polygon_points_on_sides(&self) -> PolygonPointsOnSides {
         PolygonPointsOnSides::new(self.rim().clone(), self.holes().clone())
     }
+
+    pub fn get_all_corners_on_polygon(ind: usize, all_polys: &Vec<Polygon>) -> Vec<Corner> {
+        let mut res = vec![];
+        let mut i = 0;
+
+        while i < all_polys.len() {
+            if i == ind {
+                i+=1;
+                continue;
+            }
+
+            res.append(&mut Self::get_all_corners_for_polygons(&all_polys[ind], &all_polys[i], i));
+            i+=1;
+        }
+
+        res
+    }
+
+    fn get_all_corners_for_polygons(poly_on_which_to_find_corners: &Polygon, poly2: &Polygon, ind_poly2: usize) -> Vec<Corner> {
+        let mut res = vec![];
+        let poly = poly_on_which_to_find_corners;
+
+        let mut i = 0;
+        let prl = poly.rim().len();
+        let rl2 = poly2.rim().len();
+
+        while i < prl {
+            let mut j = 0;
+            let tmp_p = &poly.rim()[i];
+            let next_p = &poly.rim()[(i+1)%prl];
+
+            while j < rl2 {
+                let tmp_p2 = &poly2.rim()[j];
+                let next_p2 = &poly2.rim()[(j+1)%rl2];
+                let seg = LineSegment::shared_segment_no_len0(
+                    &LineSegment::new(tmp_p.clone(), next_p.clone()), 
+                    &LineSegment::new(tmp_p2.clone(), next_p2.clone())
+                );
+                match seg {
+                    Some(seg) => {
+                        res.push(Corner{pt: seg.p1().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
+                        res.push(Corner{pt: seg.p2().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
+                        println!("shared: {:?} {:?} line1: {:?} {:?} line2: {:?} {:?}", seg.p1(), seg.p2(), tmp_p.clone(), next_p.clone(), tmp_p2.clone(), next_p2.clone());
+                    }, 
+                    None => {}
+                }
+                
+                j+=1;
+            }
+            i+=1;
+        }
+
+        res
+    } 
+}
+
+#[derive(Debug, Clone)]
+pub struct Corner {
+    pub pt: Point,
+    pub ind_of_bordering_polygon: usize,
+    pub ind_of_side_in_this_polygon: usize
 }
 
 #[derive(Clone)]
