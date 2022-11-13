@@ -19,3 +19,9 @@ mod polygon_points_on_sides;
 
 pub use self::line_segment::LineSegment;
 mod line_segment;
+
+pub use self::angle::Angle;
+mod angle;
+
+pub use self::positive_f64::PositiveF64;
+mod positive_f64;

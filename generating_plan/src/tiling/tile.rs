@@ -65,6 +65,7 @@ fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
     let mut res = vec![];
 
     res.append(&mut parallel_rims_to_polygons(tile.base_polygon().rim(), tile.surface_polygon().rim()));
+
     let mut i = 0;
     while i < tile.base_polygon().holes().len() {
         res.append(&mut parallel_rims_to_polygons(&tile.base_polygon().holes()[i], &tile.surface_polygon().holes()[i]));
@@ -84,7 +85,9 @@ fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) ->
     let rl = base_rim.len();
 
     while i < rl {
-        res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
+        if !Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && !Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
+            res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
+        }
         i+=1;
     }
 

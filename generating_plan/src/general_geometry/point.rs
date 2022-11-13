@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 use nalgebra::Matrix3;
-use crate::general_geometry::Simmilar;
+use crate::general_geometry::{Angle, Simmilar};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Point {
@@ -113,5 +113,9 @@ impl Point {
         (self.x == 0. || (t2.x / self.x).simmilar_to(ratio, epsilon)) && 
         (self.y == 0. || (t2.y / self.y).simmilar_to(ratio, epsilon)) && 
         (self.z == 0. || (t2.z / self.z).simmilar_to(ratio, epsilon))
+    }
+
+    pub fn angle_to(&self, other: &Point) -> Angle {
+        Angle::new((self.dot_product(other) / (self.modulo() * other.modulo())).acos())
     }
 }

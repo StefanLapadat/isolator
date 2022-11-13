@@ -1,25 +1,11 @@
+Sta jos imam ovde? 
 
-- mergovanje zidova  - moracemo ovo sranje da zanemarimo za sada; Mnogo je zajebano, potrosio sam ceo dan a nista nisam zavrsio. Uradivo je, ali smara. Uradio sam polovicno, za ovo sto meni treba je kao ok. Mada je opstije resenje koje stvarno radi posao zapravo prava stvar.. Prava stvar bi bilo da predjem sa babylona na ovaj rust djavo i da ukljucim i clang i tu clipper biblioteku i aj u kurac. Jebem ti wasm. Isuvise je komplikovano ovako koristiti wasm kako ja hocu.. 
+- Da nadjem tacan ugao izmedju ravni
+- Da nadjem kako da projektujem rezultate corner handling funkcije na ono sto imam 
+- Da implementiram funkciju further process rims 
+- Da namestim tako da dva bordering zida daju iste rezultate kada se racuna iz perspektive jednog i drugog
 
-Morao bih da ubacim sve biblioteke da budu wasm.. sto bih u sustini i mogao mozda?? Ali hajde videcemo, za sada imam ovo sranje, moram da pazim samo da mi se rupe ne zatvore kada se prave zgrade. Bice rucnog posla, ali ok, hajde.. guram ovako nekako. Protraceno mi je ovo vreme malo, ali sam video koliko sam glup jeeee, naucio sam kao nesto.. 
+Kad to uradim, onda sam otprilike odradio to sto sam hteo sa coskovima; Onda jos imam da sredim sama poplocavanja i to sa lepkom i onda mogu da refaktorisem. Takodje, da probam da ubacim onu funkcionalnost za mergovanje poligona. Da doradim specifikaciju, sta tacno prihvatam, sta ne prihvatam, da se uverim da mi je ovaj algoritam za odredjivanje coskova dobar, da ga popravim ako treba i tako dalje.. Trajace to jos neko vreme, recimo 2 nedelje, ali ce na kraju biti ok. Izuzetno ok. Onda mogu da predjem na fazu 2 - simulaciju izvrsavanja. 
 
-- refaktor           - ni ovo necemo raditi sada, kako god ga zbudzim da radi, to je to za fazu 1;
-
-
-- bez lepka, individualne ploce
-
-- prozori, vrata i terase na levels.. ok.. 
-
-- sa lepkom
-
-Jos ove tri stvari gore i to je to za fazu 1; To za jedno 4-5 dana. Do tad samo angular :( 
-
-===========================
-
-Necu nikakve graficke editore, picke materine, ovo sto imam sa levels je apsolutno dovoljno, za sada; trebalo bi podrzati i kose zidove kroz levels, ali to cemo naknadno; ionako je to retkost.. mada kazem, trebalo bi podrzati.
-
-Kada uradim ove stvari od gore, racunacu da sam zavrsio fazu 1; Mogu da predjem na fazu 2 a to je simulacija postavljanja, a zatim i na fazu 3 koja je pravo izvodjenje na modelima zgrada. Faza 4 je eksperiment na pravoj gradjevini. 
-
-Sve posle toga zahteva dodatnu lovu i postaje vec ozbiljna prica.. Videcemo. 
 
 

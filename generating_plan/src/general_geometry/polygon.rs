@@ -84,10 +84,6 @@ impl Polygon {
         res
     }
 
-    pub fn translate(&self, inc: &Point) -> Polygon {
-        Polygon::from_polygon_points_on_sides(PolygonPointsOnSides::new(self.rim().clone(), self.holes().clone()).translate(inc))
-    }
-
     pub fn rim_extrusion(&self, inc: &Point) -> Vec<Polygon> {
         let mut res: Vec<Polygon> = vec![];
 
@@ -470,7 +466,6 @@ impl Polygon {
                     Some(seg) => {
                         res.push(Corner{pt: seg.p1().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
                         res.push(Corner{pt: seg.p2().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
-                        println!("shared: {:?} {:?} line1: {:?} {:?} line2: {:?} {:?}", seg.p1(), seg.p2(), tmp_p.clone(), next_p.clone(), tmp_p2.clone(), next_p2.clone());
                     }, 
                     None => {}
                 }
