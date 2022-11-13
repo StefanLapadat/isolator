@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Plane, Simmilar};
+use crate::general_geometry::{Point, Plane, Simmilar, PolygonPointsOnSides};
 use petgraph::graph::{UnGraph};
 use petgraph::algo;
 
@@ -11,12 +11,13 @@ pub struct Polygon {
 
 impl Polygon {
     pub fn new(rim: Vec<Point>, holes: Vec<Vec<Point>>) -> Polygon {
-        let temp = Polygon {
-            rim: rim,
-            holes: holes
-        };
+        Self::from_polygon_points_on_sides(PolygonPointsOnSides::new(rim, holes))
+    }
 
-        temp.remove_points_not_on_corners()
+    pub fn from_polygon_points_on_sides(poly: PolygonPointsOnSides) -> Polygon {
+        let rim_and_holes = poly.to_polygon();
+
+        Polygon { rim: rim_and_holes.0, holes: rim_and_holes.1 }
     }
 
     pub fn from_triplets(rim: Vec<(f64, f64, f64)>, holes: Vec<Vec<(f64, f64, f64)>>) -> Polygon {
@@ -68,48 +69,23 @@ impl Polygon {
     pub fn wireframe(&self) -> Vec<Vec<Point>> {
         let mut res: Vec<Vec<Point>> = vec![];
 
-        let mut seq: Vec<Point> = vec![];
-        for point in self.rim() {
-            seq.push(point.clone());
-        }
-        if !self.rim().is_empty() {
-            seq.push(self.rim()[0].clone());
-        }
-        res.push(seq);
+        res.push(Self::rim_wireframe(self.rim()));
+
         for hole in self.holes() {
-            let mut seq_hole:Vec<Point> = vec![];
-            for point in hole {
-                seq_hole.push(point.clone());
-            }
-            if !hole.is_empty() {
-                seq_hole.push(hole[0].clone());
-            }
-            res.push(seq_hole);
+            res.push(Self::rim_wireframe(hole));
         }
 
         res
     }
 
+    fn rim_wireframe(points: &Vec<Point>)-> Vec<Point> {
+        let mut res = points.clone();
+        res.push(points[0].clone());
+        res
+    }
+
     pub fn translate(&self, inc: &Point) -> Polygon {
-        let mut rim: Vec<Point> = vec![];
-        let mut holes: Vec<Vec<Point>> = vec![];
-
-        for point in self.rim() {
-            rim.push(point.add(&inc));
-        }
-
-        for hole in self.holes() {
-            let mut new_hole: Vec<Point> = vec![];
-            for point in hole {
-                new_hole.push(point.add(&inc));
-            }
-            holes.push(new_hole);
-        }
-
-        Polygon {
-            rim,
-            holes
-        }
+        Polygon::from_polygon_points_on_sides(PolygonPointsOnSides::new(self.rim().clone(), self.holes().clone()).translate(inc))
     }
 
     pub fn rim_extrusion(&self, inc: &Point) -> Vec<Polygon> {
@@ -227,30 +203,6 @@ impl Polygon {
         res
     }
 
-    fn remove_points_not_on_corners(&self) -> Polygon {
-        let rim: Vec<Point> = Self::remove_points_not_on_corners_one_ring(self.rim());
-        let holes: Vec<Vec<Point>> = self.holes().into_iter().map(|hole| Self::remove_points_not_on_corners_one_ring(hole)).collect::<Vec<_>>();
-
-        Polygon{rim, holes}
-    }
-
-    fn remove_points_not_on_corners_one_ring(rim: &Vec<Point>) -> Vec<Point> {
-        let mut res: Vec<Point> = vec![];
-        let mut i: usize = 0;
-        let rl = rim.len();
-
-        while i < rl {
-            let next = &rim[(i+1)%rl];
-            let prev = &rim[(i + rl -1)%rl];
-            if !Point::are_points_colinear(prev, &rim[i], next) {
-                res.push(rim[i].clone());
-            }
-            i+=1;
-        }
-
-        res
-    }
-
     pub fn merge_multiple_polygons(polygons: &Vec<Polygon>) -> Vec<Polygon> {
         let mut res = vec![];
         let groups: Vec<Vec<usize>> = Self::get_connected_groups(polygons);
@@ -279,10 +231,8 @@ impl Polygon {
 
             while j < polygons.len() as u32 {
                 if Self::are_neighbours(&polygons[i as usize], &polygons[j as usize]) {
-                    println!("true");
                     res.push((i, j));
                 } else {
-                    println!("false");
                 }
 
                 j+=1;
@@ -300,7 +250,6 @@ impl Polygon {
         if !normal1.are_vectors_colinear(&normal2) || !normal1.same_oktant(&normal2) {
             false 
         } else {
-            println!("else");
             Self::is_poly1_close_to_poly2(poly1, poly2) || Self::is_poly1_close_to_poly2(poly2, poly1)
         }
     }
@@ -365,19 +314,12 @@ impl Polygon {
         let start_poly = if start.0 { poly1 } else { poly2 };
         let mut tmp_poly = start_poly;
 
-        println!("{:?} {:?}", poly1, poly2);
-
         loop {
             result_rim.push(tmp_poly.rim()[tmp.1].clone());
-            println!("{:?} {:?}", tmp_poly.rim()[tmp.1], tmp.0);
-
 
             tmp = Self::pick_next_point_for_merging(tmp, poly1, poly2, &result_rim);
             tmp_poly = if tmp.0 { poly1 } else { poly2 };
-            
-
-            // std::thread::sleep(std::time::Duration::new(1,0));
-            
+                        
             if Point::are_points_simmilar(&tmp_poly.rim()[tmp.1], &start_poly.rim()[start.1]) {
                 break;
             }
@@ -387,8 +329,6 @@ impl Polygon {
 
         result_holes.append(&mut poly1.holes().clone());
         result_holes.append(&mut poly2.holes().clone());
-
-        // println!("{:?} {:?} {:?}", poly1.rim(), poly2.rim(), result_rim);
         
         Polygon::new(result_rim, result_holes)
     }
@@ -432,7 +372,7 @@ impl Polygon {
             Some(segment) => {
                 match current_result_rim.into_iter().find(|pt| Point::are_points_simmilar(&not_current_poly.rim()[segment.0], &pt)) {
                     Some(_) =>  (current_tmp.0, (current_tmp.1 + 1) % current_poly.rim().len()),
-                    None => {println!("Jebem ti mater! {:?} {:?}", not_current_poly.rim()[segment.0], not_current_poly.rim()[segment.1]); (!current_tmp.0, segment.1) }
+                    None => (!current_tmp.0, segment.1)
                 }
             },
             None => {
@@ -496,6 +436,10 @@ impl Polygon {
         }
 
         Option::None
+    }
+
+    pub fn to_polygon_points_on_sides(&self) -> PolygonPointsOnSides {
+        PolygonPointsOnSides::new(self.rim().clone(), self.holes().clone())
     }
 }
 

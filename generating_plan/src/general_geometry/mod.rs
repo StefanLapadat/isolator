@@ -12,3 +12,6 @@ mod triangle;
 
 pub use self::plane::Plane;
 mod plane;
+
+pub use self::polygon_points_on_sides::PolygonPointsOnSides;
+mod polygon_points_on_sides;

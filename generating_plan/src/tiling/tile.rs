@@ -1,24 +1,25 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Triangle, Polygon};
+use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides};
 use crate::triangulation::PolygonForTriangulation;
 
+#[derive(Debug)]
 pub struct Tile {
-    base_polygon: Polygon,
-    surface_polygon: Polygon,
+    base_polygon: PolygonPointsOnSides,
+    surface_polygon: PolygonPointsOnSides,
 }
 
 impl Tile {
-    pub fn new(base_polygon: Polygon, surface_polygon: Polygon) -> Tile {
+    pub fn new(base_polygon: PolygonPointsOnSides, surface_polygon: PolygonPointsOnSides) -> Tile {
         Tile {
             base_polygon, surface_polygon
         }
     }
 
-    fn base_polygon(&self) -> &Polygon {
+    fn base_polygon(&self) -> &PolygonPointsOnSides {
         &self.base_polygon
     }
 
-    fn surface_polygon(&self) -> &Polygon {
+    fn surface_polygon(&self) -> &PolygonPointsOnSides {
         &self.surface_polygon
     }
 }
@@ -67,7 +68,11 @@ fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
     let mut i = 0;
     while i < tile.base_polygon().holes().len() {
         res.append(&mut parallel_rims_to_polygons(&tile.base_polygon().holes()[i], &tile.surface_polygon().holes()[i]));
+        i+=1;
     }
+
+    res.push(Polygon::from_polygon_points_on_sides(tile.base_polygon().clone()));
+    res.push(Polygon::from_polygon_points_on_sides(tile.surface_polygon().clone()));
 
     res
 }
@@ -79,13 +84,7 @@ fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) ->
     let rl = base_rim.len();
 
     while i < rl {
-        let tmp_b = base_rim[i].clone();
-        let next_b = base_rim[(i+1)%rl].clone();
-        let tmp_s = surface_rim[i].clone();
-        let next_s = surface_rim[(i+1)%rl].clone();
-
         res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
-
         i+=1;
     }
 

@@ -1,0 +1,10 @@
+There's starting to be somewhat a lot of stuff that I do not support. 
+
+Do not support nice correct merging of polygons; We could fix this if we somehow incorporate clipper cpp lib into wasm.. And if we also incorporate fyrox engine instead of babylon, it's gonna be wonderfull!! :D 
+
+And now also do not support tiles with funky base and surface polygons. 
+We don't have (and will not have for now) great treatment of corners when it comes to 
+
+This will have to be fixed in future. And it's quite important to be fixed because otherwise, we are not gonna have probems triangulating tile surfaces. For now I think it's gonna work out, but generally, I am going to have to implement all these things if I intend to have a serious program. 
+
+
