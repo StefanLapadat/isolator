@@ -134,6 +134,8 @@ fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Border> {
 }
 
 fn corners_on_one_side_to_borders(corners: &Vec<Corner>, start: &Point, end: &Point) -> Vec<Border> {
+    // let mut res = vec![];
+
     vec![
         Border {
             point_a: start.clone(),
@@ -141,6 +143,10 @@ fn corners_on_one_side_to_borders(corners: &Vec<Corner>, start: &Point, end: &Po
             wall_ind: None
         }
     ]
+
+    // Problem je malo u tome sto sam ranije imao potrebu da nemam 
+
+    // res
 }
 
 struct Border {
