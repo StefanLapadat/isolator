@@ -25,3 +25,6 @@ mod angle;
 
 pub use self::positive_f64::PositiveF64;
 mod positive_f64;
+
+pub use self::line3d::Line3D;
+pub mod line3d;

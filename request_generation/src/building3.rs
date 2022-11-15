@@ -5,8 +5,13 @@ pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
 
     let walls: Vec<Polygon> = vec![
         Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (0.0, 0.0, 10.0)], vec![]),
-        Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (15.0, 15.0, 0.0), (15.0, 15.0, 10.0), (10.0, 0.0, 10.0)], vec![]),
+        Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (3.0, 3.0, 0.0), (3.0, 3.0, 10.0), (10.0, 0.0, 10.0)], vec![]),
     ];
+
+    // let walls: Vec<Polygon> = vec![
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (0.0, 0.0, 10.0)], vec![]),
+    //     Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (10.0, 10.0, 10.0), (10.0, 0.0, 10.0)], vec![]),
+    // ];
 
     // let walls: Vec<Polygon> = vec![
     //     Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (0.0, 10.0, 0.0)], vec![]),

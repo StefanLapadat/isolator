@@ -118,4 +118,8 @@ impl Point {
     pub fn angle_to(&self, other: &Point) -> Angle {
         Angle::new((self.dot_product(other) / (self.modulo() * other.modulo())).acos())
     }
+
+    pub fn exactly_same(&self, other: &Point) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z
+    }
 }

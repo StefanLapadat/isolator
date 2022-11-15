@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
-use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, PositiveF64, Angle};
+use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d};
 use crate::building_representations::converters;
 use crate::tiling::{Tile, TriangulizedTiles, corner_handling};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
@@ -71,10 +71,10 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
             Some(val) => {
                 let solved_corner = solve_corner(&LineSegment::new(border.point_a, border.point_b), &request.data()[ind], &request.data()[val]);
 
-                surface_rim.push(solved_corner.2);
-                surface_rim.push(solved_corner.3);
                 base_rim.push(solved_corner.0);
                 base_rim.push(solved_corner.1);
+                surface_rim.push(solved_corner.2);
+                surface_rim.push(solved_corner.3);
             },
             None => {
                 surface_rim.push(border.point_a.add(&wall.normal().normalize().multiply(isolation_width)));
@@ -97,26 +97,34 @@ fn further_process_base_and_surface_rims(base_rim: &Vec<Point>, surface_rim: &Ve
 }
 
 fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
+    let inc1 = observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width());
+    let inc2 = bordering_wall.polygon().normal().normalize().multiply(bordering_wall.isolation().as_ref().unwrap().width());
 
-    let angle = observing_wall.polygon().normal().angle_to(&bordering_wall.polygon().normal()).val() - std::f64::consts::PI;
-    let angle = Angle::new(angle);
-    let width1 = PositiveF64::new(observing_wall.isolation().as_ref().unwrap().width()).unwrap();
-    let width2 = PositiveF64::new(bordering_wall.isolation().as_ref().unwrap().width()).unwrap();
+    let shared_segment_vec = shared_segment.to_point();
 
-    let res = corner_handling::handle_corner(angle, width1, width2);
+    let line1 = Line3D::new(Point::vector_multiplication(&shared_segment_vec, &inc1), shared_segment.p1().add(&inc1));
+    let line2 = Line3D::new(Point::vector_multiplication(&shared_segment_vec, &inc2), shared_segment.p1().add(&inc2));
 
-    // first return base points and then surface points
-    let pt1 = shared_segment.p1().clone();
-    let pt2 = shared_segment.p2().clone();
-    let pt3 = shared_segment.p1().add(&observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width()));
-    let pt4 = shared_segment.p2().add(&observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width()));
+    let intersection = line3d::intersection(&line1.unwrap(), &line2.unwrap());
 
-    (pt1, pt2, pt3, pt4)
+    match intersection {
+        line3d::Intersection::None => panic!("No intersection found where it was expected."),
+        line3d::Intersection::Line(_) => panic!("Whole line found as an intersection where single point was expected."),
+        line3d::Intersection::Point(pt) => {
+            let pt1 = shared_segment.p1().clone();
+            let pt2 = shared_segment.p2().clone();
+            let pt3 = pt.clone();
+            let pt4 = pt.clone().add(&shared_segment_vec);
+
+            (pt1, pt2, pt3, pt4)
+        }
+    }
 }
 
-fn get_angle_between_walls() {
-    
+fn get_coefs(shared_normal: &Point, n1: &Point, n2: &Point) -> (f64, f64) {
+    (1., 1.)
 }
+
 
 fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Border> {
     let walls = request.data().into_iter().map(|a| a.polygon().clone()).collect::<Vec<_>>();

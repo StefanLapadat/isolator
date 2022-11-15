@@ -85,9 +85,23 @@ fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) ->
     let rl = base_rim.len();
 
     while i < rl {
+        if Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
+            i+=1; 
+            continue;
+        }
+
         if !Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && !Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
             res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
         }
+
+        if Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && !Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
+            res.push(Polygon::new(vec![base_rim[i].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
+        }
+
+        if !Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
+            res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone()], vec![]));
+        }
+
         i+=1;
     }
 

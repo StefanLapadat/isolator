@@ -61,6 +61,10 @@ impl LineSegment {
         None
     }
 
+    pub fn to_point(&self) -> Point {
+        self.p2.subtract(&self.p1)
+    }
+
     pub fn p1(&self) -> &Point {
         &self.p1
     }
