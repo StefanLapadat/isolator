@@ -47,7 +47,7 @@ impl Request {
         for p in building.walls() {
             let plane_normal = &p.normal().normalize();
             let plane_is_horizontal = Point::are_points_simmilar(plane_normal, &Point::new(0., 0., 1.)) || Point::are_points_simmilar(plane_normal, &Point::new(0., 0., -1.));
-            println!("{:?}", &p.normal().normalize());
+
             data.push(PolygonWithIsolationDetails {
                 polygon: p.clone(),
                 isolation: if plane_is_horizontal { Option::None } else { Option::Some(IsolationDetails {

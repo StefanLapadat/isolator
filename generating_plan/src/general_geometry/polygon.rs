@@ -458,14 +458,18 @@ impl Polygon {
             while j < rl2 {
                 let tmp_p2 = &poly2.rim()[j];
                 let next_p2 = &poly2.rim()[(j+1)%rl2];
+
                 let seg = LineSegment::shared_segment_no_len0(
                     &LineSegment::new(tmp_p.clone(), next_p.clone()), 
                     &LineSegment::new(tmp_p2.clone(), next_p2.clone())
                 );
+                
                 match seg {
                     Some(seg) => {
-                        res.push(Corner{pt: seg.p1().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
-                        res.push(Corner{pt: seg.p2().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
+                        if !next_p.subtract(tmp_p).same_oktant(&next_p2.subtract(tmp_p2)) {
+                            res.push(Corner{pt: seg.p1().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
+                            res.push(Corner{pt: seg.p2().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
+                        }                        
                     }, 
                     None => {}
                 }
@@ -476,7 +480,7 @@ impl Polygon {
         }
 
         res
-    } 
+    }
 }
 
 #[derive(Debug, Clone)]

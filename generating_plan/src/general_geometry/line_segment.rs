@@ -72,4 +72,8 @@ impl LineSegment {
     pub fn p2(&self) -> &Point {
         &self.p2
     }
+
+    pub fn len(&self) -> f64 {
+        self.to_point().modulo()
+    }
 }

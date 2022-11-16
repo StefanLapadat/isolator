@@ -74,13 +74,24 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
             match border.wall_ind {
                 Some(val) => {
                     let solved_corner = solve_corner(&LineSegment::new(border.point_a.clone(), border.point_b.clone()), &request.data()[ind], &request.data()[val]);
+
+                    if Point::are_points_simmilar(&solved_corner.2, &solved_corner.3) {
+                        println!("******* {:?} {:?}", &solved_corner.2, &solved_corner.3);
+                    }
     
                     one_side_base_rim.push(solved_corner.0);
                     one_side_base_rim.push(solved_corner.1);
                     one_side_surface_rim.push(solved_corner.2);
                     one_side_surface_rim.push(solved_corner.3);
+
+                    
                 },
                 None => {
+                    if Point::are_points_simmilar(&border.point_a.add(&wall.normal().normalize().multiply(isolation_width)), 
+                    &border.point_b.add(&wall.normal().normalize().multiply(isolation_width))) {
+                        println!("Pera kojot");
+                    }
+
                     one_side_surface_rim.push(border.point_a.add(&wall.normal().normalize().multiply(isolation_width)));
                     one_side_surface_rim.push(border.point_b.add(&wall.normal().normalize().multiply(isolation_width)));
                     one_side_base_rim.push(border.point_a.clone());
@@ -95,16 +106,19 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
         i+=1;
     }
 
+
     let surface_rim = further_process_surface_rim(&surface_rim);
 
     let flat_base_rim = base_rim.into_iter().flatten().collect::<Vec<_>>();
     let flat_surface_rim = surface_rim.into_iter().flatten().collect::<Vec<_>>();
+
 
     let base_holes: Vec<Vec<Point>> = request.data()[ind].polygon().holes().clone();
     let surface_holes = base_holes.clone().into_iter().map(|hole| hole.into_iter().map(|hole_point| hole_point.add(wall_height_vec)).collect::<Vec<_>>()).collect::<Vec<_>>();
 
     res.push(Tile::new(PolygonPointsOnSides::new(flat_base_rim, base_holes), PolygonPointsOnSides::new(flat_surface_rim, surface_holes)));
     
+
     res
 }
 
@@ -121,6 +135,11 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
 
         let this_side = &surface_rim[i];
         let first_line_this_side = Line3D::from_2_points(&this_side[0], &this_side[1]).unwrap();
+        let last_line_this_side_opt = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]);
+        if last_line_this_side_opt.is_none() {
+            println!("len is {:?} {:?} {:?}", this_side.len(), &this_side[this_side.len() - 1], &this_side[this_side.len() - 2]);
+        }
+
         let last_line_this_side = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]).unwrap();
 
         let next_side = &surface_rim[(i + 1) % srl];
@@ -147,9 +166,10 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
         let mut res_elem = vec![];
 
         res_elem.push(first_point_in_result);
-        let j = 1;
+        let mut j = 1;
         while j < this_side.len() - 1 {
             res_elem.push(this_side[j].clone());
+            j+=1;
         }
         res_elem.push(last_point_in_result);
 
@@ -176,6 +196,11 @@ fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolat
             let pt2 = shared_segment.p2().clone();
             let pt3 = pt1.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
             let pt4 = pt2.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
+
+            if Point::are_points_simmilar(&pt1, &pt2) {
+                println!("Here kojot");
+            }
+
 
             return (pt1, pt2, pt3, pt4);
         }
@@ -207,6 +232,7 @@ fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Vec<Border>> {
     let walls = request.data().into_iter().map(|a| a.polygon().clone()).collect::<Vec<_>>();
 
     let corners = Polygon::get_all_corners_on_polygon(ind, &walls);
+    
     corners_to_borders(&corners, &walls[ind])
 }
 
