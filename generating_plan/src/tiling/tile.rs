@@ -30,10 +30,6 @@ impl Tile {
         let p1 = Polygon::new(base_data.0, base_data.1).plane();
         let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
 
-        println!("{:?}", p1);
-        println!("{:?}", p2);
-        
-
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
     }
 }
@@ -154,8 +150,7 @@ fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
 
 pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> bool {
     let tile_width = tile.width();
-    println!("{}", tile_width);
-
+    
     unit_tile.d.x.simmilar_to(tile_width, 0.0001) || 
     unit_tile.d.y.simmilar_to(tile_width, 0.0001) || 
     unit_tile.d.z.simmilar_to(tile_width, 0.0001)

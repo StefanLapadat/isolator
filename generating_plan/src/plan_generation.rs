@@ -74,24 +74,13 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
             match border.wall_ind {
                 Some(val) => {
                     let solved_corner = solve_corner(&LineSegment::new(border.point_a.clone(), border.point_b.clone()), &request.data()[ind], &request.data()[val]);
-
-                    if Point::are_points_simmilar(&solved_corner.2, &solved_corner.3) {
-                        println!("******* {:?} {:?}", &solved_corner.2, &solved_corner.3);
-                    }
     
                     one_side_base_rim.push(solved_corner.0);
                     one_side_base_rim.push(solved_corner.1);
                     one_side_surface_rim.push(solved_corner.2);
                     one_side_surface_rim.push(solved_corner.3);
-
-                    
                 },
                 None => {
-                    if Point::are_points_simmilar(&border.point_a.add(&wall.normal().normalize().multiply(isolation_width)), 
-                    &border.point_b.add(&wall.normal().normalize().multiply(isolation_width))) {
-                        println!("Pera kojot");
-                    }
-
                     one_side_surface_rim.push(border.point_a.add(&wall.normal().normalize().multiply(isolation_width)));
                     one_side_surface_rim.push(border.point_b.add(&wall.normal().normalize().multiply(isolation_width)));
                     one_side_base_rim.push(border.point_a.clone());
@@ -136,9 +125,6 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
         let this_side = &surface_rim[i];
         let first_line_this_side = Line3D::from_2_points(&this_side[0], &this_side[1]).unwrap();
         let last_line_this_side_opt = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]);
-        if last_line_this_side_opt.is_none() {
-            println!("len is {:?} {:?} {:?}", this_side.len(), &this_side[this_side.len() - 1], &this_side[this_side.len() - 2]);
-        }
 
         let last_line_this_side = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]).unwrap();
 
@@ -196,11 +182,6 @@ fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolat
             let pt2 = shared_segment.p2().clone();
             let pt3 = pt1.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
             let pt4 = pt2.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
-
-            if Point::are_points_simmilar(&pt1, &pt2) {
-                println!("Here kojot");
-            }
-
 
             return (pt1, pt2, pt3, pt4);
         }
