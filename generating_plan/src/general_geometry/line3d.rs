@@ -14,6 +14,10 @@ impl Line3D {
             })
         }
     }
+
+    pub fn from_2_points(p1: &Point, p2: &Point) -> Option<Line3D> {
+        Self::new(p1.subtract(&p2), p1.clone())
+    }
 }
 
 fn are_parallel(l1: &Line3D, l2: &Line3D) -> bool {

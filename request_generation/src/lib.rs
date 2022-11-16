@@ -4,9 +4,8 @@ pub mod building1;
 pub mod building2;
 pub mod building3;
 
-
 pub fn create_request(request_id: i32) -> Request {
-    let width = 2.;
+    let width = 0.3;
     match request_id {
         1 =>  Request::from_polygon_walls_building(&building1::create_building_polygon_walls(), width),
         2 =>  Request::from_polygon_walls_building(&building2::create_building_polygon_walls(), width),

@@ -3,10 +3,25 @@ use generating_plan::building_representations::{polygon_walls::PolygonWalls};
 
 pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
 
+    let house_whl = 25.0;
+
     let walls: Vec<Polygon> = vec![
-        Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (0.0, 0.0, 10.0)], vec![]),
-        Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (3.0, 3.0, 0.0), (3.0, 3.0, 10.0), (10.0, 0.0, 10.0)], vec![]),
+    Polygon::from_triplets(vec![(0.,0.,0.), (0.,0.,25.), (0.,25.,25.), (0.,25.,0.)], vec![]),
+    Polygon::from_triplets(vec![(0.,house_whl,0.),(0.,house_whl,house_whl),(house_whl,house_whl,house_whl), (house_whl,house_whl,0.)], vec![]),
+    Polygon::from_triplets(vec![(0.,0.,0.), (0.,house_whl,0.), (house_whl,house_whl,0.), (house_whl,0.,0.)], vec![]),
+    // Polygon::from_triplets(vec![(0.,0.,house_whl), (house_whl,0.,house_whl), (house_whl,house_whl,house_whl), (0.,house_whl,house_whl)], vec![]),
     ];
+
+    // let walls: Vec<Polygon> = vec![
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (0.0, 0.0, 10.0)], vec![]),
+    //     Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (3.0, 3.0, 0.0), (3.0, 3.0, 10.0), (10.0, 0.0, 10.0)], vec![]),
+    // ];
+
+    // let walls: Vec<Polygon> = vec![
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 2.0), (10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (0.0, 10.0, 2.0)], vec![]),
+    //     Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (10.0, 10.0, 10.0), (10.0, 10.0, 0.0)], vec![]),
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 2.0), (0.0, -10.0, 6.), (10.0, -10.0, 4.0), (10.0, 0.0, 0.0)], vec![]),
+    // ];
 
     // let walls: Vec<Polygon> = vec![
     //     Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (0.0, 0.0, 10.0)], vec![]),
@@ -17,6 +32,13 @@ pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
     //     Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (0.0, 10.0, 0.0)], vec![]),
     //     Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (20.0, 0.0, 0.0), (20.0, 10.0, 0.0), (10.0, 10.0, 0.0)], vec![]),
     // ];
+
+    // let walls: Vec<Polygon> = vec![
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 2.0), (10.0, 0.0, 0.0), (10.0, 10.0, 0.0), (0.0, 10.0, 2.0)], vec![]),
+    //     Polygon::from_triplets(vec![(10.0, 0.0, 0.0), (10.0, 0.0, 10.0), (10.0, 10.0, 10.0), (10.0, 10.0, 0.0)], vec![]),
+    //     Polygon::from_triplets(vec![(0.0, 0.0, 2.0), (0.0, -10.0, 6.), (10.0, -10.0, 4.0), (10.0, 0.0, 0.0)], vec![]),
+    // ];
+
 
     // let right0 = (5.0, 0.0);
     // let up0 = (0.0, 5.0);

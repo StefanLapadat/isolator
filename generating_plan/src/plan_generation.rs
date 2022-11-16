@@ -19,7 +19,7 @@ pub fn generate_plan(request: &Request) -> Plan {
 
     Plan {
         building: converters::polygon_walls_to_triangulized_walls(building),
-        tiles: triangulized_tiles(get_tiling(request))
+        tiles:  TriangulizedTiles::from_tiles(get_tiling(request))
     }
 }
 
@@ -31,10 +31,6 @@ fn polygon_walls_from_request(request: &Request) -> PolygonWalls {
     }
     
     PolygonWalls::new(walls)
-}
-
-fn triangulized_tiles(tiles: Vec<Tile>) -> TriangulizedTiles {
-    TriangulizedTiles::from_tiles(tiles)
 }
 
 fn get_tiling(request: &Request) -> Vec<Tile> {
@@ -62,45 +58,131 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
 
     let borders = get_borders_for_wall(ind, request);
     let wall = request.data()[ind].polygon();
+    let wall_height_vec = &wall.normal().normalize().multiply(isolation_width);
 
-    let mut base_rim: Vec<Point> = vec![];
-    let mut surface_rim: Vec<Point> = vec![];
+    let mut base_rim: Vec<Vec<Point>> = vec![];
+    let mut surface_rim: Vec<Vec<Point>> = vec![];
 
-    for border in borders {
-        match border.wall_ind {
-            Some(val) => {
-                let solved_corner = solve_corner(&LineSegment::new(border.point_a, border.point_b), &request.data()[ind], &request.data()[val]);
+    let mut i = 0;
+    while i<borders.len() {
+        let one_side_borders = &borders[i];
 
-                base_rim.push(solved_corner.0);
-                base_rim.push(solved_corner.1);
-                surface_rim.push(solved_corner.2);
-                surface_rim.push(solved_corner.3);
-            },
-            None => {
-                surface_rim.push(border.point_a.add(&wall.normal().normalize().multiply(isolation_width)));
-                surface_rim.push(border.point_b.add(&wall.normal().normalize().multiply(isolation_width)));
-                base_rim.push(border.point_a);
-                base_rim.push(border.point_b);
+        let mut one_side_base_rim: Vec<Point> = vec![];
+        let mut one_side_surface_rim: Vec<Point> = vec![];
+
+        for border in one_side_borders {
+            match border.wall_ind {
+                Some(val) => {
+                    let solved_corner = solve_corner(&LineSegment::new(border.point_a.clone(), border.point_b.clone()), &request.data()[ind], &request.data()[val]);
+    
+                    one_side_base_rim.push(solved_corner.0);
+                    one_side_base_rim.push(solved_corner.1);
+                    one_side_surface_rim.push(solved_corner.2);
+                    one_side_surface_rim.push(solved_corner.3);
+                },
+                None => {
+                    one_side_surface_rim.push(border.point_a.add(&wall.normal().normalize().multiply(isolation_width)));
+                    one_side_surface_rim.push(border.point_b.add(&wall.normal().normalize().multiply(isolation_width)));
+                    one_side_base_rim.push(border.point_a.clone());
+                    one_side_base_rim.push(border.point_b.clone());
+                }
             }
         }
+
+        base_rim.push(one_side_base_rim);
+        surface_rim.push(one_side_surface_rim);
+
+        i+=1;
     }
 
-    // let (base_rim, surface_rim) = further_process_base_and_surface_rims(&base_rim, &surface_rim);
+    let surface_rim = further_process_surface_rim(&surface_rim);
 
-    res.push(Tile::new(PolygonPointsOnSides::new(base_rim, vec![]), PolygonPointsOnSides::new(surface_rim, vec![])));
+    let flat_base_rim = base_rim.into_iter().flatten().collect::<Vec<_>>();
+    let flat_surface_rim = surface_rim.into_iter().flatten().collect::<Vec<_>>();
+
+    let base_holes: Vec<Vec<Point>> = request.data()[ind].polygon().holes().clone();
+    let surface_holes = base_holes.clone().into_iter().map(|hole| hole.into_iter().map(|hole_point| hole_point.add(wall_height_vec)).collect::<Vec<_>>()).collect::<Vec<_>>();
+
+    res.push(Tile::new(PolygonPointsOnSides::new(flat_base_rim, base_holes), PolygonPointsOnSides::new(flat_surface_rim, surface_holes)));
     
     res
 }
 
-fn further_process_base_and_surface_rims(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) -> (Vec<Point>, Vec<Point>) {
-    (vec![], vec![])
+fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>> {
+    let mut res = vec![];
+
+    let mut i = 0;
+    let srl = surface_rim.len();
+    while i < srl {
+        let prev_side = &surface_rim[(i + srl - 1) % srl];
+        let last_point_on_prev_side = &prev_side[prev_side.len() - 1];
+        let prev_last_point_on_prev_side = &prev_side[prev_side.len() - 2];
+        let prev_side_last_line = Line3D::from_2_points(prev_last_point_on_prev_side, last_point_on_prev_side).unwrap();
+
+        let this_side = &surface_rim[i];
+        let first_line_this_side = Line3D::from_2_points(&this_side[0], &this_side[1]).unwrap();
+        let last_line_this_side = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]).unwrap();
+
+        let next_side = &surface_rim[(i + 1) % srl];
+        let first_point_on_next_side = &next_side[0];
+        let second_point_on_next_side = &next_side[1];
+        let next_side_first_line = Line3D::from_2_points(first_point_on_next_side, second_point_on_next_side).unwrap();
+        
+        let first_point_in_result: Point;
+        match line3d::intersection(&prev_side_last_line, &first_line_this_side) {
+            line3d::Intersection::Point(pt) => {
+                first_point_in_result = pt;
+            },
+            _ => panic!("Unexpected")
+        }
+
+        let last_point_in_result: Point;
+        match line3d::intersection(&last_line_this_side, &next_side_first_line) {
+            line3d::Intersection::Point(pt) => {
+                last_point_in_result = pt;
+            },
+            _ => panic!("Unexpected")
+        }
+
+        let mut res_elem = vec![];
+
+        res_elem.push(first_point_in_result);
+        let j = 1;
+        while j < this_side.len() - 1 {
+            res_elem.push(this_side[j].clone());
+        }
+        res_elem.push(last_point_in_result);
+
+        res.push(res_elem);
+
+        i+=1;
+    }
+
+    res
 }
 
 fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
-    let inc1 = observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width());
-    let inc2 = bordering_wall.polygon().normal().normalize().multiply(bordering_wall.isolation().as_ref().unwrap().width());
 
+    let inc2: Point; 
     let shared_segment_vec = shared_segment.to_point();
+    let obs_wall_iso_w = observing_wall.isolation().as_ref().unwrap().width();
+
+    match bordering_wall.isolation() {
+        Some(val) => {
+            inc2 = bordering_wall.polygon().normal().normalize().multiply(val.width());
+        },
+        None => {
+            let pt1 = shared_segment.p1().clone();
+            let pt2 = shared_segment.p2().clone();
+            let pt3 = pt1.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
+            let pt4 = pt2.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
+
+            return (pt1, pt2, pt3, pt4);
+        }
+    }
+
+    let inc1 = observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width());
+
 
     let line1 = Line3D::new(Point::vector_multiplication(&shared_segment_vec, &inc1), shared_segment.p1().add(&inc1));
     let line2 = Line3D::new(Point::vector_multiplication(&shared_segment_vec, &inc2), shared_segment.p1().add(&inc2));
@@ -121,19 +203,14 @@ fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolat
     }
 }
 
-fn get_coefs(shared_normal: &Point, n1: &Point, n2: &Point) -> (f64, f64) {
-    (1., 1.)
-}
-
-
-fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Border> {
+fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Vec<Border>> {
     let walls = request.data().into_iter().map(|a| a.polygon().clone()).collect::<Vec<_>>();
 
     let corners = Polygon::get_all_corners_on_polygon(ind, &walls);
     corners_to_borders(&corners, &walls[ind])
 }
 
-fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Border> {
+fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Vec<Border>> {
     let mut res = vec![];
 
     let rl = wall.rim().len();
@@ -144,7 +221,7 @@ fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Border> {
         let next = &wall.rim()[(i+1)%rl];
         let mut corners_on_this_side: Vec<Corner> = corners.into_iter().filter(|corner| corner.ind_of_side_in_this_polygon == i).map(|corner| corner.clone()).collect::<Vec<Corner>>();
 
-        res.append(&mut corners_on_one_side_to_borders(&mut corners_on_this_side, tmp, next));
+        res.push(corners_on_one_side_to_borders(&mut corners_on_this_side, tmp, next));
         i+=1;
     }
 

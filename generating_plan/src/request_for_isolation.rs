@@ -1,4 +1,4 @@
-use crate::general_geometry::{Polygon, Simmilar};
+use crate::general_geometry::{Polygon, Point};
 use serde::{Serialize, Deserialize};
 use crate::building_representations::polygon_walls::PolygonWalls;
 
@@ -45,8 +45,9 @@ impl Request {
         let mut data: Vec<PolygonWithIsolationDetails> = vec![];
 
         for p in building.walls() {
-            let plane_is_horizontal = p.normal().x.simmilar_to(0., 0.001) && p.normal().y.simmilar_to(0., 0.001);
-
+            let plane_normal = &p.normal().normalize();
+            let plane_is_horizontal = Point::are_points_simmilar(plane_normal, &Point::new(0., 0., 1.)) || Point::are_points_simmilar(plane_normal, &Point::new(0., 0., -1.));
+            println!("{:?}", &p.normal().normalize());
             data.push(PolygonWithIsolationDetails {
                 polygon: p.clone(),
                 isolation: if plane_is_horizontal { Option::None } else { Option::Some(IsolationDetails {

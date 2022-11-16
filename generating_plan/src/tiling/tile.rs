@@ -74,8 +74,8 @@ fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
 
     res.push(Polygon::from_polygon_points_on_sides(tile.base_polygon().clone()));
     res.push(Polygon::from_polygon_points_on_sides(tile.surface_polygon().clone()));
-
-    res
+    
+    Polygon::merge_multiple_polygons(&res)
 }
 
 fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) -> Vec<Polygon> {
@@ -122,4 +122,3 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
 
     (TriangulizedTile::new(triangles), wireframe)
 }
-
