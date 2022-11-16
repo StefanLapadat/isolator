@@ -8,8 +8,6 @@ pub struct CornerHandlingResult {
     other_away_from_line: Point
 }
 
-
-
 pub fn handle_corner(angle_from_base_line_to_other_in_positive_direction: Angle, width_base_line: PositiveF64, width_other: PositiveF64) -> CornerHandlingResult {
     let angle = angle_from_base_line_to_other_in_positive_direction;
     let angle_other = Angle::new(angle.val() - PI/2.0);

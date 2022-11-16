@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides};
+use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar};
 use crate::triangulation::PolygonForTriangulation;
 
 #[derive(Debug)]
@@ -21,6 +21,20 @@ impl Tile {
 
     fn surface_polygon(&self) -> &PolygonPointsOnSides {
         &self.surface_polygon
+    }
+
+    fn width(&self) -> f64 {
+        let base_data = self.base_polygon().to_polygon();
+        let surface_data = self.surface_polygon().to_polygon();
+
+        let p1 = Polygon::new(base_data.0, base_data.1).plane();
+        let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
+
+        println!("{:?}", p1);
+        println!("{:?}", p2);
+        
+
+        (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
     }
 }
 
@@ -121,4 +135,42 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
     }
 
     (TriangulizedTile::new(triangles), wireframe)
+}
+
+
+fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
+    // So how exactly could I do this?? 
+    // And is it sensible to implement this first without glue, and then to somehow try to add glue into the story?? 
+    // How do I even specify where should glue be? 
+    // I am not sure if it will be that easy to just shove glue into the solution, to hack it.. but anyway, as always, I will 
+    // of course not give any though to this problem, but, for the sake of getting the feel for the problem, will just strat hacking stuff. 
+    // ..
+    // Weeell, this doesn't seem to be that hard?? 
+    // First of all I need unit tile to have one dimension equal to tile width? I could start philosophy on how it doesn't have to be like that, but.. 
+    // KISS :D 
+
+    None
+}
+
+pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> bool {
+    let tile_width = tile.width();
+    println!("{}", tile_width);
+
+    unit_tile.d.x.simmilar_to(tile_width, 0.0001) || 
+    unit_tile.d.y.simmilar_to(tile_width, 0.0001) || 
+    unit_tile.d.z.simmilar_to(tile_width, 0.0001)
+}
+
+pub struct UnitTile {
+    d: Point
+}
+
+impl UnitTile {
+    pub fn new(d: Point) -> Option<Self> {
+        if !d.same_oktant(&Point::new(1., 1., 1.)) || d.close_to_zero() {
+            None
+        } else {
+            Some(UnitTile { d })
+        }
+    }
 }

@@ -1,9 +1,19 @@
 use request_generation;
-use generating_plan::general_geometry::{Line3D, Point, line3d};
+use generating_plan::general_geometry::{Line3D, Point, line3d, PolygonPointsOnSides};
+use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(2);
-    let plan = generating_plan::plan_generation::generate_plan(&req);
+    // let req = request_generation::create_request(2);
+    // let plan = generating_plan::plan_generation::generate_plan(&req);
+
+    let tile = Tile::new(
+        PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
+        PolygonPointsOnSides::new(vec![Point::new(0., 0., 3.245), Point::new(1., 0., 3.245), Point::new(0.5, 1., 3.245), ], vec![])
+    );
+
+    let unit_tile = UnitTile::new(Point::new(3.246, 1., 1.)).unwrap();
+
+    println!("{}", generating_plan::tiling::tile::are_tile_and_unit_tile_compatible(&tile, &unit_tile));
 
     // println!("{}", (Point::new(0., 0., 1.).angle_to(&Point::new(0., 0., -1.)).val()));
 

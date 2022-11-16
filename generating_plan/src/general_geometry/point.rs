@@ -10,6 +10,8 @@ pub struct Point {
 }
 
 impl Point {
+    pub const ZERO: Point = Point{x: 0., y: 0., z:0.};
+
     pub fn new(x: f64, y: f64, z: f64) -> Point {
         Point { x, y, z }
     }
@@ -121,5 +123,9 @@ impl Point {
 
     pub fn exactly_same(&self, other: &Point) -> bool {
         self.x == other.x && self.y == other.y && self.z == other.z
+    }
+
+    pub fn close_to_zero(&self) -> bool {
+        return Point::are_points_simmilar(&self, &Self::ZERO);
     }
 }

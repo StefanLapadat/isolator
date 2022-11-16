@@ -15,6 +15,40 @@ impl Plane {
         }
     }
 
+    pub fn a(&self) -> f64 {
+        self.a
+    }
+
+    pub fn b(&self) -> f64 {
+        self.b
+    }
+
+    pub fn c(&self) -> f64 {
+        self.c
+    }
+
+    pub fn d(&self) -> f64 {
+        self.d
+    }
+
+    pub fn from_points_vector_through_origin(points: &Vec<Point>) -> Option<Plane> {
+        let noncolinear_points = Plane::get_three_noncolinear_points_from_vector_of_points(&points);
+        match noncolinear_points {
+            Option::Some(pts) => Option::Some(Plane::from_three_noncolinear_points_through_origin(pts.0, pts.1, pts.2)),
+            Option::None => Option::None
+        }
+    }
+
+    fn from_three_noncolinear_points_through_origin(t1: &Point, t2: &Point, t3: &Point) -> Plane {
+        let normal = Point::vector_multiplication(&t2.subtract(t1), &t3.subtract(t2));
+        Plane {
+            a: normal.x,
+            b: normal.y,
+            c: normal.z,
+            d: 0.
+        }
+    }
+
     pub fn from_points_vector(points: &Vec<Point>) -> Option<Plane> {
         let noncolinear_points = Plane::get_three_noncolinear_points_from_vector_of_points(&points);
         match noncolinear_points {
@@ -29,7 +63,7 @@ impl Plane {
             a: normal.x,
             b: normal.y,
             c: normal.z,
-            d: 0.
+            d: -normal.dot_product(t1)
         }
     }
 

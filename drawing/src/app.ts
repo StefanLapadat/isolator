@@ -40,7 +40,7 @@ class App {
 
         this.connectCamera();
         this.connectLights();
-        this.showBuilding();
+        // this.showBuilding();
         this.showIsolation();
         this.showAxis(100);
 
@@ -86,6 +86,7 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         buildingMesh.material = mat;
+        
     }
 
     showIsolation() {

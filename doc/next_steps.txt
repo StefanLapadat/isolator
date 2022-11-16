@@ -1,11 +1,30 @@
-Sta jos imam ovde? 
+TODO: 
 
-- Da nadjem tacan ugao izmedju ravni
-- Da nadjem kako da projektujem rezultate corner handling funkcije na ono sto imam 
-- Da implementiram funkciju further process rims 
-- Da namestim tako da dva bordering zida daju iste rezultate kada se racuna iz perspektive jednog i drugog
+- naravno, podela na male tile-ove; 
 
-Kad to uradim, onda sam otprilike odradio to sto sam hteo sa coskovima; Onda jos imam da sredim sama poplocavanja i to sa lepkom i onda mogu da refaktorisem. Takodje, da probam da ubacim onu funkcionalnost za mergovanje poligona. Da doradim specifikaciju, sta tacno prihvatam, sta ne prihvatam, da se uverim da mi je ovaj algoritam za odredjivanje coskova dobar, da ga popravim ako treba i tako dalje.. Trajace to jos neko vreme, recimo 2 nedelje, ali ce na kraju biti ok. Izuzetno ok. Onda mogu da predjem na fazu 2 - simulaciju izvrsavanja. 
+- naravno, lepak;
 
 
+- ubacivanje pametnijeg nacina za secenje cornera.
 
+
+
+- kontakt zida sa izolacijom i bez - dorada; Ukljuceno u ovo je i pitanje oko toga sta se desava kada imamo dva stiropora koji su vrlo razlicitih debljina.
+
+
+- uf, bas imam problem sa hendlovanjem slucaja gde se jedan poligon naslanja na drugi ali ne po ivici nego po njegovoj povrsini ili po rupama.. konkretno slucaj terase.
+
+
+
+TODO: 
+
+- naravno refaktor
+
+TODO: 
+
+- naravno generisanje plana kako ce se uz pomoc masina postaviti to sto treba. 
+
+TODO Nekaaaad:
+
+- generalni nacin za pronalazak kolizija medju tile-ovima;
+- generalni nacin za pronalazak kolizija medju meshovima; 

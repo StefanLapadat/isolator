@@ -135,7 +135,7 @@ impl Polygon {
             panic!("greska teska 1!");
         }
     
-        let plane = Plane::from_points_vector(points);
+        let plane = Plane::from_points_vector_through_origin(points);
     
         match plane {
             Option::None => panic!("greska teska 2 {:?}", points),
@@ -274,7 +274,11 @@ impl Polygon {
     }
 
     pub fn normal(&self) -> Point {
-        Plane::from_points_vector(self.rim()).unwrap().normal_vector()
+        self.plane().normal_vector()
+    }
+
+    pub fn plane(&self) -> Plane {
+        Plane::from_points_vector(self.rim()).unwrap()
     }
 
     fn merge_group_of_neighbouring_polygons(group: &Vec<usize>, polygons: &Vec<Polygon>) -> Polygon {
