@@ -145,12 +145,15 @@ fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
     // First of all I need unit tile to have one dimension equal to tile width? I could start philosophy on how it doesn't have to be like that, but.. 
     // KISS :D 
 
+    // So for first iteration, what do I need? 
+    // I should just 
+
     None
 }
 
 pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> bool {
     let tile_width = tile.width();
-    
+
     unit_tile.d.x.simmilar_to(tile_width, 0.0001) || 
     unit_tile.d.y.simmilar_to(tile_width, 0.0001) || 
     unit_tile.d.z.simmilar_to(tile_width, 0.0001)
