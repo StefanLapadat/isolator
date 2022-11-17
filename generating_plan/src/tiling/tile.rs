@@ -26,7 +26,7 @@ impl Tile {
 
     fn width(&self) -> f64 {
 
-        println!("{:?} {:?}", self.base_polygon(), self.surface_polygon());
+        // println!("{:?} {:?}", self.base_polygon(), self.surface_polygon());
 
         let base_data = self.base_polygon().to_polygon();
         let surface_data = self.surface_polygon().to_polygon();
@@ -34,7 +34,7 @@ impl Tile {
         let p1 = Polygon::new(base_data.0, base_data.1).plane();
         let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
 
-        println!("{:?} {:?}", p1, p2);
+        // println!("{:?} {:?}", p1, p2);
 
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
     }
@@ -167,6 +167,7 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
 
     let base_union_box = Polygon2D::union_box_many(vec![base_2d, surface_2d]);
     let base_splitted = split_2d_surrounding_boxes(&base_union_box, unit_tile_width, unit_tile_height);
+    // let base_splitted = vec![base_union_box];
 
     let base_union_boxes_3d = base_splitted.iter().map(|b| b.to_3d(&system)).collect::<Vec<_>>();
     let surface_union_boxes_3d = base_union_boxes_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
@@ -192,26 +193,33 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
 
 fn split_2d_surrounding_boxes(r: &Rectangle, unit_tile_width: f64, unit_tile_height: f64) -> Vec<Rectangle> {
     let mut res = vec![];
+    println!("DUzine sirine {:?} {:?} {:?} {:?}", r.width(), r.height(), unit_tile_width, unit_tile_height);
+
 
     let (start_x, start_y, end_x, end_y) = (r.low_left().x(), r.low_left().y(), r.up_right().x(), r.up_right().y());
-    let (mut tmp_x, mut tmp_y) = (start_x, start_y);
+    println!("Poceci krajevi {:?} {:?} {:?} {:?}",start_x, start_y, end_x, end_y);
 
-    while !tmp_x.simmilar_to(end_x, 0.001) {
-        while !tmp_y.simmilar_to(end_y, 0.001) {
+    let mut tmp_x = start_x;
+    while !tmp_x.simmilar_to(end_x, 0.001) && tmp_x < end_x {
+        let mut tmp_y = start_y;
+
+        while !tmp_y.simmilar_to(end_y, 0.001) && tmp_y < end_y {
+            println!("**** {} {}", tmp_x, tmp_y);
+            // std::thread::sleep(std::time::Duration::new(0, 1_00_000_000));
+            res.push(Rectangle::new(Point2D::new(tmp_x, tmp_y), Point2D::new(tmp_x + unit_tile_width, tmp_y + unit_tile_height)));
             tmp_y += unit_tile_height;
-            res.push(Rectangle::new(Point2D::new(tmp_x, tmp_y), Point2D::new(tmp_x + unit_tile_width, tmp_y + unit_tile_height)))
         }
         tmp_x += unit_tile_width;
+        println!("tmp_x je {}", tmp_x);
     }
 
     res
 }
 
-
 pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> Option<(f64, f64)> {
     let tile_width = tile.width();
 
-    println!("{:?} {:?}", tile_width, unit_tile.d);
+    // println!("{:?} {:?}", tile_width, unit_tile.d);
 
     if unit_tile.d.x.simmilar_to(tile_width, 0.0001) {
         return Some((unit_tile.d.y, unit_tile.d.z));

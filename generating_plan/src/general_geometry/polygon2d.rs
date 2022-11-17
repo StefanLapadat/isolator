@@ -98,6 +98,6 @@ impl Rectangle {
     }
 
     pub fn height(&self) -> f64 {
-        (self.low_left.y() - self.low_right().y()).abs()
+        (self.low_left.y() - self.up_right().y()).abs()
     }
 }

@@ -40,7 +40,7 @@ class App {
 
         this.connectCamera();
         this.connectLights();
-        // this.showBuilding();
+        this.showBuilding();
         this.showIsolation();
         this.showAxis(5);
 
@@ -79,7 +79,7 @@ class App {
         this.buildingMeshVertexData.applyToMesh(buildingMesh);
 
         const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
-        buildingWireframe.color = BABYLON.Color3.Black();
+        buildingWireframe.color = BABYLON.Color3.Red();
 
         var mat = new BABYLON.StandardMaterial("matBuildingMesh", this.scene);
         mat.wireframe = false;

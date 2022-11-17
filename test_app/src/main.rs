@@ -3,7 +3,7 @@ use generating_plan::general_geometry::{Line3D, Point, line3d, PolygonPointsOnSi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(3);
+    let req = request_generation::create_request(1);
     let plan = generating_plan::plan_generation::generate_plan(&req);
 
     // let tile = Tile::new(
