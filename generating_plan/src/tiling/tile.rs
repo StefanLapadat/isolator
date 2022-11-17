@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D};
+use crate::general_geometry::polygon2d::Rectangle;
+use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D};
 use crate::triangulation::PolygonForTriangulation;
 
 #[derive(Debug, Clone)]
@@ -24,11 +25,16 @@ impl Tile {
     }
 
     fn width(&self) -> f64 {
+
+        println!("{:?} {:?}", self.base_polygon(), self.surface_polygon());
+
         let base_data = self.base_polygon().to_polygon();
         let surface_data = self.surface_polygon().to_polygon();
 
         let p1 = Polygon::new(base_data.0, base_data.1).plane();
         let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
+
+        println!("{:?} {:?}", p1, p2);
 
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
     }
@@ -139,23 +145,14 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
 }
 
 pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
-    // So how exactly could I do this?? 
-    // And is it sensible to implement this first without glue, and then to somehow try to add glue into the story?? 
-    // How do I even specify where should glue be? 
-    // I am not sure if it will be that easy to just shove glue into the solution, to hack it.. but anyway, as always, I will 
-    // of course not give any though to this problem, but, for the sake of getting the feel for the problem, will just strat hacking stuff. 
-    // ..
-    // Weeell, this doesn't seem to be that hard?? 
-    // First of all I need unit tile to have one dimension equal to tile width? I could start philosophy on how it doesn't have to be like that, but.. 
-    // KISS :D 
-
-    // So for first iteration, what do I need? 
-    // I should find a bounding box arround baseand surface polygons first, that seems like a reasonable first step :) 
-    // After that, what? Fuck it, I need a good way to project stuff.. And I don't have it. I have some hacked stuff, but I should have a good, good 
-    // way to project any polygon to any plane.. That should be a must.. And also, to return that projected polygon into original state. 
-    // Now, ok, if I had that, what would I do? I guess that I would find the bounding box of both polygons and then a single bounding 
-    // box of both polygons together, and in the end, I would need to find an intersection between all the tiles in that bounding box and my original tile. 
-    // That's it :) Great! I will complete this tonight. What else? Maybe, smarter way to solve corners! Yep, great as well. 
+    let (unit_tile_width, unit_tile_height);
+    match are_tile_and_unit_tile_compatible(tile, unit_tile) {
+        Some((unit_tile_w, unit_tile_h)) => {
+            (unit_tile_width, unit_tile_height) = (unit_tile_w, unit_tile_h);
+        }, None => {
+            return None;
+        }
+    }
 
     let args_base= tile.base_polygon.to_polygon();
     let args_surface = tile.surface_polygon.to_polygon();
@@ -169,26 +166,66 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let surface_2d = surface.to_2d(&system);
 
     let base_union_box = Polygon2D::union_box_many(vec![base_2d, surface_2d]);
-    let base_union_box_3d = base_union_box.to_3d(&system);
-    let surface_union_box = base_union_box_3d.translate(&tile.width_vec());
+    let base_splitted = split_2d_surrounding_boxes(&base_union_box, unit_tile_width, unit_tile_height);
 
-    let base_comps = base_union_box_3d.destruct_to_components();
-    let surface_comps = surface_union_box.destruct_to_components();
+    let base_union_boxes_3d = base_splitted.iter().map(|b| b.to_3d(&system)).collect::<Vec<_>>();
+    let surface_union_boxes_3d = base_union_boxes_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
 
-    let res_tile = Tile::new(PolygonPointsOnSides::new(base_comps.0, base_comps.1),
-                                    PolygonPointsOnSides::new(surface_comps.0, surface_comps.1));
+    let base_comps = base_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
+    let surface_comps = surface_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
+
+    if base_comps.len() != surface_comps.len() {
+        panic!("Somethings fishy here");
+    }
+
+    let it = base_comps.iter().zip(surface_comps.iter());
+    let mut res = vec![];
+    for (i, (x, y)) in it.enumerate() {
+        let t = Tile::new(PolygonPointsOnSides::new(x.0.clone(), x.1.clone()),
+        PolygonPointsOnSides::new(y.0.clone(), y.1.clone()));
+        res.push(t);
+    }
 
     // Option::Some(vec![tile.clone()])
-    Option::Some(vec![res_tile])
+    Option::Some(res)
+}
+
+fn split_2d_surrounding_boxes(r: &Rectangle, unit_tile_width: f64, unit_tile_height: f64) -> Vec<Rectangle> {
+    let mut res = vec![];
+
+    let (start_x, start_y, end_x, end_y) = (r.low_left().x(), r.low_left().y(), r.up_right().x(), r.up_right().y());
+    let (mut tmp_x, mut tmp_y) = (start_x, start_y);
+
+    while !tmp_x.simmilar_to(end_x, 0.001) {
+        while !tmp_y.simmilar_to(end_y, 0.001) {
+            tmp_y += unit_tile_height;
+            res.push(Rectangle::new(Point2D::new(tmp_x, tmp_y), Point2D::new(tmp_x + unit_tile_width, tmp_y + unit_tile_height)))
+        }
+        tmp_x += unit_tile_width;
+    }
+
+    res
 }
 
 
-pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> bool {
+pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> Option<(f64, f64)> {
     let tile_width = tile.width();
 
-    unit_tile.d.x.simmilar_to(tile_width, 0.0001) || 
-    unit_tile.d.y.simmilar_to(tile_width, 0.0001) || 
-    unit_tile.d.z.simmilar_to(tile_width, 0.0001)
+    println!("{:?} {:?}", tile_width, unit_tile.d);
+
+    if unit_tile.d.x.simmilar_to(tile_width, 0.0001) {
+        return Some((unit_tile.d.y, unit_tile.d.z));
+    }
+
+    if unit_tile.d.y.simmilar_to(tile_width, 0.0001) {
+        return Some((unit_tile.d.x, unit_tile.d.z));
+    }
+
+    if unit_tile.d.z.simmilar_to(tile_width, 0.0001) {
+        return Some((unit_tile.d.x, unit_tile.d.y))
+    }
+
+    None
 }
 
 #[derive(Debug, Serialize, Deserialize)]

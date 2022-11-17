@@ -73,15 +73,31 @@ impl Rectangle {
             self.up_left()].iter().map(|p| Self::point_2d_to_point_3d_in_self_plane(p)).collect::<Vec<_>>()
     }
 
-    fn low_right(&self) -> Point2D {
+    pub fn low_right(&self) -> Point2D {
         Point2D::new(self.up_right.x(), self.low_left.y())
     }
 
-    fn up_left(&self) -> Point2D {
+    pub fn up_left(&self) -> Point2D {
         Point2D::new(self.low_left.x(), self.up_right.y())
+    }
+
+    pub fn low_left(&self) -> Point2D {
+        self.low_left.to_owned()
+    }
+
+    pub fn up_right(&self) -> Point2D {
+        self.up_right.to_owned()
     }
 
     fn point_2d_to_point_3d_in_self_plane(point: &Point2D) -> Point {
         Point::new(point.x(), point.y(), 0.)
+    }
+
+    pub fn width(&self) -> f64 {
+        (self.low_left.x() - self.low_right().x()).abs()
+    }
+
+    pub fn height(&self) -> f64 {
+        (self.low_left.y() - self.low_right().y()).abs()
     }
 }

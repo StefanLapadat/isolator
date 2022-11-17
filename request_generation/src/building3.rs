@@ -6,7 +6,7 @@ pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
     let house_whl = 25.0;
 
     let walls: Vec<Polygon> = vec![
-        Polygon::from_triplets(vec![(0.,5.,0.), (5.,10.,0.), (5.,10.,5.), (0.,5.,5.)], vec![]),
+        Polygon::from_triplets(vec![(0.,0.,0.), (10.,0.,0.), (10.,0.,10.)], vec![]),
     ];
 
     // let walls: Vec<Polygon> = vec![

@@ -3,8 +3,8 @@ use generating_plan::general_geometry::{Line3D, Point, line3d, PolygonPointsOnSi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    // let req = request_generation::create_request(2);
-    // let plan = generating_plan::plan_generation::generate_plan(&req);
+    let req = request_generation::create_request(3);
+    let plan = generating_plan::plan_generation::generate_plan(&req);
 
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
@@ -22,6 +22,10 @@ fn main(){
     
     // println!("{:?}", line3d::intersection(&l1, &l2));
 
+
+}
+
+fn test_mapping_coordinates_from_2d_to_3d_and_back() {
     let poly = Polygon::from_triplets(vec![(0.,0.,0.), (0.,0.,25.), (0.,25.,25.), (0.,25.,0.)], vec![]);
     let system = poly.coordinate_system_xy_parallel_to_self();
 

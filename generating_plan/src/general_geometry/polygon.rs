@@ -159,7 +159,6 @@ impl Polygon {
         let mut res = vec![];
     
         let constant_coordinate = find_constant_coordinate(points);
-        println!("{:?}", constant_coordinate.0);
 
         match constant_coordinate.0 {
             Coordinate::X => {

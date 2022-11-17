@@ -9,6 +9,6 @@ pub mod tiling;
 pub mod plan_generation;
 
 pub fn create_plan<F>(request: &Request, alert: F) -> Plan where F: Fn(String) -> () {
-    alert(String::from("Pera kojot suhi genije"));
+    // alert(String::from("Pera kojot suhi genije"));
     plan_generation::generate_plan(request)
 }
