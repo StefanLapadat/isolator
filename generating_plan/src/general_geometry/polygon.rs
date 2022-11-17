@@ -149,6 +149,10 @@ impl Polygon {
         (self.rim, self.holes)
     }
 
+    pub fn distance_from_origin(&self) -> Point {
+        self.plane().distance_from_origin()
+    }
+
     pub fn flatten_points_no_removal_of_constant_coordinate(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<Point> {
         points.into_iter().map(
             |p| p.coordinates_in_different_coordinate_system_original_base(system))

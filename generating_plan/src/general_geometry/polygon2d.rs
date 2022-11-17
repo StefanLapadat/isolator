@@ -59,9 +59,9 @@ impl Rectangle {
         Rectangle::new(Point2D::new(min_x, min_y), Point2D::new(max_x, max_y))
     }
 
-    pub fn to_3d(&self, self_system: &CoordinateSystem3D) -> Polygon {
+    pub fn to_3d(&self, self_system: &CoordinateSystem3D, original_distance_from_origin: &Point) -> Polygon {
         let inv_system = self_system.inverse_system();
-        let rim_pts = self.to_points_3d_in_self_plane().iter().map(|pt| pt.coordinates_in_different_coordinate_system_original_base(&inv_system)).collect::<Vec<_>>();
+        let rim_pts = self.to_points_3d_in_self_plane().iter().map(|pt| pt.coordinates_in_different_coordinate_system_original_base(&inv_system).add(original_distance_from_origin)).collect::<Vec<_>>();
         Polygon::new(rim_pts, vec![])
     }
 

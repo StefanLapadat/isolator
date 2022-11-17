@@ -27,13 +27,14 @@ fn main(){
 
 fn test_mapping_coordinates_from_2d_to_3d_and_back() {
     let poly = Polygon::from_triplets(vec![(0.,0.,0.), (0.,0.,25.), (0.,25.,25.), (0.,25.,0.)], vec![]);
+    let original_distance_from_origin = Point::new(0., 0., 0.);
     let system = poly.coordinate_system_xy_parallel_to_self();
 
     let poly2d = poly.to_2d(&system);
 
     println!("{:?}", poly2d);
     println!("{:?}", poly2d.union_box());
-    println!("{:?}", poly2d.union_box().to_3d(&system));
+    println!("{:?}", poly2d.union_box().to_3d(&system, &original_distance_from_origin));
 
     println!("{:?}", system);
     println!("{:?}", CoordinateSystem3D::inverse_system(&system));

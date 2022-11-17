@@ -2,7 +2,7 @@ use generating_plan::general_geometry::{Polygon};
 use generating_plan::building_representations::{polygon_walls::PolygonWalls};
 
 pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
-    let house_whl = 25.0;
+    let house_whl = 250.0;
 
     let walls: Vec<Polygon> = vec![
         // Polygon::from_triplets(vec![(0.,0.,0.), (10.,0.,0.), (10.,0.,10.), (15.,0.,10.), (15.,0.,0.), (house_whl,0.,0.), (house_whl,0.,house_whl), (0.,0.,house_whl)], 

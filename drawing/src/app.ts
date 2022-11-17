@@ -79,7 +79,7 @@ class App {
         this.buildingMeshVertexData.applyToMesh(buildingMesh);
 
         const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
-        buildingWireframe.color = BABYLON.Color3.Red();
+        buildingWireframe.color = BABYLON.Color3.Green();
 
         var mat = new BABYLON.StandardMaterial("matBuildingMesh", this.scene);
         mat.wireframe = false;

@@ -99,4 +99,8 @@ impl Plane {
 
         CoordinateSystem3D::new(Point::ZERO, x, y, z)
     }
+
+    pub fn distance_from_origin(&self) -> Point {
+        self.normal_vector().normalize().multiply(self.d.abs() / self.normal_vector().modulo())
+    }
 }
