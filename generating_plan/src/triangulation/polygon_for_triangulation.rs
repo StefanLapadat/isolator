@@ -63,7 +63,7 @@ impl PolygonForTriangulation {
     }
 
     fn triangulate_3d_indices_result(&self) -> Vec<usize> {
-        return earcut(&Polygon::flatten_points(&self.points), &self.holes, 2);
+        let system = Polygon::new(self.points.clone(), vec![]).coordinate_system_xy_parallel_to_self();
+        return earcut(&Polygon::flatten_points(&self.points, &system), &self.holes, 2);
     }
 }
-

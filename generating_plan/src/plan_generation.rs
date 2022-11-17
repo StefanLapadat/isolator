@@ -4,7 +4,7 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
 use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d};
 use crate::building_representations::converters;
-use crate::tiling::{Tile, TriangulizedTiles, corner_handling};
+use crate::tiling::{Tile, TriangulizedTiles, tile};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
 use std::cmp::Ordering;
 
@@ -49,8 +49,8 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
 
         i+=1;
     }
-
-    tiles
+    
+    tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
 }
 
 fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_width: f64) -> Vec<Tile> {
@@ -95,18 +95,15 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
         i+=1;
     }
 
-
     let surface_rim = further_process_surface_rim(&surface_rim);
 
     let flat_base_rim = base_rim.into_iter().flatten().collect::<Vec<_>>();
     let flat_surface_rim = surface_rim.into_iter().flatten().collect::<Vec<_>>();
 
-
     let base_holes: Vec<Vec<Point>> = request.data()[ind].polygon().holes().clone();
     let surface_holes = base_holes.clone().into_iter().map(|hole| hole.into_iter().map(|hole_point| hole_point.add(wall_height_vec)).collect::<Vec<_>>()).collect::<Vec<_>>();
 
     res.push(Tile::new(PolygonPointsOnSides::new(flat_base_rim, base_holes), PolygonPointsOnSides::new(flat_surface_rim, surface_holes)));
-    
 
     res
 }
@@ -124,7 +121,6 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
 
         let this_side = &surface_rim[i];
         let first_line_this_side = Line3D::from_2_points(&this_side[0], &this_side[1]).unwrap();
-        let last_line_this_side_opt = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]);
 
         let last_line_this_side = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]).unwrap();
 

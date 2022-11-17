@@ -28,3 +28,12 @@ mod positive_f64;
 
 pub use self::line3d::Line3D;
 pub mod line3d;
+
+pub use self::coordinate_system3d::CoordinateSystem3D;
+pub mod coordinate_system3d;
+
+pub use self::point2d::Point2D;
+pub mod point2d;
+
+pub use self::polygon2d::Polygon2D;
+pub mod polygon2d;

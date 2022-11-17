@@ -1,8 +1,8 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar};
+use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D};
 use crate::triangulation::PolygonForTriangulation;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Tile {
     base_polygon: PolygonPointsOnSides,
     surface_polygon: PolygonPointsOnSides,
@@ -31,6 +31,11 @@ impl Tile {
         let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
 
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
+    }
+
+    fn width_vec(&self) -> Point {
+        let p_args = self.base_polygon().to_polygon();
+        Polygon::new(p_args.0, p_args.1).normal().normalize().multiply(self.width())
     }
 }
 
@@ -133,8 +138,7 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
     (TriangulizedTile::new(triangles), wireframe)
 }
 
-
-fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
+pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
     // So how exactly could I do this?? 
     // And is it sensible to implement this first without glue, and then to somehow try to add glue into the story?? 
     // How do I even specify where should glue be? 
@@ -146,10 +150,38 @@ fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
     // KISS :D 
 
     // So for first iteration, what do I need? 
-    // I should just 
+    // I should find a bounding box arround baseand surface polygons first, that seems like a reasonable first step :) 
+    // After that, what? Fuck it, I need a good way to project stuff.. And I don't have it. I have some hacked stuff, but I should have a good, good 
+    // way to project any polygon to any plane.. That should be a must.. And also, to return that projected polygon into original state. 
+    // Now, ok, if I had that, what would I do? I guess that I would find the bounding box of both polygons and then a single bounding 
+    // box of both polygons together, and in the end, I would need to find an intersection between all the tiles in that bounding box and my original tile. 
+    // That's it :) Great! I will complete this tonight. What else? Maybe, smarter way to solve corners! Yep, great as well. 
 
-    None
+    let args_base= tile.base_polygon.to_polygon();
+    let args_surface = tile.surface_polygon.to_polygon();
+
+    let base = Polygon::new(args_base.0, args_base.1);
+    let surface = Polygon::new(args_surface.0, args_surface.1);
+    
+    let system = base.coordinate_system_xy_parallel_to_self();
+    
+    let base_2d = base.to_2d(&system);
+    let surface_2d = surface.to_2d(&system);
+
+    let base_union_box = Polygon2D::union_box_many(vec![base_2d, surface_2d]);
+    let base_union_box_3d = base_union_box.to_3d(&system);
+    let surface_union_box = base_union_box_3d.translate(&tile.width_vec());
+
+    let base_comps = base_union_box_3d.destruct_to_components();
+    let surface_comps = surface_union_box.destruct_to_components();
+
+    let res_tile = Tile::new(PolygonPointsOnSides::new(base_comps.0, base_comps.1),
+                                    PolygonPointsOnSides::new(surface_comps.0, surface_comps.1));
+
+    // Option::Some(vec![tile.clone()])
+    Option::Some(vec![res_tile])
 }
+
 
 pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> bool {
     let tile_width = tile.width();
@@ -159,6 +191,7 @@ pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> b
     unit_tile.d.z.simmilar_to(tile_width, 0.0001)
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UnitTile {
     d: Point
 }

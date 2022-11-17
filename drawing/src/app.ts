@@ -42,7 +42,7 @@ class App {
         this.connectLights();
         // this.showBuilding();
         this.showIsolation();
-        this.showAxis(100);
+        this.showAxis(5);
 
         this.initGeneralGameStuff();
     }
@@ -86,12 +86,11 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         buildingMesh.material = mat;
-        
     }
 
     showIsolation() {
         var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
-        this.isolationMeshVertexData.applyToMesh(isolationMesh);
+        // this.isolationMeshVertexData.applyToMesh(isolationMesh);
 
         const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
         isolationWireframe.color = BABYLON.Color3.Black();

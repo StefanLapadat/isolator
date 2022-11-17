@@ -1,16 +1,22 @@
-use crate::general_geometry::{Polygon, Point};
+use crate::{general_geometry::{Polygon, Point}, tiling::UnitTile};
 use serde::{Serialize, Deserialize};
 use crate::building_representations::polygon_walls::PolygonWalls;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Request {
-    data: Vec<PolygonWithIsolationDetails>
+    data: Vec<PolygonWithIsolationDetails>,
+    unit_tile: UnitTile
 }
 
 impl Request {
     pub fn data(&self) -> &Vec<PolygonWithIsolationDetails> {
         &self.data
     }
+
+    pub fn unit_tile(&self) -> &UnitTile {
+        &self.unit_tile
+    }
+
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -41,7 +47,7 @@ impl IsolationDetails {
 }
 
 impl Request {
-    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64) -> Request {
+    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile) -> Request {
         let mut data: Vec<PolygonWithIsolationDetails> = vec![];
 
         for p in building.walls() {
@@ -57,7 +63,8 @@ impl Request {
         }
 
         Request {
-            data
+            data,
+            unit_tile
         }
     }
 }

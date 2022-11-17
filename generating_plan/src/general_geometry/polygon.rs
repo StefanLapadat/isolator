@@ -1,7 +1,9 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment};
+use crate::general_geometry::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D};
 use petgraph::graph::{UnGraph};
 use petgraph::algo;
+
+use super::Polygon2D;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Polygon {
@@ -58,12 +60,21 @@ impl Polygon {
         Self::from_triplets(rim, holes)
     }
 
-    pub fn rim<'a>(&'a self) -> & 'a Vec<Point> {
+    pub fn rim(&self) -> &Vec<Point> {
         &self.rim
     }
 
-    pub fn holes<'a>(&'a self) -> & 'a Vec<Vec<Point>> {
+    pub fn holes(&self) -> &Vec<Vec<Point>> {
         &self.holes
+    }
+
+    pub fn translate(&self, inc: &Point) -> Polygon {
+        let translate_vec_points = |x: &Vec<Point>| x.iter().map(|pt| pt.add(inc)).collect::<Vec<_>>();
+
+        let rim = translate_vec_points(self.rim());
+        let holes = self.holes().iter().map(|hole| translate_vec_points(hole)).collect::<Vec<_>>();
+
+        Polygon::new(rim, holes)
     }
 
     pub fn wireframe(&self) -> Vec<Vec<Point>> {
@@ -130,36 +141,26 @@ impl Polygon {
         res
     }
 
-    pub fn flatten_points_no_removal(points: &Vec<Point>) -> Vec<Point> {
-        if points.is_empty() {
-            panic!("greska teska 1!");
-        }
-    
-        let plane = Plane::from_points_vector_through_origin(points);
-    
-        match plane {
-            Option::None => panic!("greska teska 2 {:?}", points),
-            Option::Some(plane) => {
-                let new_coordinate_system = plane.coordinate_system_normal_to_plane();
-                let mut new_coordinates: Vec<Point> = vec![];
-
-                for p in points {
-                    new_coordinates.push(p.coordinates_in_different_coordinate_system(&new_coordinate_system));
-                }
-    
-                new_coordinates
-            }
-        }
+    pub fn flatten_points(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<f64> {
+        Self::remove_constant_coordinate(&Self::flatten_points_no_removal_of_constant_coordinate(points, system))
     }
 
-    pub fn flatten_points(points: &Vec<Point>) -> Vec<f64> {
-        Self::remove_constant_coordinate(&Self::flatten_points_no_removal(points))
+    pub fn destruct_to_components(self) -> (Vec<Point>, Vec<Vec<Point>>) {
+        (self.rim, self.holes)
+    }
+
+    pub fn flatten_points_no_removal_of_constant_coordinate(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<Point> {
+        points.into_iter().map(
+            |p| p.coordinates_in_different_coordinate_system_original_base(system))
+            .collect::<Vec<_>>()
     }
 
     fn remove_constant_coordinate(points: &Vec<Point>) -> Vec<f64> {
         let mut res = vec![];
     
         let constant_coordinate = find_constant_coordinate(points);
+        println!("{:?}", constant_coordinate.0);
+
         match constant_coordinate.0 {
             Coordinate::X => {
                 for p in points {
@@ -279,6 +280,36 @@ impl Polygon {
 
     pub fn plane(&self) -> Plane {
         Plane::from_points_vector(self.rim()).unwrap()
+    }
+
+    pub fn coordinate_system_xy_parallel_to_self(&self) -> CoordinateSystem3D {
+        self.plane().coordinate_system_normal_to_plane_origin_at_base()
+    }
+
+    pub fn to_2d(&self, system: &CoordinateSystem3D) -> Polygon2D {
+        let rim = Self::flatten_points_to_points_2d(&self.rim(), system);
+
+        let holes = 
+            self.holes().into_iter().map(|hole| Self::flatten_points_to_points_2d(hole, system)).collect::<Vec<_>>();
+
+        Polygon2D::new(rim, holes)
+    }
+
+    fn flatten_points_to_points_2d(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<Point2D> {
+        Self::from_raw_vals_to_points(Self::flatten_points(points, system))
+    }
+
+    fn from_raw_vals_to_points(vals: Vec<f64>) -> Vec<Point2D> {
+        let mut i = 0;
+
+        let mut res = vec![];
+
+        while i < vals.len() {
+            res.push(Point2D::new(vals[i], vals[i+1]));
+            i+=2;
+        }
+
+        res
     }
 
     fn merge_group_of_neighbouring_polygons(group: &Vec<usize>, polygons: &Vec<Polygon>) -> Polygon {
@@ -494,7 +525,7 @@ pub struct Corner {
     pub ind_of_side_in_this_polygon: usize
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum Coordinate {
     X,
     Y,

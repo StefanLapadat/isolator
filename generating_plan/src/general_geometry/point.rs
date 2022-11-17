@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 use nalgebra::Matrix3;
-use crate::general_geometry::{Angle, Simmilar};
+use crate::general_geometry::{Angle, Simmilar, CoordinateSystem3D};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Point {
@@ -10,9 +10,9 @@ pub struct Point {
 }
 
 impl Point {
-    pub const ZERO: Point = Point{x: 0., y: 0., z:0.};
+    pub const ZERO: Point = Point::new(0., 0., 0.);
 
-    pub fn new(x: f64, y: f64, z: f64) -> Point {
+    pub const fn new(x: f64, y: f64, z: f64) -> Point {
         Point { x, y, z }
     }
 
@@ -36,13 +36,18 @@ impl Point {
         Point::new(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
     }
 
-    pub fn coordinates_in_different_coordinate_system(&self, new_system: &Vec<Point>) -> Point {
+    pub fn coordinates_in_different_coordinate_system_original_base(&self, new_system: &CoordinateSystem3D) -> Point {
+        if !Point::are_points_simmilar(new_system.o(), &Point::ZERO) {
+            panic!("New system has to have origin at (0, 0, 0). Provided was {:?}", new_system.o());
+        }
+
         Point {
-            x: new_system[0].dot_product(self),
-            y: new_system[1].dot_product(self),
-            z: new_system[2].dot_product(self),
+            x: new_system.x().dot_product(self),
+            y: new_system.y().dot_product(self),
+            z: new_system.z().dot_product(self),
         }
     }
+
 
     pub fn inverse_mat(mat3x3: &Vec<Point>) -> Vec<Point> {
         let m = mat3x3;
@@ -62,13 +67,7 @@ impl Point {
     }
 
     pub fn normalize(&self) -> Point {
-        let modulo = self.modulo();
-
-        Point {
-            x: self.x / modulo,
-            y: self.y / modulo,
-            z: self.z / modulo
-        }
+        self.divide(self.modulo())
     }
 
     pub fn are_points_colinear(t1: &Point, t2: &Point, t3: &Point) -> bool {

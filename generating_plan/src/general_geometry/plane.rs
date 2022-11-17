@@ -1,5 +1,7 @@
 use crate::general_geometry::Point;
 
+use super::CoordinateSystem3D;
+
 #[derive(Debug)]
 pub struct Plane {
     a: f64,
@@ -89,12 +91,12 @@ impl Plane {
         Point::new(self.a, self.b, self.c)
     }
 
-    pub fn coordinate_system_normal_to_plane(&self) -> Vec<Point> {
+    pub fn coordinate_system_normal_to_plane_origin_at_base(&self) -> CoordinateSystem3D {
 
         let z = self.normal_vector().normalize();
         let x = Point::vector_multiplication(&z, &z.add(&Point::new(z.x + 10.56782, z.y + 20.345454, z.z + -30.4563))).normalize();
-        let y = Point::vector_multiplication(&z, &x).normalize();
+        let y = Point::vector_multiplication(&z, &x).normalize();        
 
-        vec![z, x, y]
+        CoordinateSystem3D::new(Point::ZERO, x, y, z)
     }
 }
