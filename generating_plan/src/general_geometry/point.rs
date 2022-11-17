@@ -48,7 +48,6 @@ impl Point {
         }
     }
 
-
     pub fn inverse_mat(mat3x3: &Vec<Point>) -> Vec<Point> {
         let m = mat3x3;
         let m = Matrix3::new(m[0].x, m[0].y, m[0].z, m[1].x, m[1].y, m[1].z, m[2].x, m[2].y, m[2].z);

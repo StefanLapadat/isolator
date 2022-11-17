@@ -15,6 +15,10 @@ impl Line3D {
         }
     }
 
+    pub fn direction(&self) -> &Point {
+        &self.direction
+    }
+
     pub fn from_2_points(p1: &Point, p2: &Point) -> Option<Line3D> {
         Self::new(p1.subtract(&p2), p1.clone())
     }

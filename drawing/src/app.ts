@@ -90,7 +90,7 @@ class App {
 
     showIsolation() {
         var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
-        // this.isolationMeshVertexData.applyToMesh(isolationMesh);
+        this.isolationMeshVertexData.applyToMesh(isolationMesh);
 
         const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
         isolationWireframe.color = BABYLON.Color3.Black();

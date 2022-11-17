@@ -7,7 +7,7 @@ pub mod building3;
 
 pub fn create_request(request_id: i32) -> Request {
     let width = 0.3;
-    let unit_tile = UnitTile::new(Point::new(2.0, 2.0, 0.3)).unwrap();
+    let unit_tile = UnitTile::new(Point::new(5.0, 2.0, 0.3)).unwrap();
     
     match request_id {
         1 =>  Request::from_polygon_walls_building(&building1::create_building_polygon_walls(), width, unit_tile),
