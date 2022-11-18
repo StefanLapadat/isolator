@@ -1,10 +1,11 @@
 use request_generation;
-use generating_plan::general_geometry::{Line3D, Point, line3d, PolygonPointsOnSides, Polygon, Polygon2D, CoordinateSystem3D};
+use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPointsOnSides, Polygon, Polygon2D, CoordinateSystem3D};
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
     let req = request_generation::create_request(1);
     let plan = generating_plan::plan_generation::generate_plan(&req);
+
 
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
@@ -15,14 +16,10 @@ fn main(){
 
     // println!("{}", generating_plan::tiling::tile::are_tile_and_unit_tile_compatible(&tile, &unit_tile));
 
-    // println!("{}", (Point::new(0., 0., 1.).angle_to(&Point::new(0., 0., -1.)).val()));
-
     // let l1 = Line3D::new(Point::new(1., 1., 0.), Point::new(0., 0., 10.)).unwrap();
     // let l2 = Line3D::new(Point::new(20., 12., 3.), Point::new(0., 0., 10.)).unwrap();
     
     // println!("{:?}", line3d::intersection(&l1, &l2));
-
-
 }
 
 fn test_mapping_coordinates_from_2d_to_3d_and_back() {
@@ -38,4 +35,18 @@ fn test_mapping_coordinates_from_2d_to_3d_and_back() {
 
     println!("{:?}", system);
     println!("{:?}", CoordinateSystem3D::inverse_system(&system));
+}
+
+fn test_angles() {
+    println!("{}", (Point::new(0.0, 632.5, 0.0).angle_to(&Point::new(0.0, 625.0, 0.0)).val()));
+}
+
+fn test_distance_between_planes() {
+    let p1 = Plane::from_points_vector(&vec![Point::new(0., 0., 0.), Point::new(0., 5., 0.), Point::new(0., 5., 5.)]).unwrap();
+    let p2 = Plane::from_points_vector(&vec![Point::new(3., 0., 0.), Point::new(3., 5., 0.), Point::new(3., 5., 5.)]).unwrap();
+
+    let p1 = Plane::new(0.0, 632.5 * (625./632.5), 0.0 ,-16002.25 * (625./632.5));
+    let p2 = Plane::new(0.0 ,625.0 ,0.0 ,-15625.0);
+    
+    println!("{}",  (p1.d() - p2.d()).abs() / p1.normal_vector().modulo());
 }

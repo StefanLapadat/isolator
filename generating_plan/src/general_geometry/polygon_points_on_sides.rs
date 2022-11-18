@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point};
+use crate::general_geometry::{Point, Polygon};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PolygonPointsOnSides {
@@ -44,6 +44,11 @@ impl PolygonPointsOnSides {
 
         (rim, holes)
     }   
+
+    pub fn to_polygon_true_type(&self) -> Polygon {
+        let poly_comps = self.to_polygon();
+        Polygon::new(poly_comps.0, poly_comps.1)
+    }
 
     fn remove_points_not_on_corners_one_ring(rim: &Vec<Point>) -> Vec<Point> {
         let mut res: Vec<Point> = vec![];

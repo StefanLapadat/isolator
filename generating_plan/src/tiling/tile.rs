@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 use crate::general_geometry::polygon2d::Rectangle;
-use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D};
+use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D, Plane};
 use crate::triangulation::PolygonForTriangulation;
 
 #[derive(Debug, Clone)]
@@ -24,17 +24,14 @@ impl Tile {
         &self.surface_polygon
     }
 
-    fn width(&self) -> f64 {
-
-        // println!("{:?} {:?}", self.base_polygon(), self.surface_polygon());
-
+    pub fn width(&self) -> f64 {
         let base_data = self.base_polygon().to_polygon();
         let surface_data = self.surface_polygon().to_polygon();
 
         let p1 = Polygon::new(base_data.0, base_data.1).plane();
         let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
-
-        // println!("{:?} {:?}", p1, p2);
+        
+        let (p1, p2) = Plane::make_parallel_planes_have_same_params(&p1, &p2);
 
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
     }
@@ -159,9 +156,9 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
 
     let base = Polygon::new(args_base.0, args_base.1);
     let surface = Polygon::new(args_surface.0, args_surface.1);
-    
+
     let system = base.coordinate_system_xy_parallel_to_self();
-    
+
     let base_2d = base.to_2d(&system);
     let surface_2d = surface.to_2d(&system);
 
@@ -170,8 +167,9 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
 
     let original_distance_from_origin = base.distance_from_origin();
     let base_union_boxes_3d = base_splitted.iter().map(|b| b.to_3d(&system, &original_distance_from_origin)).collect::<Vec<_>>();
-    let surface_union_boxes_3d = base_union_boxes_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
 
+    let surface_union_boxes_3d = base_union_boxes_3d.iter()
+    .map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
     let base_comps = base_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
     let surface_comps = surface_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
 
@@ -187,7 +185,6 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
         res.push(t);
     }
 
-    // Option::Some(vec![tile.clone()])
     Option::Some(res)
 }
 
@@ -212,8 +209,6 @@ fn split_2d_surrounding_boxes(r: &Rectangle, unit_tile_width: f64, unit_tile_hei
 
 pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> Option<(f64, f64)> {
     let tile_width = tile.width();
-
-    // println!("{:?} {:?}", tile_width, unit_tile.d);
 
     if unit_tile.d.x.simmilar_to(tile_width, 0.0001) {
         return Some((unit_tile.d.y, unit_tile.d.z));

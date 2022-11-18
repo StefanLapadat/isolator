@@ -56,9 +56,13 @@ impl Request {
 
             data.push(PolygonWithIsolationDetails {
                 polygon: p.clone(),
-                isolation: if plane_is_horizontal { Option::None } else { Option::Some(IsolationDetails {
-                    width: width
-                })}
+                isolation: if plane_is_horizontal { 
+                    Option::None 
+                } else { 
+                    Option::Some(IsolationDetails {
+                        width
+                    })
+                }
             })
         }
 

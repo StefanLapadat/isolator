@@ -2,7 +2,7 @@ use crate::general_geometry::Point;
 
 use super::{CoordinateSystem3D, Line3D};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Plane {
     a: f64,
     b: f64,
@@ -89,6 +89,14 @@ impl Plane {
         
             Option::None
         }
+    }
+
+    pub fn make_parallel_planes_have_same_params(p1: &Plane, p2: &Plane) -> (Plane, Plane) {
+        let (n1, n2) = (p1.normal_vector(), p2.normal_vector());
+        let coef = n1.divide_by_parallel_vec(&n2);
+
+
+        (Plane::new(p1.a/coef, p1.b/coef, p1.c/coef, p1.d/coef), p2.clone())
     }
 
     pub fn normal_vector(&self) -> Point {

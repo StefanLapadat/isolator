@@ -73,6 +73,25 @@ impl Point {
         t2.subtract(t1).are_vectors_colinear(&t3.subtract(t1))
     }
 
+    pub fn divide_by_parallel_vec(&self, v2: &Point) -> f64 {
+        if !Self::are_vectors_colinear(&self, v2) {
+            panic!("This function can only be called for parallel vectors. Actual were: {:?} {:?}", self, v2);
+        }
+        
+        let ratio;
+        if v2.x != 0. {
+            ratio = self.x / v2.x;
+        } else {
+            if self.y != 0. {
+                ratio = self.y / v2.y;
+            } else {
+                ratio = self.z / v2.z;
+            }
+        }
+
+        ratio
+    }
+
     pub fn are_points_simmilar(t1: &Point, t2: &Point) -> bool {
         let epsilon = 0.0001;
         t1.x.simmilar_to(t2.x, epsilon) && t1.y.simmilar_to(t2.y, epsilon) && t1.z.simmilar_to(t2.z, epsilon) 

@@ -2,9 +2,6 @@
 
 1.1.
 
-2 nije radio od starta.. Jos funkcionalnost gde pronalazim bounding box za 2 nije radila kako treba. Tako da to treba proveriti.
-Za neke zidove se ne vracaju paralalne povrsine na tile-u. Ovo nemam pojma sta je.
-
 Implementirati preseke iz one biblioteke.
 Implementirati algoritam koji treba da resi problem sa presecima.
 Secenje kornera malo bolje.
