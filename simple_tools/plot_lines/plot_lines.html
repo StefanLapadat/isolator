@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Title</title>
+</head>
+
+<body>
+    <canvas style="border: 1px solid black" id="myCanvas" width="900" height="1750">
+            
+    </canvas>
+    <script>
+        var p1 = {
+            exterior: [{
+                x: 0,
+                y: 0
+            }, {
+                x: 30,
+                y: 0
+            }, {
+                x: 30,
+                y: 50
+            }, {
+                x: 25,
+                y: 50
+            }, {
+                x: 25,
+                y: 40
+            }, {
+                x: 20,
+                y: 40
+            }, {
+                x: 20,
+                y: 50
+            }, {
+                x: 0,
+                y: 50
+            }, {
+                x: 0,
+                y: 0
+            }, ].map(a => ({
+                x: a.x * 10,
+                y: a.y * 10
+            })),
+            interiors: [
+
+            ]
+        };
+
+        var p2 = {
+            exterior: [{
+                x: -10,
+                y: 70
+            }, {
+                x: 15,
+                y: 70
+            }, {
+                x: 15,
+                y: 45
+            }, {
+                x: 27,
+                y: 45
+            }, {
+                x: 27,
+                y: 38
+            }, {
+                x: -10,
+                y: 38
+            }, {
+                x: -10,
+                y: 70
+            }, ].map(a => ({
+                x: a.x * 10,
+                y: a.y * 10
+            })),
+            interiors: [
+                [{
+                    x: -5,
+                    y: 45
+                }, {
+                    x: 5,
+                    y: 45
+                }, {
+                    x: 5,
+                    y: 55
+                }, {
+                    x: -5,
+                    y: 55
+                }, {
+                    x: -5,
+                    y: 45
+                }, ].map(a => ({
+                    x: a.x * 10,
+                    y: a.y * 10
+                }))
+            ]
+        };
+
+        var p3 = {
+            exterior: [{
+                x: 0.0,
+                y: 380.0,
+            }, {
+                x: 270.0,
+                y: 380.0,
+            }, {
+                x: 270.0,
+                y: 450.0,
+            }, {
+                x: 250.0,
+                y: 450.0,
+            }, {
+                x: 250.0,
+                y: 400.0,
+            }, {
+                x: 200.0,
+                y: 400.0,
+            }, {
+                x: 200.0,
+                y: 450.0,
+            }, {
+                x: 150.0,
+                y: 450.0,
+            }, {
+                x: 150.0,
+                y: 500.0,
+            }, {
+                x: 50.0,
+                y: 500.0,
+            }, {
+                x: 50.0,
+                y: 450.0,
+            }, {
+                x: 0.0,
+                y: 450.0,
+            }, {
+                x: 0.0,
+                y: 380.0,
+            }, ],
+            interiors: [
+
+            ]
+        };
+
+        drawAPolygon(moveAPolygon(p1, {
+            x: -200,
+            y: -600
+        }));
+        drawAPolygon(moveAPolygon(p2, {
+            x: -200,
+            y: -600
+        }));
+        drawAPolygon(p3);
+
+
+
+        function drawAPolygon(p) {
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            const W = ctx.canvas.width,
+                H = ctx.canvas.height;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            // ctx.clearRect(0, 0, W, H);
+
+            ctx.setTransform(1, 0, 0, 1, W / 2, H / 2);
+
+            ctx.beginPath();
+
+            drawClosedLine(ctx, p.exterior);
+
+            var j = 0;
+            while (j < p.interiors.length) {
+                drawClosedLine(ctx, p.interiors[j]);
+                j++;
+            }
+        }
+
+        function drawClosedLine(ctx, pts) {
+            ctx.moveTo(pts[0].x, pts[0].y);
+            var i = 1;
+            while (i < pts.length) {
+                console.log('hej')
+
+                ctx.lineTo(pts[i].x, pts[i].y);
+                ctx.stroke();
+                i++;
+            }
+        }
+
+        function moveAPolygon(p, inc) {
+            return ({
+                exterior: p.exterior.map(a => ({
+                    x: a.x + inc.x,
+                    y: a.y + inc.y
+                })),
+                interiors: p.interiors.map(interior => interior.map(a => ({
+                    x: a.x + inc.x,
+                    y: a.y + inc.y
+                })))
+            });
+        }
+    </script>
+</body>
+
+</html>

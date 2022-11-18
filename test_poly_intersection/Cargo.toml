@@ -1,0 +1,11 @@
+[package]
+name = "test_poly_intersection"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+old-geo-types = { package = "geo-types", version = "0.6.2" }
+geo-types = "0.7.3"
+geo-booleanop = "0.3.2"
