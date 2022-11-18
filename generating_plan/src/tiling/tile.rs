@@ -198,7 +198,8 @@ fn split_2d_surrounding_boxes(r: &Rectangle, unit_tile_width: f64, unit_tile_hei
         let mut tmp_y = start_y;
 
         while !tmp_y.simmilar_to(end_y, 0.001) && tmp_y < end_y {
-            res.push(Rectangle::new(Point2D::new(tmp_x, tmp_y), Point2D::new(tmp_x + unit_tile_width, tmp_y + unit_tile_height)));
+            res.push(Rectangle::new(Point2D::new(tmp_x, tmp_y), 
+            Point2D::new((tmp_x + unit_tile_width).min(end_x), (tmp_y + unit_tile_height).min(end_y))));
             tmp_y += unit_tile_height;
         }
         tmp_x += unit_tile_width;

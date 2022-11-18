@@ -2,6 +2,8 @@
 
 1.1.
 
+Neke povrsine su mi random pomerene od mesta gde treba da budu...?? Zasto bi to bilo, nemam pojma :(
+
 Implementirati preseke iz one biblioteke.
 Implementirati algoritam koji treba da resi problem sa presecima.
 Secenje kornera malo bolje.
