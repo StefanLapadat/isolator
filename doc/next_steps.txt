@@ -1,8 +1,17 @@
 ============= FAZA 1 ================
 
-- naravno, podela na male tile-ove - ne mora nista fensi, najjednostavnija strategija bukvalno.
-- naravno, lepak;
-- ubacivanje pametnijeg nacina za secenje cornera.
+1.1.
+
+2 nije radio od starta.. Jos funkcionalnost gde pronalazim bounding box za 2 nije radila kako treba. Tako da to treba proveriti.
+Za neke zidove se ne vracaju paralalne povrsine na tile-u. Ovo nemam pojma sta je.
+
+Implementirati preseke iz one biblioteke.
+Implementirati algoritam koji treba da resi problem sa presecima.
+Secenje kornera malo bolje.
+Lepak.
+
+1.2.
+
 - naravno generisanje plana kako ce se uz pomoc masina postaviti to sto treba, isto najjednostavnije moguce, tako da mogu da predjem na fizicko postavljanje na nekakvim modelima, maketama, kako god. Jer ako je negde problem, tu ce biti. Ne treba drndati do savrsenstva ovo sranje, kad je na drugoj strani mozda neizvodljivo.. 
 
 ============= FAZA 2 ================
@@ -16,4 +25,6 @@ Isto kao faza 2, ali na pravom objektu.
 ============= FAZA 4 ================
 
 Prolazak kroz sve faze 1-3, ali se prica usloznjava - nije vise prototip, nego se realizuje ozbiljniji proizvod.
+
+Znaci na prvom mestu, ovde cemo imati razlicite vrste testova. Unit testove na nivou koda, ali i ogroman broj automatski generisanih zgrada i oblika koji treba da sluze tome da potvrde da aplikacija nigde ne puca. Znaci da se potvrdi da se uvek generisu nekakvi planovi. Za odredjene zgrade ce biti i assertovi, znaci kao nekakav integracioni test. Ali sve to malo kasnije. 
 

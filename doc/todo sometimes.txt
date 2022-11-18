@@ -9,4 +9,3 @@ TODO Nekaaaad:
 
 - kontakt zida sa izolacijom i bez - dorada; Ukljuceno u ovo je i pitanje oko toga sta se desava kada imamo dva stiropora koji su vrlo razlicitih debljina.
 
-Uf kad bih imao neku biblioteku modela nekih svakidasnjih stvari poput - gvozdena sipka, ili plasticna sipka ili sta ja znam, moze da bude bilo sta.. Ali narocito su bitni oluci, cevi za plin i tako te stvarcice, pa eto, da se moze i to upotrebiti kao neka pomoc sistemu, da mu se moze reci sta da ocekuje - pa onda teksture, da li su cigle, da li je neki ne znam, spanski zid, da li je kreceno, da li nije, tako, svasta nesto sto bi moglo da ovom mom sistemu omoguci da bolje roka. Bilo bi super. Za sada, nije to toliko bitno. 

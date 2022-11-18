@@ -1,9 +1,14 @@
 
-I Do not support nice correct merging of polygons; And I really should have this. We could fix this if we somehow incorporate clipper cpp lib into wasm.. And if we also incorporate fyrox engine instead of babylon, it could be really awesome. 
+Bolje mergovanje poligona od ovog mog cuda.
 
-Nije da treba samo da gledam tacke gde se sastaju dva zida; Treba da detektujem sve slucajeve na zgradi koji su takvi da jedna izolacija moze da smeta drugoj. Dobra stvar je sto propuste u algoritmu mogu bar lako da detektujem tako sto cu iskoristiti neku funkciju za hvatanje preseka medju plocama. 
+Bolja detekcija kolizija stiropora - ne samo na susednim zidovima. Rupe uopste ne proveravam na kontakte sa drugim zidovima.. A to isto moze da bude; I ne da moze da bude, nego je bukvalno uvek tako. 
 
-Moram, ali moram da porazmislim o numerickim problemima. Radim tu neka zaokruzivanja, aproksimacije, sta li vec, ali ono.. 
+Potencijalni numericki problemi. 
 
-Imacu problem sa situacijom kada na kraju zida imam zarubljeni ili kako vec da to nazovem, stirpor; ne mogu lepo da opisem sta mislim, ali imam resenje za ovo cini mi se :) Sve ovo ce kasnije, ukoliko sve bude ok, doci na tapet za prave algoritme. Za sada pravim nesto sto radi u 90% slucajeva. A kasnije, ako zazivi ovo, bice robusno.. Na kraju krajeva, kao i sve sto sam opisao. 
+Izbacivanje unwrapa itd, zapravo koriscenje rustovih dobrih strana :) 
+
+Nehendlovanje situacije gde se plocice bas lepo ne uklapaju u zgradu.. Hm, ovo mi se ne svidja da ostane, a mogu da popravim. Isuvise ogranicava. 
+
+
+
 
