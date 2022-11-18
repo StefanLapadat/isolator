@@ -3,9 +3,10 @@ use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPoi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(1);
-    let plan = generating_plan::plan_generation::generate_plan(&req);
+    // let req = request_generation::create_request(1);
+    // let plan = generating_plan::plan_generation::generate_plan(&req);
 
+    test_distance_between_origin_and_plane();
 
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
@@ -49,4 +50,10 @@ fn test_distance_between_planes() {
     let p2 = Plane::new(0.0 ,625.0 ,0.0 ,-15625.0);
     
     println!("{}",  (p1.d() - p2.d()).abs() / p1.normal_vector().modulo());
+}
+
+fn test_distance_between_origin_and_plane() {
+    let p = Polygon::from_triplets(vec![(5.,-2.,15.), (5.,-2.,17.), (5.,0.,17.), (5.,0.,15.)], vec![]);
+    println!("{:?}", p.plane());
+    println!("{}", p.plane().above_origin());
 }

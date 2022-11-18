@@ -91,6 +91,10 @@ impl Plane {
         }
     }
 
+    pub fn above_origin(&self) -> bool {
+        self.d() <= 0.
+    }
+
     pub fn make_parallel_planes_have_same_params(p1: &Plane, p2: &Plane) -> (Plane, Plane) {
         let (n1, n2) = (p1.normal_vector(), p2.normal_vector());
         let coef = n1.divide_by_parallel_vec(&n2);
@@ -118,7 +122,13 @@ impl Plane {
     }
 
     pub fn distance_from_origin(&self) -> Point {
-        self.normal_vector().normalize().multiply(self.d.abs() / self.normal_vector().modulo())
+        let distance_vec = self.normal_vector().normalize().multiply(self.d.abs() / self.normal_vector().modulo());
+
+        if self.above_origin() {
+            distance_vec
+        } else {
+            distance_vec.multiply(-1.)
+        }
     }
 
     pub fn parallel_to(&self, other: &Plane) -> bool {
