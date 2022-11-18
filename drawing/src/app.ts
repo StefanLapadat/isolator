@@ -40,7 +40,7 @@ class App {
 
         this.connectCamera();
         this.connectLights();
-        this.showBuilding();
+        // this.showBuilding();
         this.showIsolation();
         this.showAxis(50);
 

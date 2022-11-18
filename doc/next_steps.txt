@@ -2,10 +2,11 @@
 
 1.1.
 
-Neke povrsine su mi random pomerene od mesta gde treba da budu...?? Zasto bi to bilo, nemam pojma :(
+hm imam jos jedan problem.. Nesto se na building 2 ne iscrtava bas najbolje. Uglavnom je ok, ali ovo zajebava. nista, vraticu se na ovaj komit kasnije pa cu srediti. 
 
 Implementirati preseke iz one biblioteke.
 Implementirati algoritam koji treba da resi problem sa presecima.
+
 Secenje kornera malo bolje.
 Lepak.
 
