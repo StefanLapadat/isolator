@@ -40,6 +40,13 @@ impl Tile {
         let p_args = self.base_polygon().to_polygon();
         Polygon::new(p_args.0, p_args.1).normal().normalize().multiply(self.width())
     }
+
+    pub fn translate(&self) -> Tile {
+        let inc = self.base_polygon().to_polygon_true_type().normal().normalize().multiply(3.0);
+    
+        Tile::new(self.base_polygon().translate(&inc), self.surface_polygon().translate(&inc))
+    }
+    
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -92,7 +99,7 @@ fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
 
     res.push(Polygon::from_polygon_points_on_sides(tile.base_polygon().clone()));
     res.push(Polygon::from_polygon_points_on_sides(tile.surface_polygon().clone()));
-    
+
     Polygon::merge_multiple_polygons(&res)
 }
 

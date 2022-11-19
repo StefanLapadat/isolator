@@ -98,10 +98,26 @@ impl Point {
     }
 
     pub fn same_oktant(&self, t2: &Point) -> bool {
+        let sx = Self::to_zero_if_minus_zero(self.x);
+        let sy = Self::to_zero_if_minus_zero(self.y);
+        let sz = Self::to_zero_if_minus_zero(self.z);
+
+        let tx = Self::to_zero_if_minus_zero(t2.x);
+        let ty = Self::to_zero_if_minus_zero(t2.y);
+        let tz = Self::to_zero_if_minus_zero(t2.z);
+        
         if self.modulo().simmilar_to(0., 0.0001) || t2.modulo().simmilar_to(0., 0.0001) {
             true
         } else {
-            self.x.signum() == t2.x.signum() && self.y.signum() == t2.y.signum() && self.z.signum() == t2.z.signum()
+            sx.signum() == tx.signum() && sy.signum() == ty.signum() && sz.signum() == tz.signum()
+        }
+    }
+
+    fn to_zero_if_minus_zero(num: f64) -> f64 {
+        if num == 0. {
+            0.
+        } else {
+            num
         }
     }
 

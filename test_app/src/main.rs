@@ -6,6 +6,8 @@ fn main(){
     let req = request_generation::create_request(1);
     let plan = generating_plan::plan_generation::generate_plan(&req);
 
+    // test_merging_of_polygons();
+
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 3.245), Point::new(1., 0., 3.245), Point::new(0.5, 1., 3.245), ], vec![])
@@ -54,4 +56,20 @@ fn test_distance_between_origin_and_plane() {
     let p = Polygon::from_triplets(vec![(5.,-2.,15.), (5.,-2.,17.), (5.,0.,17.), (5.,0.,15.)], vec![]);
     println!("{:?}", p.plane());
     println!("{}", p.plane().above_origin());
+}
+
+fn test_merging_of_polygons() {
+    // let p1 =  Polygon::from_triplets(vec![(0.0, 25.0, 0.0), (0.0, -0.3, 0.0), (-0.3, -0.3, 0.0), (-0.3, 25.3, 0.0)], vec![]);
+
+    // let p2 =  Polygon::from_triplets(vec![(0.0, 25.3, 0.0), (0.0, 25.0, 0.0), (-0.3, 25.3, 0.0)], vec![]);
+
+    // let p1 =  Polygon::from_triplets(vec![(0.0, 25.0, 0.0), (0.0, -0.3, 0.0), (-0.3, -0.3, 0.0), (-0.3, 25.3, 0.0)], vec![]);
+
+    let p1 =  Polygon::from_triplets(vec![(0.0, 25.0, 0.0), (0.0, 0.0, 0.0), (-0.3, -0.3, 0.0), (-0.3, 25.3, 0.0)], vec![]);
+
+    let p2 =  Polygon::from_triplets(vec![(0.0, 0.0, 0.0), (0.0, -0.3, 0.0), (-0.3, -0.3, 0.0)], vec![]);
+
+    let p3 =  Polygon::from_triplets(vec![(0.0, 25.3, 0.0), (0.0, 25.0, 0.0), (-0.3, 25.3, 0.0)], vec![]);
+
+    println!("{:?}", Polygon::merge_multiple_polygons(&vec![p1, p2, p3, ]));
 }

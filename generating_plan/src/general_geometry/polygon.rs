@@ -217,8 +217,7 @@ impl Polygon {
             while j < polygons.len() as u32 {
                 if Self::are_neighbours(&polygons[i as usize], &polygons[j as usize]) {
                     res.push((i, j));
-                } else {
-                }
+                } 
 
                 j+=1;
             }
@@ -229,15 +228,38 @@ impl Polygon {
         res
     }
 
-    fn are_neighbours(poly1: &Polygon, poly2: &Polygon) -> bool {
+    fn are_neighbours(poly1: &Polygon, poly2: &Polygon) -> bool {        
         let normal1 = poly1.normal();
         let normal2 = poly2.normal();
 
-        if !normal1.are_vectors_colinear(&normal2) || !normal1.same_oktant(&normal2) {
+        let res = if !normal1.are_vectors_colinear(&normal2) || !normal1.same_oktant(&normal2) {
             false 
         } else {
             Self::is_poly1_close_to_poly2(poly1, poly2) || Self::is_poly1_close_to_poly2(poly2, poly1)
+        };
+
+        res
+    }
+
+    fn is_poly1(poly: &Polygon) -> bool {
+        if Point::are_points_simmilar(&poly.rim()[0], &Point::new(0.0, 25.0, 0.0)) &&
+            Point::are_points_simmilar(&poly.rim()[1], &Point::new(0.0, -0.3, 0.0)) &&
+            Point::are_points_simmilar(&poly.rim()[2], &Point::new(-0.3, -0.3, 0.0)) &&
+            Point::are_points_simmilar(&poly.rim()[3], &Point::new(-0.3, 25.3, 0.0)) {
+                return true;
         }
+
+        false
+    }
+
+    fn is_poly2(poly: &Polygon) -> bool {
+        if  Point::are_points_simmilar(&poly.rim()[0], &Point::new( 0.0, 25.3, 0.0 )) &&
+            Point::are_points_simmilar(&poly.rim()[0], &Point::new( 0.0, 25.0, 0.0 )) &&
+            Point::are_points_simmilar(&poly.rim()[0], &Point::new(-0.3, 25.3, 0.0))  {
+                return true;
+        }
+
+        false
     }
 
     fn is_poly1_close_to_poly2(poly1: &Polygon, poly2: &Polygon) -> bool {

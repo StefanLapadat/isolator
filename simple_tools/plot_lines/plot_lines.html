@@ -11,7 +11,8 @@
     </canvas>
     <script>
         //test1();
-        testProblematicDataForUnion();
+        // testProblematicDataForUnion();
+        test2();
 
         function drawAPolygon(p) {
             var c = document.getElementById("myCanvas");
@@ -268,6 +269,88 @@
                 x: 60,
                 y: 0
             }));
+        }
+
+        function test2() {
+            var p1 = {
+                exterior: [{
+                    x: 0.0,
+                    y: 25.0,
+                    z: 0.0
+                }, {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0
+                }, {
+                    x: -3,
+                    y: -3,
+                    z: 0.0
+                }, {
+                    x: -3,
+                    y: 25.3,
+                    z: 0.0
+                }, {
+                    x: 0.0,
+                    y: 25.0,
+                    z: 0.0
+                }].map(a => ({
+                    x: a.x * 10,
+                    y: a.y * 10
+                })),
+                interiors: [
+
+                ]
+            };
+
+            var p2 = {
+                exterior: [{
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0
+                }, {
+                    x: 0.0,
+                    y: -3,
+                    z: 0.0
+                }, {
+                    x: -3,
+                    y: -3,
+                    z: 0.0
+                }].map(a => ({
+                    x: a.x * 10,
+                    y: a.y * 10
+                })),
+                interiors: [
+                    [].map(a => ({
+                        x: a.x * 10,
+                        y: a.y * 10
+                    }))
+                ]
+            };
+
+            var p3 = {
+                exterior: [{
+                    x: 0.0,
+                    y: 28.3,
+                    z: 0.0
+                }, {
+                    x: 0.0,
+                    y: 25.0,
+                    z: 0.0
+                }, {
+                    x: -3,
+                    y: 28.3,
+                    z: 0.0
+                }].map(a => ({
+                    x: a.x * 10,
+                    y: a.y * 10
+                })),
+                interiors: [
+
+                ]
+            };
+            drawAPolygon(p1);
+            drawAPolygon(p2);
+            drawAPolygon(p3);
         }
     </script>
 </body>

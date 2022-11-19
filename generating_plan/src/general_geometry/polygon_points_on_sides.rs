@@ -15,6 +15,15 @@ impl PolygonPointsOnSides {
         }
     }
 
+    pub fn translate(&self, inc: &Point) -> PolygonPointsOnSides {
+        let translate_vec_points = |x: &Vec<Point>| x.iter().map(|pt| pt.add(inc)).collect::<Vec<_>>();
+
+        let rim = translate_vec_points(self.rim());
+        let holes = self.holes().iter().map(|hole| translate_vec_points(hole)).collect::<Vec<_>>();
+
+        PolygonPointsOnSides::new(rim, holes)
+    }
+
     fn remove_duplicates(rim: Vec<Point>) -> Vec<Point> {
         let mut i = 1;
         let mut res: Vec<Point> = vec![rim[0].clone()];

@@ -49,7 +49,9 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
 
         i+=1;
     }
+    
     tiles
+    // tiles.iter().map(|t| t.translate()).collect::<Vec<_>>()
     //tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
 }
 
@@ -62,6 +64,8 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
 
     let mut base_rim: Vec<Vec<Point>> = vec![];
     let mut surface_rim: Vec<Vec<Point>> = vec![];
+
+    // println!("{} {:?}", ind, borders);
 
     let mut i = 0;
     while i<borders.len() {
@@ -96,6 +100,7 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
     }
 
     let surface_rim = further_process_surface_rim(&surface_rim);
+    // let base_rim = further_process_base_rim(&base_rim);
 
     let flat_base_rim = base_rim.into_iter().flatten().collect::<Vec<_>>();
     let flat_surface_rim = surface_rim.into_iter().flatten().collect::<Vec<_>>();
@@ -162,6 +167,8 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
 
     res
 }
+
+
 
 fn solve_corner1(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
 
@@ -318,6 +325,7 @@ fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Vec<Border>>
 }
 
 fn corners_on_one_side_to_borders(corners: &mut Vec<Corner>, start: &Point, end: &Point) -> Vec<Border> {
+
     corners.sort_by(|a, b| a.pt.subtract(&start).modulo().partial_cmp(&b.pt.subtract(&start).modulo()).unwrap_or(Ordering::Equal));
 
     let mut i = 0;
@@ -356,6 +364,7 @@ fn corners_on_one_side_to_borders(corners: &mut Vec<Corner>, start: &Point, end:
     res
 }
 
+#[derive(Clone, Debug)]
 struct Border {
     point_a: Point,
     point_b: Point, 
