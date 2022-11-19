@@ -32,7 +32,7 @@ impl Point {
         Point::new(self.x / scalar, self.y / scalar, self.z / scalar)
     }
 
-    pub fn vector_multiplication(a: &Point, b: &Point) -> Point {
+    pub fn cross_prod(a: &Point, b: &Point) -> Point {
         Point::new(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
     }
 

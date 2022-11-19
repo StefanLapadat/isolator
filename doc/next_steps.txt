@@ -2,12 +2,9 @@
 
 1.1.
 
-hm imam jos jedan problem.. Nesto se na building 2 ne iscrtava bas najbolje. Uglavnom je ok, ali ovo zajebava. nista, vraticu se na ovaj komit kasnije pa cu srediti. 
-
+Secenje kornera malo bolje.
 Implementirati preseke iz one biblioteke.
 Implementirati algoritam koji treba da resi problem sa presecima.
-
-Secenje kornera malo bolje.
 Lepak.
 
 1.2.

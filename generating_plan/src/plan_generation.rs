@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
-use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d};
+use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d, Plane};
 use crate::building_representations::converters;
 use crate::tiling::{Tile, TriangulizedTiles, tile};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
@@ -49,8 +49,8 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
 
         i+=1;
     }
-
-    tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
+    tiles
+    //tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
 }
 
 fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_width: f64) -> Vec<Tile> {
@@ -73,7 +73,7 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
         for border in one_side_borders {
             match border.wall_ind {
                 Some(val) => {
-                    let solved_corner = solve_corner(&LineSegment::new(border.point_a.clone(), border.point_b.clone()), &request.data()[ind], &request.data()[val]);
+                    let solved_corner = solve_corner2(&LineSegment::new(border.point_a.clone(), border.point_b.clone()), &request.data()[ind], &request.data()[val]);
     
                     one_side_base_rim.push(solved_corner.0);
                     one_side_base_rim.push(solved_corner.1);
@@ -163,31 +163,25 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
     res
 }
 
-fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
+fn solve_corner1(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
 
     let inc2: Point; 
     let shared_segment_vec = shared_segment.to_point();
-    let obs_wall_iso_w = observing_wall.isolation().as_ref().unwrap().width();
 
     match bordering_wall.isolation() {
         Some(val) => {
             inc2 = bordering_wall.polygon().normal().normalize().multiply(val.width());
         },
         None => {
-            let pt1 = shared_segment.p1().clone();
-            let pt2 = shared_segment.p2().clone();
-            let pt3 = pt1.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
-            let pt4 = pt2.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
-
-            return (pt1, pt2, pt3, pt4);
+            return solve_corner_isolated_next_to_non_isolated_wall(shared_segment, observing_wall, bordering_wall);
         }
     }
 
     let inc1 = observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width());
 
 
-    let line1 = Line3D::new(Point::vector_multiplication(&shared_segment_vec, &inc1), shared_segment.p1().add(&inc1));
-    let line2 = Line3D::new(Point::vector_multiplication(&shared_segment_vec, &inc2), shared_segment.p1().add(&inc2));
+    let line1 = Line3D::new(Point::cross_prod(&shared_segment_vec, &inc1), shared_segment.p1().add(&inc1));
+    let line2 = Line3D::new(Point::cross_prod(&shared_segment_vec, &inc2), shared_segment.p1().add(&inc2));
 
     let intersection = line3d::intersection(&line1.unwrap(), &line2.unwrap());
 
@@ -203,6 +197,98 @@ fn solve_corner(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolat
             (pt1, pt2, pt3, pt4)
         }
     }
+}
+
+fn solve_corner2(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
+
+    let bor_wall_width_vec: Point; 
+
+    match bordering_wall.isolation() {
+        Some(val) => {
+            bor_wall_width_vec = bordering_wall.polygon().normal().normalize().multiply(val.width());
+        },
+        None => {
+            return solve_corner_isolated_next_to_non_isolated_wall(shared_segment, observing_wall, bordering_wall);
+        }
+    }
+
+    let obs_wall_width_vec = observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width());
+
+    let shared_segment_vec = shared_segment.to_point();
+    let obs_wall_surface_line = Line3D::new(Point::cross_prod(&shared_segment_vec, &obs_wall_width_vec), shared_segment.p1().add(&obs_wall_width_vec)).unwrap();
+
+    let bor_wall_surface_line = Line3D::new(Point::cross_prod(&shared_segment_vec, &bor_wall_width_vec), shared_segment.p1().add(&bor_wall_width_vec)).unwrap();
+
+    let surface_lines_intersection = line3d::intersection(&obs_wall_surface_line, &bor_wall_surface_line);
+
+    match surface_lines_intersection {
+        line3d::Intersection::None => panic!("No intersection found where it was expected."),
+        line3d::Intersection::Line(_) => panic!("Whole line found as an intersection where single point was expected."),
+        line3d::Intersection::Point(pt) => {
+            let ordering = order_planes(&observing_wall.polygon().plane(), &bordering_wall.polygon().plane());
+            let (pt1, pt2, pt3, pt4);
+
+            let base_line: Line3D;
+            let surface_line: Line3D;
+
+            if ordering > 0 {
+                base_line = Line3D::new(Point::cross_prod(&shared_segment_vec, &bor_wall_width_vec), shared_segment.p1().to_owned()).unwrap();
+                surface_line = obs_wall_surface_line; 
+            } else {
+                base_line = Line3D::new(Point::cross_prod(&shared_segment_vec, &obs_wall_width_vec), shared_segment.p1().to_owned()).unwrap();
+                surface_line = bor_wall_surface_line;
+            }
+        
+            let base_surface_intersection = line3d::intersection(&base_line, &surface_line);
+
+            match base_surface_intersection {
+                line3d::Intersection::None => panic!("No intersection found where it was expected."),
+                line3d::Intersection::Line(_) => panic!("Whole line found as an intersection where single point was expected."),
+                line3d::Intersection::Point(base_surface_intersection_pt) => {
+                    if ordering > 0 {
+                        pt1 = shared_segment.p1().clone();
+                        pt2 = shared_segment.p2().clone();
+                        pt3 = base_surface_intersection_pt.clone();
+                        pt4 = base_surface_intersection_pt.clone().add(&shared_segment_vec);
+                    } else {
+                        pt1 = base_surface_intersection_pt.clone();
+                        pt2 = base_surface_intersection_pt.clone().add(&shared_segment_vec);
+                        pt3 = pt.clone();
+                        pt4 = pt.clone().add(&shared_segment_vec);
+                    }
+                }
+            }
+                        
+            (pt1, pt2, pt3, pt4)
+        }
+    }
+}
+
+fn order_planes(p1: &Plane, p2: &Plane) -> isize {
+    let n1 = p1.normal_vector().normalize();
+    let n2 = p2.normal_vector().normalize();
+
+    let n1_num = n1.x * 100. + n1.y * 10. + n1.z;
+    let n2_num = n2.x * 100. + n2.y * 10. + n2.z;
+
+    if n1_num > n2_num {
+        1
+    } else if n1_num < n2_num {
+        -1
+    } else {
+        panic!("Cannot order parallel planes. {:?} {:?}", p1, p2);
+    }
+}
+
+fn solve_corner_isolated_next_to_non_isolated_wall(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
+    let obs_wall_iso_w = observing_wall.isolation().as_ref().unwrap().width();
+
+    let pt1 = shared_segment.p1().clone();
+    let pt2 = shared_segment.p2().clone();
+    let pt3 = pt1.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
+    let pt4 = pt2.add(&observing_wall.polygon().normal().normalize().multiply(obs_wall_iso_w));
+
+    return (pt1, pt2, pt3, pt4);
 }
 
 fn get_borders_for_wall(ind: usize, request: &Request) -> Vec<Vec<Border>> {

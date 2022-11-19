@@ -39,7 +39,7 @@ fn distance(l1: &Line3D, l2: &Line3D) -> f64 {
     let e1 = &l1.direction;
     let e2 = &l2.direction;
 
-    let n = Point::vector_multiplication(e1, e2);
+    let n = Point::cross_prod(e1, e2);
 
     let distance = n.dot_product(&r1.subtract(r2)).abs() / n.modulo();
 
@@ -69,9 +69,9 @@ fn intersection_of_two_lines_with_exactly_one_common_point(l1: &Line3D, l2: &Lin
     let e1 = &l1.direction;
     let e2 = &l2.direction;
 
-    let n = Point::vector_multiplication(e1, e2);
+    let n = Point::cross_prod(e1, e2);
 
-    Intersection::Point(l1.direction.multiply(Point::vector_multiplication(e2, &n).dot_product(&r2.subtract(r1))/n.dot_product(&n)).add(&l1.n))
+    Intersection::Point(l1.direction.multiply(Point::cross_prod(e2, &n).dot_product(&r2.subtract(r1))/n.dot_product(&n)).add(&l1.n))
 }
 
 #[derive(Debug)]

@@ -46,7 +46,7 @@ impl Plane {
     }
 
     fn from_three_noncolinear_points_through_origin(t1: &Point, t2: &Point, t3: &Point) -> Plane {
-        let normal = Point::vector_multiplication(&t2.subtract(t1), &t3.subtract(t2));
+        let normal = Point::cross_prod(&t2.subtract(t1), &t3.subtract(t2));
         Plane {
             a: normal.x,
             b: normal.y,
@@ -64,7 +64,7 @@ impl Plane {
     }
 
     fn from_three_noncolinear_points(t1: &Point, t2: &Point, t3: &Point) -> Plane {
-        let normal = Point::vector_multiplication(&t2.subtract(t1), &t3.subtract(t2));
+        let normal = Point::cross_prod(&t2.subtract(t1), &t3.subtract(t2));
         Plane {
             a: normal.x,
             b: normal.y,
@@ -111,12 +111,12 @@ impl Plane {
         let z = self.normal_vector().normalize();
         let x: Point;
         if self.parallel_to(&Self::XY) {
-            x = Point::vector_multiplication(&z, &z.add(&Point::new(z.x + 10.56782, z.y + 20.345454, z.z + -30.4563))).normalize();
+            x = Point::cross_prod(&z, &z.add(&Point::new(z.x + 10.56782, z.y + 20.345454, z.z + -30.4563))).normalize();
         } else {
             let line = self.line_parallel_to_intersection_going_through_origin(&Self::XY);
             x = line.direction().clone().normalize();
         }
-        let y = Point::vector_multiplication(&z, &x).normalize();
+        let y = Point::cross_prod(&z, &x).normalize();
 
         CoordinateSystem3D::new(Point::ZERO, x, y, z)
     }
@@ -136,7 +136,7 @@ impl Plane {
     }
 
     pub fn line_parallel_to_intersection_going_through_origin(&self, other: &Plane) -> Line3D {
-        let dir = Point::vector_multiplication(&self.normal_vector(), &other.normal_vector());
+        let dir = Point::cross_prod(&self.normal_vector(), &other.normal_vector());
         Line3D::new(dir, Point::ZERO).unwrap()
     }
 }

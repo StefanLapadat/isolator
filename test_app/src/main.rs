@@ -3,10 +3,8 @@ use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPoi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    // let req = request_generation::create_request(1);
-    // let plan = generating_plan::plan_generation::generate_plan(&req);
-
-    test_distance_between_origin_and_plane();
+    let req = request_generation::create_request(1);
+    let plan = generating_plan::plan_generation::generate_plan(&req);
 
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
