@@ -40,7 +40,7 @@ import (("./index.js") as any).catch(e => console.error("Error importing `index.
                 localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
                 reloadApp();
             })
-        }, 300);
+        }, 400);
     }
 );
 
@@ -108,11 +108,11 @@ class App {
     }
 
     getShowBuilding(): ShowBuildingOrIsolation {
-        return parseInt((document.getElementById('building') as any)?.value ?? localStorage.getItem('requestId') ?? '1');
+        return parseInt((document.getElementById('building') as any)?.value ?? localStorage.getItem('building') ?? '1');
     }
 
     getShowIsolation(): ShowBuildingOrIsolation {
-        return parseInt((document.getElementById('isolation') as any)?.value ?? localStorage.getItem('requestId') ?? '1');
+        return parseInt((document.getElementById('isolation') as any)?.value ?? localStorage.getItem('isolation') ?? '1');
     }
 
     getShowAxes(): boolean {
@@ -155,11 +155,17 @@ class App {
     }
 
     showBuilding() {
-        var buildingMesh = new BABYLON.Mesh("buildingMesh", this.scene);
-        this.buildingMeshVertexData.applyToMesh(buildingMesh);
+        let mode = this.getShowBuilding();
 
-        const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
-        buildingWireframe.color = BABYLON.Color3.Black();
+        var buildingMesh = new BABYLON.Mesh("buildingMesh", this.scene);
+        if(mode === ShowBuildingOrIsolation.Show){
+            this.buildingMeshVertexData.applyToMesh(buildingMesh);
+        }
+
+        if(mode === ShowBuildingOrIsolation.Wireframe || mode === ShowBuildingOrIsolation.Show) {
+            const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
+            buildingWireframe.color = BABYLON.Color3.Black();
+        }
 
         var mat = new BABYLON.StandardMaterial("matBuildingMesh", this.scene);
         mat.wireframe = false;
@@ -169,11 +175,17 @@ class App {
     }
 
     showIsolation() {
-        var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
-        this.isolationMeshVertexData.applyToMesh(isolationMesh);
+        let mode = this.getShowIsolation();
 
-        const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
-        isolationWireframe.color = BABYLON.Color3.Black();
+        var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
+        if(mode === ShowBuildingOrIsolation.Show){
+            this.isolationMeshVertexData.applyToMesh(isolationMesh);
+        }
+
+        if(mode === ShowBuildingOrIsolation.Wireframe || mode === ShowBuildingOrIsolation.Show) {
+            const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
+            isolationWireframe.color = BABYLON.Color3.Black();
+        }
 
         var mat = new BABYLON.StandardMaterial("mat", this.scene);
         mat.wireframe = false;
@@ -359,13 +371,8 @@ interface Triangle {
     t3: Point
 }
 
-
-
-
-
-
 enum ShowBuildingOrIsolation {
-    Hide, 
+    Show, 
     Wireframe,
-    Show
+    Hide
 }
