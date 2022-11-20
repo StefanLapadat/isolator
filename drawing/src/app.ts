@@ -1,31 +1,54 @@
 import * as BABYLON from '@babylonjs/core';
+import { FreeCamera } from '@babylonjs/core';
 
 import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
     () => {
         setTimeout(() => {
-            new App();
+            reloadApp();
+
             document.getElementById("request-id")?.addEventListener('input', (event) => {
                 localStorage.setItem("requestId", (event as any).data);
-                location.reload();
+                reloadApp();
             })
 
             document.getElementById("tile-length")?.addEventListener('input', (event) => {
                 localStorage.setItem("tileLength", (event as any).data);
-                location.reload();
+                reloadApp();
             })
 
             document.getElementById("tile-height")?.addEventListener('input', (event) => {
                 localStorage.setItem("tileHeight", (event as any).data);
-                location.reload();
+                reloadApp();
             })
 
             document.getElementById("tile-width")?.addEventListener('input', (event) => {
                 localStorage.setItem("tileWidth", (event as any).data);
-                location.reload();
+                reloadApp();
+            })
+
+            document.getElementById("building")?.addEventListener('input', (event) => {
+                localStorage.setItem("building", (event as any).data);
+                reloadApp();
+            })
+
+            document.getElementById("isolation")?.addEventListener('input', (event) => {
+                localStorage.setItem("isolation", (event as any).data);
+                reloadApp();
+            })
+
+            document.getElementById("show-axes")?.addEventListener('input', (event) => {
+                localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
+                reloadApp();
             })
         }, 300);
     }
 );
+
+function reloadApp() {
+    let camera = ((window as any).babylonApp as any)?.getCamera();
+    ((window as any).babylonApp as any)?.dispose();
+    (window as any).babylonApp = new App(camera);
+}
 
 class App {
     private readonly plan: Plan;
@@ -38,7 +61,7 @@ class App {
     private readonly isolationMeshVertexData: BABYLON.VertexData;
     private readonly isolationWireframeData: BABYLON.Vector3[][];
 
-    constructor() {
+    constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
         this.engine = new BABYLON.Engine(this.canvas, true);
 
@@ -53,13 +76,19 @@ class App {
 
         this.scene = this.createScene();
 
-        this.connectCamera();
+        this.connectCamera(camera);
         this.connectLights();
-        // this.showBuilding();
+        this.showBuilding();
         this.showIsolation();
-        this.showAxis(50);
+        if (this.getShowAxes()) {
+            this.showAxis(50);
+        }
 
         this.initGeneralGameStuff();
+    }
+
+    dispose() {
+        this.engine.dispose();
     }
 
     getRequestId(): number {
@@ -78,6 +107,21 @@ class App {
         return parseFloat((document.getElementById('tile-width') as any)?.value ?? localStorage.getItem('tileWidth') ?? '0.3');
     }
 
+    getShowBuilding(): ShowBuildingOrIsolation {
+        return parseInt((document.getElementById('building') as any)?.value ?? localStorage.getItem('requestId') ?? '1');
+    }
+
+    getShowIsolation(): ShowBuildingOrIsolation {
+        return parseInt((document.getElementById('isolation') as any)?.value ?? localStorage.getItem('requestId') ?? '1');
+    }
+
+    getShowAxes(): boolean {
+        return document.querySelector('#show-axes' as any).checked;
+    }
+
+
+
+
     getCanvas(): HTMLCanvasElement {
         return document.getElementById("canvas") as HTMLCanvasElement;
     }
@@ -86,10 +130,19 @@ class App {
         return new BABYLON.Scene(this.engine)
     }
 
-    connectCamera() {
-        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-20, 30, -40), this.scene);
+    connectCamera(cam?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
+        let px = -20, py = 30, pz  = -40, tx = 20, ty = 0, tz = 30;
+        if (cam) {
+            px = cam.position.x;
+            py = cam.position.y;
+            pz = cam.position.z;
+            tx = cam.target.x;
+            ty = cam.target.y;
+            tz = cam.target.z;
+        }
+        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(px, py, pz), this.scene);
         camera.invertRotation = true;
-        camera.setTarget(new BABYLON.Vector3(20, 0, 30));
+        camera.setTarget(new BABYLON.Vector3(tx, ty, tz));
         camera.attachControl(this.canvas, true);
     }
 
@@ -199,6 +252,14 @@ class App {
         return wireframe;
     }
 
+    getCamera(): {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}} {
+        let p =  this.scene.cameras[0].position;
+        let t = (this.scene.cameras[0] as FreeCamera).target;
+        
+        return {position: {x: p._x, y: p._y, z: p._z}, target:{x: t._x, y: t._y, z: t._z}};
+    }
+    
+
     showAxis(size: number) {
         var scene = this.scene;
         var makeTextPlane = function(text: any, color: any, size: any) {
@@ -296,4 +357,15 @@ interface Triangle {
     t1: Point,
     t2: Point,
     t3: Point
+}
+
+
+
+
+
+
+enum ShowBuildingOrIsolation {
+    Hide, 
+    Wireframe,
+    Show
 }

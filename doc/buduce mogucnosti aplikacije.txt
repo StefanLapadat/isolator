@@ -1,0 +1,2 @@
+- unosenje debljine stiropora i zgrade u koju je ukljucena izolacija i dobijanje zgrade bez izolacije.
+

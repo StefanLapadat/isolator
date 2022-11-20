@@ -7,12 +7,29 @@
 </head>
 
 <body>
-    <div id="controls">
+    <div id="controls" style="padding-bottom: 8px;">
         <input id="request-id" type="number" start="1" step="1" value="1" />
         <input id="tile-length" type="number" start="1" step="0.1" value="1" min="0.1" />
         <input id="tile-height" type="number" start="1" step="0.1" value="1" min="0.1" />
         <input id="tile-width" type="number" start="0.1" step="0.1" value="0.1" min="0.1" />
+        <label>Building
+            <select id="building">
+                <option value="show">Show</option>
+                <option value="wireframe">Wireframe</option>
+                <option value="hide">Hide</option>
+            </select>
+        </label>
+        <label>Isolation
+            <select id="isolation">
+                <option value="show">Show</option>
+                <option value="wireframe">Wireframe</option>
+                <option value="hide">Hide</option>
+            </select>
+        </label>
+
+        <input type="checkbox" id="show-axes" checked name="show-axes"><label for="show-axes">Show Axes</label>
     </div>
+
     <canvas style="width: 100%; height: 90%;" id="canvas"></canvas>
 
 </body>
