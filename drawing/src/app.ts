@@ -100,7 +100,7 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         mat.alpha = 1;
-        mat.diffuseColor = BABYLON.Color3.Green();
+        mat.diffuseColor = BABYLON.Color3.Blue();
         isolationMesh.material = mat;
     }
 

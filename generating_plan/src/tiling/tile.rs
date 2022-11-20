@@ -1,3 +1,4 @@
+use nalgebra::base;
 use serde::{Serialize, Deserialize};
 use crate::general_geometry::polygon2d::Rectangle;
 use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D, Plane};
@@ -11,9 +12,29 @@ pub struct Tile {
 
 impl Tile {
     pub fn new(base_polygon: PolygonPointsOnSides, surface_polygon: PolygonPointsOnSides) -> Tile {
+        let (base_polygon, surface_polygon) = Self::remove_duplicate_pairs_from_base_and_surface_polygons(&base_polygon, &surface_polygon);
+
         Tile {
             base_polygon, surface_polygon
         }
+    }
+
+    fn remove_duplicate_pairs_from_base_and_surface_polygons(base_polygon: &PolygonPointsOnSides, surface_polygon: &PolygonPointsOnSides) -> (PolygonPointsOnSides, PolygonPointsOnSides) {
+        let mut i = 0;
+        let (mut base_polygon_res, mut surface_polygon_res) = (vec![], vec![]);
+        
+        let rl = base_polygon.rim().len();
+
+        while i < rl {
+            if !Point::are_points_simmilar(&base_polygon.rim()[i], &base_polygon.rim()[(i+1)%rl]) || 
+                !Point::are_points_simmilar(&surface_polygon.rim()[i], &surface_polygon.rim()[(i+1)%rl])  {
+                    base_polygon_res.push(base_polygon.rim()[i].clone());
+                    surface_polygon_res.push(surface_polygon.rim()[i].clone());
+            }
+            i+=1;
+        }
+
+        (PolygonPointsOnSides::new(base_polygon_res, vec![]), PolygonPointsOnSides::new(surface_polygon_res, vec![]))
     }
 
     fn base_polygon(&self) -> &PolygonPointsOnSides {
@@ -46,7 +67,23 @@ impl Tile {
     
         Tile::new(self.base_polygon().translate(&inc), self.surface_polygon().translate(&inc))
     }
+
+    fn to_polygons(&self) -> Vec<Polygon> {
+        let mut res = vec![];
     
+        res.append(&mut parallel_rims_to_polygons(self.base_polygon().rim(), self.surface_polygon().rim()));
+    
+        let mut i = 0;
+        while i < self.base_polygon().holes().len() {
+            res.append(&mut parallel_rims_to_polygons(&self.base_polygon().holes()[i], &self.surface_polygon().holes()[i]));
+            i+=1;
+        }
+    
+        res.push(Polygon::from_polygon_points_on_sides(self.base_polygon().clone()));
+        res.push(Polygon::from_polygon_points_on_sides(self.surface_polygon().clone()));
+    
+        res
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -86,23 +123,6 @@ impl TriangulizedTiles {
     }
 }
 
-fn tile_to_polygons(tile: &Tile) -> Vec<Polygon> {
-    let mut res = vec![];
-
-    res.append(&mut parallel_rims_to_polygons(tile.base_polygon().rim(), tile.surface_polygon().rim()));
-
-    let mut i = 0;
-    while i < tile.base_polygon().holes().len() {
-        res.append(&mut parallel_rims_to_polygons(&tile.base_polygon().holes()[i], &tile.surface_polygon().holes()[i]));
-        i+=1;
-    }
-
-    res.push(Polygon::from_polygon_points_on_sides(tile.base_polygon().clone()));
-    res.push(Polygon::from_polygon_points_on_sides(tile.surface_polygon().clone()));
-
-    Polygon::merge_multiple_polygons(&res)
-}
-
 fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) -> Vec<Polygon> {
     let mut res = vec![];
 
@@ -110,34 +130,32 @@ fn parallel_rims_to_polygons(base_rim: &Vec<Point>, surface_rim: &Vec<Point>) ->
     let rl = base_rim.len();
 
     while i < rl {
-        if Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
-            i+=1; 
-            continue;
-        }
-
-        if !Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && !Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
-            res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
-        }
-
-        if Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && !Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
-            res.push(Polygon::new(vec![base_rim[i].clone(), surface_rim[(i+1)%rl].clone(), surface_rim[i].clone()], vec![]));
-        }
-
-        if !Point::are_points_simmilar(&base_rim[i], &base_rim[(i+1)%rl]) && Point::are_points_simmilar(&surface_rim[i], &surface_rim[(i+1)%rl]) {
-            res.push(Polygon::new(vec![base_rim[i].clone(), base_rim[(i+1)%rl].clone(), surface_rim[(i+1)%rl].clone()], vec![]));
-        }
-
+        res.push(base_seg_and_surface_seg_to_polygon(&base_rim[i], &base_rim[(i+1)%rl], &surface_rim[i], &surface_rim[(i+1)%rl]));
         i+=1;
     }
 
     res
 }
 
+fn base_seg_and_surface_seg_to_polygon(base_start: &Point, base_end: &Point, surface_start: &Point, surface_end: &Point) -> Polygon {
+    let (b0, b1, s0, s1) = (base_start, base_end, surface_start, surface_end);
+
+    if Point::are_points_simmilar(b0, b1) {
+        return Polygon::new(vec![b0.clone(), s1.clone(), s0.clone()], vec![]);
+    } 
+    
+    if Point::are_points_simmilar(s0, s1) {
+        return Polygon::new(vec![b0.clone(), b1.clone(), s1.clone()], vec![]);
+    } 
+    
+    return Polygon::new(vec![b0.clone(), b1.clone(), s1.clone(), s0.clone()], vec![]);
+}
+
 fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>) {
     let mut triangles: Vec<Triangle> = vec![];
     let mut wireframe: Vec<Vec<Point>> = vec![];
 
-    for side in tile_to_polygons(tile) {
+    for side in tile.to_polygons() {
         for triangle in PolygonForTriangulation::from_polygon(&side).triangulate_3d() {
             triangles.push(triangle)
         }
@@ -147,6 +165,7 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
 
     (TriangulizedTile::new(triangles), wireframe)
 }
+
 
 pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
     let (unit_tile_width, unit_tile_height);
