@@ -137,6 +137,9 @@ impl Plane {
 
     pub fn line_parallel_to_intersection_going_through_origin(&self, other: &Plane) -> Line3D {
         let dir = Point::cross_prod(&self.normal_vector(), &other.normal_vector());
+        if Point::are_points_simmilar(&Point::ZERO, &dir) {
+            println!("Why did we end up here? {:?} {:?} {:?}", dir, self, other);
+        }
         Line3D::new(dir, Point::ZERO).unwrap()
     }
 }

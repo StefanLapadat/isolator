@@ -8,6 +8,21 @@ import (("./index.js") as any).catch(e => console.error("Error importing `index.
                 localStorage.setItem("requestId", (event as any).data);
                 location.reload();
             })
+
+            document.getElementById("tile-length")?.addEventListener('input', (event) => {
+                localStorage.setItem("tileLength", (event as any).data);
+                location.reload();
+            })
+
+            document.getElementById("tile-height")?.addEventListener('input', (event) => {
+                localStorage.setItem("tileHeight", (event as any).data);
+                location.reload();
+            })
+
+            document.getElementById("tile-width")?.addEventListener('input', (event) => {
+                localStorage.setItem("tileWidth", (event as any).data);
+                location.reload();
+            })
         }, 300);
     }
 );
@@ -28,7 +43,7 @@ class App {
         this.engine = new BABYLON.Engine(this.canvas, true);
 
         this.backend = (window as any).wasm as Backend;
-        this.plan = JSON.parse(this.backend.get_plan(this.getRequestId()));
+        this.plan = JSON.parse(this.backend.get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth()));
     
         this.buildingMeshVertexData = this.getBuildingMeshVertexData();
         this.buildingWireframeData = this.getBuildingWireframeData();
@@ -49,6 +64,18 @@ class App {
 
     getRequestId(): number {
         return parseInt((document.getElementById('request-id') as any)?.value ?? localStorage.getItem('requestId') ?? '1');
+    }
+
+    getTileLength(): number {
+        return parseFloat((document.getElementById('tile-length') as any)?.value ?? localStorage.getItem('tileLength') ?? '5');
+    }
+
+    getTileHeight(): number {
+        return parseFloat((document.getElementById('tile-height') as any)?.value ?? localStorage.getItem('tileHeight') ?? '2.5');
+    }
+
+    getTileWidth(): number {
+        return parseFloat((document.getElementById('tile-width') as any)?.value ?? localStorage.getItem('tileWidth') ?? '0.3');
     }
 
     getCanvas(): HTMLCanvasElement {
@@ -100,7 +127,7 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         mat.alpha = 1;
-        mat.diffuseColor = BABYLON.Color3.Blue();
+        mat.diffuseColor = BABYLON.Color3.Green();
         isolationMesh.material = mat;
     }
 
@@ -233,7 +260,7 @@ class App {
 
 
 interface Backend {
-    get_plan(request_id: number): string,
+    get_plan(request_id: number, tile_length: number, tile_height: number, tile_width: number): string,
 }
 
 interface Plan {

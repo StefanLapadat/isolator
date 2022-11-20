@@ -4,7 +4,7 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
 use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d, Plane};
 use crate::building_representations::converters;
-use crate::tiling::{Tile, TriangulizedTiles};
+use crate::tiling::{Tile, TriangulizedTiles, tile};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
 use std::cmp::Ordering;
 
@@ -39,19 +39,18 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
 
     while i < request.data().len() {
         match request.data()[i].isolation() {
-            Option::Some(detail) => {
+            Some(detail) => {
                 tiles.append(&mut get_tiles_from_wall_in_building(i, request, detail.width()));
             },
-            Option::None => {
-
-            }
+            None => {}
         }
 
         i+=1;
     }
     
-    tiles
-    // tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
+    // tiles
+    let res = tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>();
+    res
 }
 
 fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_width: f64) -> Vec<Tile> {

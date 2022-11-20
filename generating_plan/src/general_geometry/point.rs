@@ -74,7 +74,13 @@ impl Point {
     }
 
     pub fn divide_by_parallel_vec(&self, v2: &Point) -> f64 {
-        if !Self::are_vectors_colinear(&self, v2) {
+        
+        if Self::are_points_simmilar(self, &Point { x: -43.39411254969542, y: -43.39411254969542, z: -1.05387500062791e-15 }) &&
+        Self::are_points_simmilar(v2, &Point { x: -43.39411254969542, y: -43.39411254969542, z: -2.4088571442923657e-15 }){
+            println!("ker");
+        }
+
+        if !self.are_vectors_colinear(v2) {
             panic!("This function can only be called for parallel vectors. Actual were: {:?} {:?}", self, v2);
         }
         
@@ -127,17 +133,17 @@ impl Point {
         }
 
         let ratio;
-        if self.x != 0. {
+        if !self.x.simmilar_to(0., 0.0001) {
             ratio = t2.x / self.x;
         } else {
-            if self.y != 0. {
+            if !self.y.simmilar_to(0., 0.0001) {
                 ratio = t2.y / self.y;
             } else {
                 ratio = t2.z / self.z;
             }
         }
 
-        let epsilon = 0.01;
+        let epsilon = 0.0000001;
 
         if(self.x.simmilar_to(0., 0.0001) && !t2.x.simmilar_to(0., 0.0001)) || 
         (self.y.simmilar_to(0., 0.0001) && !t2.y.simmilar_to(0., 0.0001)) || 
@@ -145,9 +151,9 @@ impl Point {
             return false;
         }
 
-        (self.x == 0. || (t2.x / self.x).simmilar_to(ratio, epsilon)) && 
-        (self.y == 0. || (t2.y / self.y).simmilar_to(ratio, epsilon)) && 
-        (self.z == 0. || (t2.z / self.z).simmilar_to(ratio, epsilon))
+        (self.x.simmilar_to(0.,epsilon) | (t2.x / self.x).simmilar_to(ratio, epsilon)) &&
+        (self.y.simmilar_to(0., epsilon) || (t2.y / self.y).simmilar_to(ratio, epsilon)) &&
+        (self.z.simmilar_to(0., epsilon) || (t2.z / self.z).simmilar_to(ratio, epsilon))
     }
 
     pub fn angle_to(&self, other: &Point) -> Angle {

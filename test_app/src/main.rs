@@ -3,8 +3,10 @@ use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPoi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(1);
+    let req = request_generation::create_request(2, 5.0, 5.0, 0.4);
     let plan = generating_plan::plan_generation::generate_plan(&req);
+
+    // test_if_planes_are_parallel();
 
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
@@ -70,4 +72,8 @@ fn test_merging_of_polygons() {
     let p3 =  Polygon::from_triplets(vec![(0.0, 25.3, 0.0), (0.0, 25.0, 0.0), (-0.3, 25.3, 0.0)], vec![]);
 
     println!("{:?}", Polygon::merge_multiple_polygons(&vec![p1, p2, p3, ]));
+}
+
+fn test_if_planes_are_parallel() {
+    println!("{:?}", Point::new(-2.775557561562895e-17, -2.775557561562895e-17, -2.000000000000002).are_vectors_colinear(&Point::new(0.0, 0.0, 1.0)));
 }
