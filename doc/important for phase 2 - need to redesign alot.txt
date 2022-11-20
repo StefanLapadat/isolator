@@ -1,0 +1,29 @@
+Sjebao sam se sa ovim rimovima i takvim pronalaskom tile-a. 
+
+Treba mi nekakvo bolje resenje. Generickije.. Mada bih mogao mozda da resim ovo sto imam trenutno i da kazem da je to to, imam to sto imam - ne podrzavam prozore, terase i sta ti ja znam, ali mogao bih da probam da napravim za postavljanje na taj nacin.. Hmhmhm, ne, to mi se ne dopada. Ne zelim takvo resenje. Imacu posle problema zbog toga i nece biti dobro. Bolje da sada to uradim kako treba, da posvetim neko vreme tom algoritmu, nego da non stop razmisljam hoce li to biti ok ili nece. 
+
+================================================================================================================================
+
+Sta je postavka problema? 
+
+
+Zadat je skup poligona sa rupama (orijentisanih). 
+Svaki od njih ima definisanu debljinu sloja koji na njega treba naneti. 
+Slojevi pod odredjenim okolnostima negde mogu biti tanji nego sto je definisano (na sastavima dva poligona).
+
+Slojeve treba realizovati pomocu ploca zadatih dimenzija (sirina, duzina, visina); 
+
+Ploce se lepe na poligone i jedna na drugu pomocu lepka.
+
+Ploce treba da budu tako namestene da se mogu, jedna po jedna, umetati na svoje krajnje mesto. 
+
+================================================================================================================================
+
+Cinjenice: 
+
+Kao prvo i prvo, kako mi uopste predstavljamo krajnju povrsinu koju treba dobiti? Rekao bih opet, kao set poligona. Svi dobijeni poligoni imaju osobinu da su paralelni sa svojim baznim poligonima. Dakle to je milion posto. Resenja problema su poligoni. U ovoj mojoj prici ne postoje oble povrsine, ne postoje nikakve krivine itd.. Mada je to pitanje.. Zasto ne bih imao na samim poligonima nekakve 'arcove'? To na kraju krajeva i babylon js podrzava kada iscrtava poligone, jel da? A i deluje da bi moglo da bude korisno podrzavati arcove? Hmhmhm, da li bih mozda arcove mogao da aproksimiram u praksi sa vecim brojem stranica na poligonima, pa da na kraju, pri samoj postavci, obrusim nesto malo i gotovo, da kazemo da je to to? Mislim da bi to bilo ok. Hmmhm.. Ono sto me malo brine je da cu da napravim ovo moje cudo, a da ce onda neki pederi investitori da dodju i da naprave bolje od toga sa timom od 15-20 ljudi i da me oduvaju.. Zato zelim odmah da imam sjajan softver. I zato moram da idem na siru pricu. Dobro je ovo sto sam radio - dobio sam osecaj za pricu. I mozda cak ne bi bilo lose da doradim ovo sto imam i da kazemo da mi je to neka 'verzija 1'. Da to cudo radi ono sto treba, mozda cak i da zavrsim sve sto sam stavio na todo - lepak, planiranje postavljanja, simulaciju itd.. Pa kada to budem imao, da se vratim zaista nazad i da onda odradim zaista kako treba. Znaci radim sve kako sam mislio, ali imam na umu da sve to moze dosta bolje. Da, tako cu da uradim i necu se osvrtati ni sekunde na ovo ovde. Ostavicu ga ovako kako jeste i nastaviti da rokam po starom. PROTOTIPIZIRAM :D 
+
+Mozda ce mi biti malo teze, jer cu s vremena na vreme imati ovakve probleme kao sto sam ih imao ovih dana, koji ce me smarati, ne pisem testove, imam dosta bugova. Medjutim, nije ovo toliko komplikovano da se ne moze roketati. Malo cu podici nivo ozbiljnosti i teram dalje. Ne smem da idem u perfekcionizam - JOS UVEK. Daj nesto da napravim, pa onda napravi sve to ali bolje, da ne kazem - perfektno :) Ima dovoljno vremena. 4 meseca, bice do jaja! :) 
+
+
+

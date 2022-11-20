@@ -6,8 +6,6 @@ fn main(){
     let req = request_generation::create_request(1);
     let plan = generating_plan::plan_generation::generate_plan(&req);
 
-    // test_merging_of_polygons();
-
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 3.245), Point::new(1., 0., 3.245), Point::new(0.5, 1., 3.245), ], vec![])

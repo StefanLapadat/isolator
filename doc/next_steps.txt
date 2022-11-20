@@ -2,7 +2,6 @@
 
 1.1.
 
-Secenje kornera malo bolje.
 Implementirati preseke iz one biblioteke.
 Implementirati algoritam koji treba da resi problem sa presecima.
 Lepak.

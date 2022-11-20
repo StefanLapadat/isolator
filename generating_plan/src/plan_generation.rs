@@ -4,7 +4,7 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
 use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d, Plane};
 use crate::building_representations::converters;
-use crate::tiling::{Tile, TriangulizedTiles, tile};
+use crate::tiling::{Tile, TriangulizedTiles};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
 use std::cmp::Ordering;
 
@@ -51,8 +51,7 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
     }
     
     tiles
-    // tiles.iter().map(|t| t.translate()).collect::<Vec<_>>()
-    //tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
+    // tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>()
 }
 
 fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_width: f64) -> Vec<Tile> {
@@ -64,8 +63,6 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
 
     let mut base_rim: Vec<Vec<Point>> = vec![];
     let mut surface_rim: Vec<Vec<Point>> = vec![];
-
-    // println!("{} {:?}", ind, borders);
 
     let mut i = 0;
     while i<borders.len() {
@@ -99,8 +96,8 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
         i+=1;
     }
 
-    let surface_rim = further_process_surface_rim(&surface_rim);
-    // let base_rim = further_process_base_rim(&base_rim);
+    let surface_rim = further_process_base_or_surface_rim(&surface_rim);
+    let base_rim = further_process_base_or_surface_rim(&base_rim);
 
     let flat_base_rim = base_rim.into_iter().flatten().collect::<Vec<_>>();
     let flat_surface_rim = surface_rim.into_iter().flatten().collect::<Vec<_>>();
@@ -113,23 +110,23 @@ fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_widt
     res
 }
 
-fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>> {
+fn further_process_base_or_surface_rim(rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>> {
     let mut res = vec![];
 
     let mut i = 0;
-    let srl = surface_rim.len();
+    let srl = rim.len();
     while i < srl {
-        let prev_side = &surface_rim[(i + srl - 1) % srl];
+        let prev_side = &rim[(i + srl - 1) % srl];
         let last_point_on_prev_side = &prev_side[prev_side.len() - 1];
         let prev_last_point_on_prev_side = &prev_side[prev_side.len() - 2];
         let prev_side_last_line = Line3D::from_2_points(prev_last_point_on_prev_side, last_point_on_prev_side).unwrap();
 
-        let this_side = &surface_rim[i];
+        let this_side = &rim[i];
         let first_line_this_side = Line3D::from_2_points(&this_side[0], &this_side[1]).unwrap();
 
         let last_line_this_side = Line3D::from_2_points(&this_side[this_side.len() - 1], &this_side[this_side.len() - 2]).unwrap();
 
-        let next_side = &surface_rim[(i + 1) % srl];
+        let next_side = &rim[(i + 1) % srl];
         let first_point_on_next_side = &next_side[0];
         let second_point_on_next_side = &next_side[1];
         let next_side_first_line = Line3D::from_2_points(first_point_on_next_side, second_point_on_next_side).unwrap();
@@ -167,8 +164,6 @@ fn further_process_surface_rim(surface_rim: &Vec<Vec<Point>>) -> Vec<Vec<Point>>
 
     res
 }
-
-
 
 fn solve_corner1(shared_segment: &LineSegment, observing_wall: &PolygonWithIsolationDetails, bordering_wall: &PolygonWithIsolationDetails) -> (Point, Point, Point, Point) {
 
