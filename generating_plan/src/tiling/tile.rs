@@ -188,13 +188,14 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let surface_2d = surface.to_2d(&system);
 
     let base_union_box = Polygon2D::union_box_many(vec![base_2d, surface_2d]);
+    println!("base union box {:?}", base_union_box);
     let base_splitted = split_2d_surrounding_boxes(&base_union_box, unit_tile_width, unit_tile_height);
+    println!("unit tile width: {} unit tile height {}", unit_tile_width, unit_tile_height);
 
     let original_distance_from_origin = base.distance_from_origin();
     let base_union_boxes_3d = base_splitted.iter().map(|b| b.to_3d(&system, &original_distance_from_origin)).collect::<Vec<_>>();
 
-    let surface_union_boxes_3d = base_union_boxes_3d.iter()
-    .map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
+    let surface_union_boxes_3d = base_union_boxes_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
     let base_comps = base_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
     let surface_comps = surface_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
 
@@ -235,14 +236,6 @@ fn split_2d_surrounding_boxes(r: &Rectangle, unit_tile_width: f64, unit_tile_hei
 
 pub fn are_tile_and_unit_tile_compatible(tile: &Tile, unit_tile: &UnitTile) -> Option<(f64, f64)> {
     let tile_width = tile.width();
-
-    if unit_tile.d.x.simmilar_to(tile_width, 0.0001) {
-        return Some((unit_tile.d.y, unit_tile.d.z));
-    }
-
-    if unit_tile.d.y.simmilar_to(tile_width, 0.0001) {
-        return Some((unit_tile.d.x, unit_tile.d.z));
-    }
 
     if unit_tile.d.z.simmilar_to(tile_width, 0.0001) {
         return Some((unit_tile.d.x, unit_tile.d.y))

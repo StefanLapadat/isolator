@@ -48,7 +48,6 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
         i+=1;
     }
     
-    // tiles
     let res = tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>();
     res
 }

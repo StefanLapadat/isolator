@@ -3,7 +3,7 @@ use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPoi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(1, 1.0, 1.0, 0.7);
+    let req = request_generation::create_request(1, 2., 1.0, 2.1);
     let plan = generating_plan::plan_generation::generate_plan(&req);
 
     // test_if_planes_are_parallel();
