@@ -2,9 +2,11 @@
 
 1.1.
 
-Implementirati preseke iz one biblioteke.
-Implementirati algoritam koji treba da resi problem sa presecima.
-Lepak.
+Implementirati preseke iz one biblioteke. 
+Implementirati algoritam koji treba da resi problem sa presecima. 
+Terase i prozori. 
+
+Lepak. 
 
 1.2.
 

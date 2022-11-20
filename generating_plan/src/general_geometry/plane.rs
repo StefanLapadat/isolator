@@ -99,7 +99,6 @@ impl Plane {
         let (n1, n2) = (p1.normal_vector(), p2.normal_vector());
         let coef = n1.divide_by_parallel_vec(&n2);
 
-
         (Plane::new(p1.a/coef, p1.b/coef, p1.c/coef, p1.d/coef), p2.clone())
     }
 
@@ -137,9 +136,6 @@ impl Plane {
 
     pub fn line_parallel_to_intersection_going_through_origin(&self, other: &Plane) -> Line3D {
         let dir = Point::cross_prod(&self.normal_vector(), &other.normal_vector());
-        if Point::are_points_simmilar(&Point::ZERO, &dir) {
-            println!("Why did we end up here? {:?} {:?} {:?}", dir, self, other);
-        }
         Line3D::new(dir, Point::ZERO).unwrap()
     }
 }

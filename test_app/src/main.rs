@@ -3,7 +3,7 @@ use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPoi
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(2, 5.0, 5.0, 0.4);
+    let req = request_generation::create_request(1, 1.0, 1.0, 0.7);
     let plan = generating_plan::plan_generation::generate_plan(&req);
 
     // test_if_planes_are_parallel();
@@ -76,4 +76,10 @@ fn test_merging_of_polygons() {
 
 fn test_if_planes_are_parallel() {
     println!("{:?}", Point::new(-2.775557561562895e-17, -2.775557561562895e-17, -2.000000000000002).are_vectors_colinear(&Point::new(0.0, 0.0, 1.0)));
+}
+
+fn test_polygons_with_weird_normals() {
+    let poly: Polygon = Polygon::new(vec![Point { x: 0.0, y: 0.0, z: 0.0 }, Point { x: 10.0, y: 0.0, z: 0.0 }, Point { x: 10.0, y: 0.0, z: 10.0 }, Point { x: 15.0, y: 0.0, z: 10.0 }, Point { x: 15.0, y: 0.0, z: 0.0 }, Point { x: 25.700000000000003, y: 0.0, z: 0.0 }, Point { x: 25.7, y: 0.0, z: 25.0 }, Point { x: 0.0, y: 0.0, z: 25.0 }], vec![]);
+
+    // println
 }

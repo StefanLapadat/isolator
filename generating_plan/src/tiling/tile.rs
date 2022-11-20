@@ -50,7 +50,7 @@ impl Tile {
 
         let p1 = Polygon::new(base_data.0, base_data.1).plane();
         let p2 = Polygon::new(surface_data.0, surface_data.1).plane();
-        
+
         let (p1, p2) = Plane::make_parallel_planes_have_same_params(&p1, &p2);
 
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
