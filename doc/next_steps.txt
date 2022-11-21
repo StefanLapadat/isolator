@@ -2,19 +2,22 @@
 
 1.1.
 
+Pod hitno moram da zamenim ovo svoje mergovanje sa eksternom bibliotekom. Ali pod hitno. 
+Terase i prozori coskovi. 
+
 Implementirati preseke iz one biblioteke. 
 Implementirati algoritam koji treba da resi problem sa presecima. 
-Terase i prozori. 
 
 Lepak. 
 
 1.2.
 
-- naravno generisanje plana kako ce se uz pomoc masina postaviti to sto treba, isto najjednostavnije moguce, tako da mogu da predjem na fizicko postavljanje na nekakvim modelima, maketama, kako god. Jer ako je negde problem, tu ce biti. Ne treba drndati do savrsenstva ovo sranje, kad je na drugoj strani mozda neizvodljivo.. 
+- naravno generisanje plana kako ce se uz pomoc masina postaviti to sto treba, isto najjednostavnije moguce, tako da mogu da predjem na fizicko postavljanje na nekakvim modelima, maketama, kako god. Jer ako je negde problem, tu ce biti. Ne treba drndati do savrsenstva ovo sranje, kad je na drugoj strani mozda neizvodljivo.
+
 
 ============= FAZA 2 ================
 
-Kreiranje masina koje mogu da, saradjujuci sa racunarom, postave stiropor na najprostiju kutiju, bez nekih fensi senzora, samo najosnovnije i najjeftinije.
+Kreiranje masina koje mogu da, saradjujuci sa racunarom, postave stiropor na model zgrade.
 
 ============= FAZA 3 ================
 
@@ -25,4 +28,8 @@ Isto kao faza 2, ali na pravom objektu.
 Prolazak kroz sve faze 1-3, ali se prica usloznjava - nije vise prototip, nego se realizuje ozbiljniji proizvod.
 
 Znaci na prvom mestu, ovde cemo imati razlicite vrste testova. Unit testove na nivou koda, ali i ogroman broj automatski generisanih zgrada i oblika koji treba da sluze tome da potvrde da aplikacija nigde ne puca. Znaci da se potvrdi da se uvek generisu nekakvi planovi. Za odredjene zgrade ce biti i assertovi, znaci kao nekakav integracioni test. Ali sve to malo kasnije. 
+
+============= FAZA 5 ================
+
+Dodatni slojevi, busenja rupa, slojevi imitacije cigle, oluci itd itd.. Mozda tu malo i VR moze da pomogne, tako sto bi covek neke stvari mogao da radi 'iz daljine'.. U sustini, ovde ce biti svega, ali je pitanje koliko ce se od ove faze inicijalno odraditi. Ona je vise onako - ako bude i sta bude, ok, ako ne, bice kasnije. 
 

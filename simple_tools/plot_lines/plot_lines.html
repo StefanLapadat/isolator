@@ -11,8 +11,8 @@
     </canvas>
     <script>
         //test1();
-        // testProblematicDataForUnion();
-        test2();
+        testProblematicDataForUnion();
+        //test3();
 
         function drawAPolygon(p) {
             var c = document.getElementById("myCanvas");
@@ -269,6 +269,42 @@
                 x: 60,
                 y: 0
             }));
+
+
+            let p3 = {
+                exterior: [{
+                    x: -14.981057489885039,
+                    y: 4.423563776499597
+                }, {
+                    x: -12.203658880999292,
+                    y: 0.2659133622199752
+                }, {
+                    x: -8.315300828559245,
+                    y: -5.554797217771496
+                }, {
+                    x: -4.1576504142796225,
+                    y: -2.777398608885748
+                }, {
+                    x: -8.04600846671967,
+                    y: 3.043311971105723
+                }, {
+                    x: -3.8883580524400467,
+                    y: 5.820710579991471
+                }, {
+                    x: -6.665756661325794,
+                    y: 9.978360994271092
+                }, {
+                    x: -14.981057489885039,
+                    y: 4.423563776499597
+                }],
+                interiors: []
+            };
+
+            drawAPolygon(moveAPolygon(scaleAPolygon(p3, 30), {
+                x: 65,
+                y: 0
+            }));
+
         }
 
         function test2() {
@@ -351,6 +387,71 @@
             drawAPolygon(p1);
             drawAPolygon(p2);
             drawAPolygon(p3);
+        }
+
+        function test3() {
+            var p1 = {
+                exterior: [{
+                    x: -10.0,
+                    y: 0.0,
+                }, {
+                    x: 10.0,
+                    y: 0.0,
+                }, {
+                    x: 10.0,
+                    y: 7.0,
+                }, {
+                    x: -10.0,
+                    y: 7.0,
+                }, {
+                    x: -10.0,
+                    y: 0.0,
+                }].map(a => ({
+                    x: a.x * 10,
+                    y: a.y * 10
+                })),
+                interiors: [
+
+                ]
+            };
+
+            var p2 = {
+                exterior: [{
+                    x: 5.0,
+                    y: 7.0,
+                }, {
+                    x: 10.0,
+                    y: 7.0,
+                }, {
+                    x: 10.0,
+                    y: 12.0,
+                }, {
+                    x: 5.0,
+                    y: 12.0
+                }, {
+                    x: 5.0,
+                    y: 7.0,
+                }].map(a => ({
+                    x: a.x * 10,
+                    y: a.y * 10
+                })),
+                interiors: [
+                    [].map(a => ({
+                        x: a.x * 10,
+                        y: a.y * 10
+                    }))
+                ]
+            };
+
+
+            drawAPolygon(p1);
+            drawAPolygon(p2);
+
+            // Dakle veci ka manjem ne moze. Zasto. A 
+            // manji ka vecem moze. 
+            // Opet gubim vreme na gluposti.. 
+            // Moram da proverim onaj lib za merge sto 
+            // sam otkazao :) 
         }
     </script>
 </body>

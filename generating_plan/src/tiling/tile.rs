@@ -188,9 +188,7 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let surface_2d = surface.to_2d(&system);
 
     let base_union_box = Polygon2D::union_box_many(vec![base_2d, surface_2d]);
-    println!("base union box {:?}", base_union_box);
     let base_splitted = split_2d_surrounding_boxes(&base_union_box, unit_tile_width, unit_tile_height);
-    println!("unit tile width: {} unit tile height {}", unit_tile_width, unit_tile_height);
 
     let original_distance_from_origin = base.distance_from_origin();
     let base_union_boxes_3d = base_splitted.iter().map(|b| b.to_3d(&system, &original_distance_from_origin)).collect::<Vec<_>>();

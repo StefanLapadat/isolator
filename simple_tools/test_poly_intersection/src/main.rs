@@ -2,7 +2,11 @@ use old_geo_types::{Polygon, polygon, LineString};
 use geo_booleanop::boolean::BooleanOp;
 
 fn main() {
-    let big: Polygon<f64> = polygon!(exterior: [(
+    test_union_1();
+}
+
+fn test_intersection_1() {
+   let big: Polygon<f64> = polygon!(exterior: [(
         x: 0.,
         y: 0.
     ), (
@@ -31,8 +35,6 @@ fn main() {
         y: 0.
     )], interiors: []);
     
-    // let mut polygon = Polygon::new(LineString::from(vec![(0., 0.), (1., 0.), (1., 1.)]), vec![]);
-
     let small: Polygon<f64>  = polygon!(exterior: [(
         x: -100.,
         y: 700.
@@ -78,4 +80,33 @@ fn main() {
     for p in union.into_iter() {
         dbg!(p);
     }
+}
+
+fn test_union_1() {
+
+    let p1: Polygon<f32> = polygon!(
+        exterior: [
+            ( x: -8.315300828559245, y: -5.554797217771496 ),
+            ( x: -4.1576504142796225, y: -2.777398608885748 ),
+            ( x: -8.04600846671967, y: 3.043311971105723 ),
+            ( x: -12.203658880999292, y: 0.2659133622199752 ),
+            ( x: -8.315300828559245, y: -5.554797217771496 )
+        ], 
+        interiors: []
+    );
+
+    let p2: Polygon<f32> = polygon!(
+        exterior: [
+            ( x: -12.203658880999292, y: 0.1659133622199752 ),
+            ( x: -3.8883580524400467, y: 5.820710579991471 ),
+            ( x: -6.665756661325794, y: 9.978360994271092 ),
+            ( x: -14.981057489885039, y: 4.423563776499597 ),
+            ( x: -12.203658880999292, y: 0.1659133622199752 )
+        ], 
+        interiors: []
+    );
+
+    let union = p1.union(&p2);
+
+    println!("{:?}", union);
 }
