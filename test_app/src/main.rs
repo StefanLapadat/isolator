@@ -1,12 +1,12 @@
 use request_generation;
-use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPointsOnSides, Polygon, Polygon2D, CoordinateSystem3D};
+use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPointsOnSides, Polygon, Polygon2D, Point2D, CoordinateSystem3D};
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    // let req = request_generation::create_request(3, 2., 1.0, 2.1);
-    // let plan = generating_plan::plan_generation::generate_plan(&req);
+    let req = request_generation::create_request(1, 1.5, 1.0, 1.3);
+    let plan = generating_plan::plan_generation::generate_plan(&req);
 
-    test_merging_of_polygons2();
+    // test_polygon_2d_intersection();
 
     // let tile = Tile::new(
     //     PolygonPointsOnSides::new(vec![Point::new(0., 0., 0.), Point::new(1., 0., 0.), Point::new(0.5, 1., 0.), ], vec![]), 
@@ -32,7 +32,7 @@ fn test_mapping_coordinates_from_2d_to_3d_and_back() {
 
     println!("{:?}", poly2d);
     println!("{:?}", poly2d.union_box());
-    println!("{:?}", poly2d.union_box().to_3d(&system, &original_distance_from_origin));
+    println!("{:?}", poly2d.union_box().to_polygon_2d().to_3d(&system, &original_distance_from_origin));
 
     println!("{:?}", system);
     println!("{:?}", CoordinateSystem3D::inverse_system(&system));
@@ -91,3 +91,19 @@ fn test_polygons_with_weird_normals() {
 
     // println
 }
+
+fn test_polygon_2d_intersection() {
+    let r1 = vec![Point2D::new(0., 0.), Point2D::new(10., 0.), Point2D::new(10., 10.), Point2D::new(0., 10.)];
+    let r2 = vec![Point2D::new(5., 0.), Point2D::new(15., 0.), Point2D::new(15., 10.), Point2D::new(5., 10.)];
+
+    let p2d1 = Polygon2D::new(r1, vec![]);
+    let p2d2 = Polygon2D::new(r2, vec![]);
+
+    println!("{:?}", p2d1.intersection(&p2d2));
+}
+
+
+
+
+
+
