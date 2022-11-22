@@ -1,4 +1,4 @@
-use crate::general_geometry::{Point, Simmilar};
+use crate::{Point, Simmilar};
 
 #[derive(Clone, Debug)]
 pub struct Line3D {
@@ -77,6 +77,6 @@ fn intersection_of_two_lines_with_exactly_one_common_point(l1: &Line3D, l2: &Lin
 #[derive(Debug)]
 pub enum Intersection {
     None,
-    Point(crate::general_geometry::Point),
-    Line(crate::general_geometry::Line3D)
+    Point(crate::Point),
+    Line(crate::Line3D)
 }

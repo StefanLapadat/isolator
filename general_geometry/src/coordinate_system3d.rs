@@ -1,4 +1,4 @@
-use crate::general_geometry::{Point};
+use crate::{Point};
 
 #[derive(Debug)]
 pub struct CoordinateSystem3D {

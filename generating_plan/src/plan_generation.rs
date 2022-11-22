@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::request_for_isolation::Request;
-use crate::general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d, Plane};
+use general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d, Plane};
 use crate::building_representations::converters;
 use crate::tiling::{Tile, TriangulizedTiles, tile};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
@@ -327,9 +327,6 @@ fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Vec<Border>>
 }
 
 fn corners_on_one_side_to_borders(corners: &mut Vec<Corner>, start: &Point, end: &Point) -> Vec<Border> {
-
-    println!("Corners len = {:?}", corners.len());
-
     corners.sort_by(|a, b| a.pt.subtract(&start).modulo().partial_cmp(&b.pt.subtract(&start).modulo()).unwrap_or(Ordering::Equal));
 
     let mut i = 0;
@@ -353,10 +350,6 @@ fn corners_on_one_side_to_borders(corners: &mut Vec<Corner>, start: &Point, end:
                 point_b: seg_start.clone(),
                 wall_ind: None
             });
-        }
-        
-        if(Point::are_points_simmilar(&corners[i].pt, &corners[i+1].pt)) {
-            println!("tu si dzukelo! {:?} {:?}", corners[i].pt, corners[i+1].pt);
         }
 
         res.push(Border {

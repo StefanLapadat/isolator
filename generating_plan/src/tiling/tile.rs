@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::polygon2d::Rectangle;
-use crate::general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D, Plane};
+use general_geometry::polygon2d::Rectangle;
+use general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D, Plane};
 use crate::triangulation::PolygonForTriangulation;
 
 #[derive(Debug, Clone)]
@@ -187,13 +187,16 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let base_and_surface_union_box = Polygon2D::union_box_many(vec![base_2d.clone(), surface_2d.clone()]);
     let union_box_splitted = split_2d_surrounding_boxes(&base_and_surface_union_box, unit_tile_width, unit_tile_height);
 
-    let original_distance_from_origin = base.distance_from_origin();
+    let original_distance_from_origin_base = base.distance_from_origin();
+    let original_distance_from_origin_surface = surface.distance_from_origin();
 
-    let base_mini_tiles_2d_boxes = union_box_splitted.iter().map(|b| b.to_polygon_2d());
-    let base_mini_tiles_2d_rects = base_mini_tiles_2d_boxes.map(|t| t.intersection(&base_2d)).filter(|intersections| intersections.len() > 0).collect::<Vec<_>>();
+    let union_box_mini_tiles_2d_boxes = union_box_splitted.iter().map(|b| b.to_polygon_2d());
 
-    let base_mini_tiles_3d = base_mini_tiles_2d_rects.iter().map(|t| t[0].to_3d(&system, &original_distance_from_origin)).collect::<Vec<_>>();
-    let surface_mini_tiles_3d = base_mini_tiles_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
+    let base_mini_tiles_2d_polys = union_box_mini_tiles_2d_boxes.clone().map(|t| t.intersection(&base_2d)).filter(|intersections| intersections.len() > 0).collect::<Vec<_>>();
+    let surface_mini_tiles_2d_polys = union_box_mini_tiles_2d_boxes.map(|t| t.intersection(&surface_2d)).filter(|intersections| intersections.len() > 0).collect::<Vec<_>>();
+
+    let base_mini_tiles_3d = base_mini_tiles_2d_polys.iter().map(|t| t[0].to_3d(&system, &original_distance_from_origin_base)).collect::<Vec<_>>();
+    let surface_mini_tiles_3d = surface_mini_tiles_2d_polys.iter().map(|t| t[0].to_3d(&system, &original_distance_from_origin_surface)).collect::<Vec<_>>();
 
     let base_comps = base_mini_tiles_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
     let surface_comps = surface_mini_tiles_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();

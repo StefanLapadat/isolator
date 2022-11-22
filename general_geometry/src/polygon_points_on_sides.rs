@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Polygon};
+use crate::{Point, Polygon};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PolygonPointsOnSides {

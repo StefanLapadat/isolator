@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::Point;
+use crate::Point;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Triangle {

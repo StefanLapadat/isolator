@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::general_geometry::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D};
+use crate::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D};
 use petgraph::graph::{UnGraph};
 use petgraph::algo;
 
@@ -339,8 +339,6 @@ impl Polygon {
     }
 
     fn merge_group_of_neighbouring_polygons(group: &Vec<usize>, polygons: &Vec<Polygon>) -> Polygon {
-        // println!("**************** {:?} Malo smo i mergovali", group);
-
         let mut res = polygons[group[0]].clone();
         let mut i = 1;
 
@@ -489,9 +487,6 @@ impl Polygon {
     }
 
     pub fn get_all_corners_on_polygon(ind: usize, all_polys: &Vec<Polygon>) -> Vec<Corner> {
-
-        println!("{:?}", all_polys);
-
         let mut res = vec![];
         let mut i = 0;
 
@@ -533,8 +528,6 @@ impl Polygon {
                 match seg {
                     Some(seg) => {
                         if !next_p.subtract(tmp_p).same_oktant(&next_p2.subtract(tmp_p2)) {
-                            // println!("Ubacili segmetn! {:?} ind_poly2: {} i: {} j: {}\n\n poly2: {:?}\n\n", seg, ind_poly2, i, j, poly2);
-                            // println!("*** {:?} {:?} {:?} {:?}\n", tmp_p, next_p, tmp_p2, next_p2);
                             res.push(Corner{pt: seg.p1().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
                             res.push(Corner{pt: seg.p2().clone(), ind_of_bordering_polygon: ind_poly2, ind_of_side_in_this_polygon: i});
                         }                        

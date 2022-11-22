@@ -3,7 +3,7 @@
 use crate::building_representations::levels::Levels;
 use crate::building_representations::polygon_walls::PolygonWalls;
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
-use crate::general_geometry::{Polygon, Point};
+use general_geometry::{Polygon, Point};
 
 pub fn levels_to_polygon_walls(levels: Levels) -> PolygonWalls {
     let mut walls: Vec<Polygon> = vec![];

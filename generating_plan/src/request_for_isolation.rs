@@ -1,4 +1,5 @@
-use crate::{general_geometry::{Polygon, Point}, tiling::UnitTile};
+use general_geometry::{Polygon, Point};
+use crate::tiling::UnitTile;
 use serde::{Serialize, Deserialize};
 use crate::building_representations::polygon_walls::PolygonWalls;
 

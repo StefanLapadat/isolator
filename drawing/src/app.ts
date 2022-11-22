@@ -1,5 +1,5 @@
 import * as BABYLON from '@babylonjs/core';
-import { FreeCamera } from '@babylonjs/core';
+import { FreeCamera, Plane } from '@babylonjs/core';
 
 import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
     () => {
@@ -51,40 +51,46 @@ function reloadApp() {
 }
 
 class App {
-    private readonly plan: Plan;
+    private plan: Plan;
     private readonly backend: Backend;
     private readonly canvas: HTMLCanvasElement;
     private readonly engine: BABYLON.Engine;
-    private readonly scene: BABYLON.Scene;
-    private readonly buildingMeshVertexData: BABYLON.VertexData;
-    private readonly buildingWireframeData: BABYLON.Vector3[][];
-    private readonly isolationMeshVertexData: BABYLON.VertexData;
-    private readonly isolationWireframeData: BABYLON.Vector3[][];
+    private scene: BABYLON.Scene;
+    private buildingMeshVertexData: BABYLON.VertexData;
+    private buildingWireframeData: BABYLON.Vector3[][];
+    private isolationMeshVertexData: BABYLON.VertexData;
+    private isolationWireframeData: BABYLON.Vector3[][];
 
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
         this.engine = new BABYLON.Engine(this.canvas, true);
 
-        this.backend = (window as any).wasm as Backend;
-        this.plan = JSON.parse(this.backend.get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth()));
-    
-        this.buildingMeshVertexData = this.getBuildingMeshVertexData();
-        this.buildingWireframeData = this.getBuildingWireframeData();
+        // this.backend = (window as any).wasm as Backend;
+        this.backend = new HttpBackend();
 
-        this.isolationMeshVertexData = this.getIsolationMeshVertexData();
-        this.isolationWireframeData = this.getIsolationWireframeData();
+        this.backend.get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth())
+        .then((response) => response.json())
+        .then((data) => {
+            this.plan = data as Plan;
 
-        this.scene = this.createScene();
+            this.buildingMeshVertexData = this.getBuildingMeshVertexData();
+            this.buildingWireframeData = this.getBuildingWireframeData();
 
-        this.connectCamera(camera);
-        this.connectLights();
-        this.showBuilding();
-        this.showIsolation();
-        if (this.getShowAxes()) {
-            this.showAxis(50);
-        }
+            this.isolationMeshVertexData = this.getIsolationMeshVertexData();
+            this.isolationWireframeData = this.getIsolationWireframeData();
 
-        this.initGeneralGameStuff();
+            this.scene = this.createScene();
+
+            this.connectCamera(camera);
+            this.connectLights();
+            this.showBuilding();
+            this.showIsolation();
+            if (this.getShowAxes()) {
+                this.showAxis(50);
+            }
+
+            this.initGeneralGameStuff();
+        });
     }
 
     dispose() {
@@ -333,7 +339,13 @@ class App {
 
 
 interface Backend {
-    get_plan(request_id: number, tile_length: number, tile_height: number, tile_width: number): string,
+    get_plan(request_id: number, tile_length: number, tile_height: number, tile_width: number): Promise<Response>,
+}
+
+class HttpBackend implements Backend {
+    get_plan(request_id: number, tile_length: number, tile_height: number, tile_width: number): Promise<Response> {
+        return fetch(`http://127.0.0.1:8000/generateplan?request_id=${request_id}&width=${tile_width}&height=${tile_height}&length=${tile_length}`);
+    }
 }
 
 interface Plan {

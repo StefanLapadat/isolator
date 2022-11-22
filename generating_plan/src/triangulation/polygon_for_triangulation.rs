@@ -1,4 +1,4 @@
-use crate::general_geometry::{Point, Polygon, Triangle};
+use general_geometry::{Point, Polygon, Triangle};
 use earcutr::earcut;
 
 pub struct PolygonForTriangulation { 

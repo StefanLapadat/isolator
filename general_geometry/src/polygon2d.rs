@@ -1,6 +1,6 @@
-use crate::general_geometry::{Point2D, Polygon, Point};
-use old_geo_types::{Polygon as GeoPolygon, LineString};
-use geo_booleanop::boolean::BooleanOp;
+use crate::{Point2D, Polygon, Point};
+use geo_types::{Coordinate, LineString, Polygon as GeoPolygon};
+use geo_clipper::Clipper;
 
 use super::CoordinateSystem3D;
 
@@ -38,33 +38,37 @@ impl Polygon2D {
         &self.holes
     }
 
+
+
     pub fn intersection(&self, other: &Self) -> Vec<Self> {
         let gp1 = self.to_geo_polygon();
         let gp2 = other.to_geo_polygon();
 
-        gp1.intersection(&gp2).into_iter().map(|gp| Self::geo_polygon_to_polygon(&gp)).collect::<Vec<_>>()
+        gp1.intersection(&gp2, 1.0).into_iter().map(|gp| Self::geo_polygon_to_polygon(&gp)).collect::<Vec<_>>()
     }
 
     fn to_geo_polygon(&self) -> GeoPolygon<f64> {
-        let rim: LineString<f64> = self.rim().iter().map(|pt| (pt.x(), pt.y())).collect();
+        let rim: LineString<f64> = self.rim().iter().map(|pt| (pt.x() * 1e10, pt.y() * 1e10)).collect();
         let mut holes: Vec<LineString<f64>> = vec![];
         for h in self.holes() {
-            holes.push(h.iter().map(|pt| (pt.x(), pt.y())).collect());
+            holes.push(h.iter().map(|pt| (pt.x() * 1e10, pt.y() * 1e10)).collect());
         }
 
         GeoPolygon::new(rim, holes)
     }
 
     fn geo_polygon_to_polygon(gp: &GeoPolygon<f64>) -> Self {
-        let rim: Vec<Point2D> = gp.exterior().points_iter().map(|pt| Point2D::new(pt.x(), pt.y())).collect::<Vec<_>>();
+        let rim: Vec<Point2D> = gp.exterior().points().map(|pt| Point2D::new(pt.x() / 1e10, pt.y() / 1e10)).collect::<Vec<_>>();
 
         let mut holes: Vec<Vec<Point2D>> = vec![];
         for line in gp.interiors() {
-            holes.push(line.points_iter().map(|pt| Point2D::new(pt.x(), pt.y())).collect::<Vec<_>>());
+            holes.push(line.points().map(|pt| Point2D::new(pt.x() / 1e10, pt.y() / 1e10)).collect::<Vec<_>>());
         }
 
         Self::new(rim, holes)
     }
+
+
 
     pub fn to_3d(&self, self_system: &CoordinateSystem3D, original_distance_from_origin: &Point) -> Polygon {
         let inv_system = self_system.inverse_system();

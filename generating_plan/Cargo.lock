@@ -4,15 +4,6 @@ version = 3
 
 [[package]]
 name = "approx"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0e60b75072ecd4168020818c0107f2857bb6c4e64252d8d3983f6263b40a5c3"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
-name = "approx"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f2a05fd1bd10b2527e20a2cd32d8873d115b8b39fe219ee25f42a8aca6ba278"
@@ -42,6 +33,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaa3a8d9a1ca92e282c96a32d6511b695d7d994d1d102ba85d279f9b2756947f"
 
 [[package]]
+name = "cc"
+version = "1.0.77"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e9f73505338f7d905b19d18738976aae232eb46b8efc15554ffc56deb5d9ebe4"
+
+[[package]]
 name = "cgmath"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -49,6 +46,15 @@ checksum = "1a98d30140e3296250832bbaaff83b27dcd6fa3cc70fb6f1f3e5c9c0023b5317"
 dependencies = [
  "approx 0.4.0",
  "num-traits",
+]
+
+[[package]]
+name = "clipper-sys"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc6bccb550d47c390af7a601bee66a74fd3a01163feb85442021096f5533d2e5"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -67,12 +73,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ce7134b9999ecaf8bcd65542e436736ef32ddca1b3e06094cb6ec5755203b80"
 
 [[package]]
-name = "float_next_after"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fc612c5837986b7104a87a0df74a5460931f1c5274be12f8d0f40aa2f30d632"
+name = "general_geometry"
+version = "0.1.0"
 dependencies = [
- "num-traits",
+ "geo-clipper",
+ "geo-types",
+ "nalgebra",
+ "petgraph",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -81,35 +90,20 @@ version = "0.1.0"
 dependencies = [
  "cgmath",
  "earcutr",
- "geo-booleanop",
- "geo-types 0.6.2",
- "geo-types 0.7.8",
+ "general_geometry",
  "nalgebra",
- "petgraph",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "geo-booleanop"
-version = "0.3.2"
+name = "geo-clipper"
+version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4b68ff17c819296610e9eee41bdf5eb37f71b09870a95f0086e07d8fcc1f45b"
+checksum = "7aaaa528780ab908be7d51317f9e06147c6b562b8133bc952f09508e101c085c"
 dependencies = [
- "float_next_after",
- "geo-types 0.6.2",
- "num-traits",
- "robust",
-]
-
-[[package]]
-name = "geo-types"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7583925a1fdb2b450c461fe0878ba6e99a8f1332b2bc72fb1383fd25b2f13bf2"
-dependencies = [
- "approx 0.3.2",
- "num-traits",
+ "clipper-sys",
+ "geo-types",
 ]
 
 [[package]]
@@ -129,9 +123,9 @@ checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
 
 [[package]]
 name = "indexmap"
-version = "1.9.1"
+version = "1.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a35a97730320ffe8e2d410b5d3b69279b98d2c14bdb8b70ea89ecf7888d41e"
+checksum = "1885e79c1fc4b10f0e172c475f458b7f7b93061064d98c3293e98c5ba0c8b399"
 dependencies = [
  "autocfg",
  "hashbrown",
@@ -257,12 +251,6 @@ name = "rawpointer"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60a357793950651c4ed0f3f52338f53b2f809f32d83a07f72909fa13e4c6c1e3"
-
-[[package]]
-name = "robust"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "222155e5550abd9100afdcdefbd08aa1b856d226b60e327044ec21b1ece2f78e"
 
 [[package]]
 name = "ryu"

@@ -1,4 +1,4 @@
-use crate::general_geometry::Point;
+use crate::Point;
 
 use super::{CoordinateSystem3D, Line3D};
 

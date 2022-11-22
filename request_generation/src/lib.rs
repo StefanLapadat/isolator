@@ -1,5 +1,5 @@
 use generating_plan::{request_for_isolation::Request, tiling::UnitTile};
-use generating_plan::general_geometry::{Point};
+use general_geometry::{Point};
 
 pub mod building1;
 pub mod building2;

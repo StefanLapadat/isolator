@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 generating_plan = { path = "../generating_plan" }
+general_geometry = { path = "../general_geometry" }

@@ -1,4 +1,4 @@
-use crate::general_geometry::{Point, Angle, PositiveF64};
+use general_geometry::{Point, Angle, PositiveF64};
 use std::f64::consts::PI;
 
 pub struct CornerHandlingResult {

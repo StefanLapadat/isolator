@@ -1,4 +1,4 @@
-use generating_plan::general_geometry::{Polygon};
+use general_geometry::{Polygon};
 use generating_plan::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls, levels::Levels, levels::Level, converters};
 
 pub fn create_building_triangulized() -> TrianguizedWalls {

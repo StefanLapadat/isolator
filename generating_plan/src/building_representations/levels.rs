@@ -1,4 +1,4 @@
-use crate::general_geometry::Polygon;
+use general_geometry::Polygon;
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]

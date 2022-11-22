@@ -1,5 +1,5 @@
 use request_generation;
-use generating_plan::general_geometry::{Line3D, Point, Plane, line3d, PolygonPointsOnSides, Polygon, Polygon2D, Point2D, CoordinateSystem3D};
+use general_geometry::{Line3D, Point, Plane, line3d, PolygonPointsOnSides, Polygon, Polygon2D, Point2D, CoordinateSystem3D};
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
@@ -99,11 +99,6 @@ fn test_polygon_2d_intersection() {
     let p2d1 = Polygon2D::new(r1, vec![]);
     let p2d2 = Polygon2D::new(r2, vec![]);
 
-    println!("{:?}", p2d1.intersection(&p2d2));
+    // println!("{:?}", p2d1.intersection(&p2d2));
 }
-
-
-
-
-
 
