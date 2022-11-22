@@ -2,7 +2,9 @@
 
 1.1.
 
-Pod hitno moram da zamenim ovo svoje mergovanje sa eksternom bibliotekom. Ali pod hitno. 
+Pod hitno moram da zamenim ovo svoje mergovanje sa eksternom bibliotekom. Ali pod hitno. To znaci i da cu uzeti drugi renderer.. Da radim babylon i websocket i rust na serveru koji se integrise sa cpp i python i ko zna kojim bibliotekama.. nemam pojma, deluje mi to malo kao overkill.. Jebi ga, kada bih uzeo javascript lepo, mogao bih svasta da radim direkt u browseru.. Sta znam, mozda to i jeste resenje.. babylon + rust na serveru i jos sto nekih libova koji su u ko zna kojim jezicima.. Sve da se to lepo bundluje i cao. Bilo bi malo sporije, ali sta znam, ipak koliko toliko ok.. al sam zapeo za rust :D Da lepo uzmem typescript i da odradim to ko car i zdravo dovidjenja. Imao bih sve mogucnosti.. Ili python, zbog libova.. Ne, ja hocu da podrzim rust.. I lomim glavu tu sa glupostima i gubim vreme zbog cega? Kad jebeno nema biblioteke.. Moram da vidim taj kompajler izmedju cppa i rusta.. Mada je i to upitno koliko ima smisla.. 
+Ne vredi kad jebeni python ima najvise biblioteka. A jebi ga, bice i biblioteka u rustu. Kad bi bili rust, js, python i ts jedini jezici, to bi bilo ok.. Trebalo bi da eksplorujem malo taj rust cpp interop.. 
+
 Terase i prozori coskovi. 
 
 Implementirati preseke iz one biblioteke. 

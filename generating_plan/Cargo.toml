@@ -12,3 +12,6 @@ earcutr = "0.3.0"
 cgmath="0.18.*"
 nalgebra = "0.31.3"
 petgraph = "0.6.2"
+old-geo-types = { package = "geo-types", version = "0.6.2" }
+geo-types = "0.7.3"
+geo-booleanop = "0.3.2"

@@ -216,7 +216,15 @@ fn solve_corner2(shared_segment: &LineSegment, observing_wall: &PolygonWithIsola
     let obs_wall_width_vec = observing_wall.polygon().normal().normalize().multiply(observing_wall.isolation().as_ref().unwrap().width());
 
     let shared_segment_vec = shared_segment.to_point();
-    let obs_wall_surface_line = Line3D::new(Point::cross_prod(&shared_segment_vec, &obs_wall_width_vec), shared_segment.p1().add(&obs_wall_width_vec)).unwrap();
+
+    let obs_wall_surface_line: Line3D;
+    
+    match Line3D::new(Point::cross_prod(&shared_segment_vec, &obs_wall_width_vec), shared_segment.p1().add(&obs_wall_width_vec)) {
+        Some(val) => obs_wall_surface_line = val,
+        None => panic!("What the heck!? shared_seg_vec: {:?} {:?}", &shared_segment, obs_wall_width_vec)
+    }
+
+
 
     let bor_wall_surface_line = Line3D::new(Point::cross_prod(&shared_segment_vec, &bor_wall_width_vec), shared_segment.p1().add(&bor_wall_width_vec)).unwrap();
 
@@ -320,6 +328,8 @@ fn corners_to_borders(corners: &Vec<Corner>, wall: &Polygon) -> Vec<Vec<Border>>
 
 fn corners_on_one_side_to_borders(corners: &mut Vec<Corner>, start: &Point, end: &Point) -> Vec<Border> {
 
+    println!("Corners len = {:?}", corners.len());
+
     corners.sort_by(|a, b| a.pt.subtract(&start).modulo().partial_cmp(&b.pt.subtract(&start).modulo()).unwrap_or(Ordering::Equal));
 
     let mut i = 0;
@@ -345,6 +355,10 @@ fn corners_on_one_side_to_borders(corners: &mut Vec<Corner>, start: &Point, end:
             });
         }
         
+        if(Point::are_points_simmilar(&corners[i].pt, &corners[i+1].pt)) {
+            println!("tu si dzukelo! {:?} {:?}", corners[i].pt, corners[i+1].pt);
+        }
+
         res.push(Border {
             point_a: seg_start.clone(),
             point_b: seg_end.clone(),

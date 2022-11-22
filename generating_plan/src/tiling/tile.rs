@@ -176,26 +176,27 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
         }
     }
 
-    let args_base= tile.base_polygon.to_polygon();
-    let args_surface = tile.surface_polygon.to_polygon();
-
-    let base = Polygon::new(args_base.0, args_base.1);
-    let surface = Polygon::new(args_surface.0, args_surface.1);
+    let base= tile.base_polygon.to_polygon_true_type();
+    let surface = tile.surface_polygon.to_polygon_true_type();
 
     let system = base.coordinate_system_xy_parallel_to_self();
 
     let base_2d = base.to_2d(&system);
     let surface_2d = surface.to_2d(&system);
 
-    let base_union_box = Polygon2D::union_box_many(vec![base_2d, surface_2d]);
-    let base_splitted = split_2d_surrounding_boxes(&base_union_box, unit_tile_width, unit_tile_height);
+    let base_and_surface_union_box = Polygon2D::union_box_many(vec![base_2d.clone(), surface_2d.clone()]);
+    let union_box_splitted = split_2d_surrounding_boxes(&base_and_surface_union_box, unit_tile_width, unit_tile_height);
 
     let original_distance_from_origin = base.distance_from_origin();
-    let base_union_boxes_3d = base_splitted.iter().map(|b| b.to_3d(&system, &original_distance_from_origin)).collect::<Vec<_>>();
 
-    let surface_union_boxes_3d = base_union_boxes_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
-    let base_comps = base_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
-    let surface_comps = surface_union_boxes_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
+    let base_mini_tiles_2d_boxes = union_box_splitted.iter().map(|b| b.to_polygon_2d());
+    let base_mini_tiles_2d_rects = base_mini_tiles_2d_boxes.map(|t| t.intersection(&base_2d)).filter(|intersections| intersections.len() > 0).collect::<Vec<_>>();
+
+    let base_mini_tiles_3d = base_mini_tiles_2d_rects.iter().map(|t| t[0].to_3d(&system, &original_distance_from_origin)).collect::<Vec<_>>();
+    let surface_mini_tiles_3d = base_mini_tiles_3d.iter().map(|b| b.translate(&tile.width_vec())).collect::<Vec<_>>();
+
+    let base_comps = base_mini_tiles_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
+    let surface_comps = surface_mini_tiles_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
 
     if base_comps.len() != surface_comps.len() {
         panic!("Somethings fishy here");

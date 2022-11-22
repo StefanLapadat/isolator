@@ -1,8 +1,9 @@
-use old_geo_types::{Polygon, polygon, LineString};
+use old_geo_types::{Polygon, polygon};
 use geo_booleanop::boolean::BooleanOp;
 
 fn main() {
-    test_union_1();
+    // test_problematic_union();
+    test_intersection_empty_result();
 }
 
 fn test_intersection_1() {
@@ -82,7 +83,43 @@ fn test_intersection_1() {
     }
 }
 
-fn test_union_1() {
+fn test_intersection_empty_result() {
+    let big: Polygon<f64> = polygon!(exterior: [(
+        x: 0.,
+        y: 0.
+    ), (
+        x: 10.,
+        y: 0.
+    ), (
+        x: 10.,
+        y: 10.
+    ), (
+        x: 0.,
+        y: 0.
+    )], interiors: []);
+
+    let small: Polygon<f64> = polygon!(exterior: [(
+        x: 20.,
+        y: 0.
+    ), (
+        x: 30.,
+        y: 0.
+    ), (
+        x: 30.,
+        y: 10.
+    ), (
+        x: 20.,
+        y: 0.
+    )], interiors: []);
+
+
+    let res = small.intersection(&big);
+    for p in res.into_iter() {
+        dbg!(p);
+    }
+}
+
+fn test_problematic_union() {
 
     let p1: Polygon<f32> = polygon!(
         exterior: [

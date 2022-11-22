@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 geo-clipper = "0.7.3"
+geo-types = "0.7.8"

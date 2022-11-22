@@ -1,6 +1,6 @@
 use crate::general_geometry::{Point, Simmilar};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct LineSegment {
     p1: Point,
     p2: Point
