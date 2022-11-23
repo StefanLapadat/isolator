@@ -1,11 +1,14 @@
-
-TODO Nekaaaad:
-
 - generalni nacin za pronalazak kolizija medju tile-ovima;
 - generalni nacin za pronalazak kolizija medju meshovima; 
 - naravno refaktor
 
-- uf, bas imam problem sa hendlovanjem slucaja gde se jedan poligon naslanja na drugi ali ne po ivici nego po njegovoj povrsini ili po rupama.. konkretno slucaj terase.
-
 - kontakt zida sa izolacijom i bez - dorada; Ukljuceno u ovo je i pitanje oko toga sta se desava kada imamo dva stiropora koji su vrlo razlicitih debljina.
+
+- Zameniti ono moje cudo mergovanja sa ovim iz biblioteke. 
+- Terase i prozori coskovi. 
+- Terase i prozori u levels prikazu. 
+- Testirati da li ima jos ociglednih buggova. 
+    Sto se ovoga tice, pronasao sam nekoliko stvari. Prva stvar je da nisam sasvim siguran zasto mi ovo sa presecima sljaka uopste ikada? Jer ja nadjem presek unit_tile rectanglea iz velikog bounding box-a sa base i surface-ima velikog tile-a i poprilicno cesto dobijem preseke koji se dobro slazu - to uopste ne bi moralo da bude tako. Mogli bi biti 'zarotirani' tako da to bas ne ispadne ok. Sta bi ovde bilo resenje - pronaci rotacije sa najboljim poklapanjem u smislu razdaljine parova tacaka. Sta bi jos moglo da se desi; Moglo bi da se desi da zbog numerickih tripova dodje do nepoklapanja broja temena u donjem i gornjem surface-u. Naravno, ono sto smo rekli da se vec desava je da je moguce da veliki tile bude tako namesten da kada izdelim bounding box na unit tileove, oni se nameste na baseu i surfaceu velikog tilea, tako da zajedno neki preseci ne cine plocicu. To bi se donekle moglo srediti, medjutim, nije bas jednostavno. Trebalo bi taj algoritam lepo napraviti. 
+- Napraviti desetak razlicitih zgrada i testirati na njima. 
+
 

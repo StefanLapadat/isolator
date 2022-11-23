@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use crate::Point;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Triangle {
     t1: Point,
     t2: Point,

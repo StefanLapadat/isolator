@@ -96,6 +96,10 @@ impl TriangulizedTile {
             triangles
         }
     }
+
+    pub fn triangles(&self) -> &Vec<Triangle> {
+        &self.triangles
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -119,6 +123,14 @@ impl TriangulizedTiles {
             tiles: triangulized_tiles,
             wireframe: wireframe
         }
+    }
+
+    pub fn tiles(&self) -> &Vec<TriangulizedTile> {
+        &self.tiles
+    }
+
+    pub fn wireframe(&self) -> &Vec<Vec<Point>> {
+        &self.wireframe
     }
 }
 
@@ -208,6 +220,9 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let it = base_comps.iter().zip(surface_comps.iter());
     let mut res = vec![];
     for (i, (x, y)) in it.enumerate() {
+        if x.0.len() != y.0.len() {
+            println!("Well fuck it man!");
+        }
         let t = Tile::new(PolygonPointsOnSides::new(x.0.clone(), x.1.clone()),
         PolygonPointsOnSides::new(y.0.clone(), y.1.clone()));
         res.push(t);

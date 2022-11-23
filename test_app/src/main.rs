@@ -3,7 +3,7 @@ use general_geometry::{Line3D, Point, Plane, line3d, PolygonPointsOnSides, Polyg
 use generating_plan::tiling::{UnitTile, Tile};
 
 fn main(){
-    let req = request_generation::create_request(1, 1.5, 1.0, 1.3);
+    let req = request_generation::create_request(2, 3.0, 1.5, 0.3);
     let plan = generating_plan::plan_generation::generate_plan(&req);
 
     // test_polygon_2d_intersection();
