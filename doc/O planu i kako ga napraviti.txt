@@ -1,0 +1,94 @@
+Dobro, sta bismo mi hteli sad? 
+
+Sta je ideja? :) 
+
+Hteli bismo da napravimo sledece: 
+
+    - Zelim da napravim funkcionalnost gde mi se pokazuje, koristeci odgovarajuci set toolova, koje plocice je moguce postaviti, koje plocice nije moguce. Kako da to uradimo? Ovo me malo podseca na 'constraint programming' (Constraint programming (CP)[1] is a paradigm for solving combinatorial problems that draws on a wide range of techniques from artificial intelligence, computer science, and operations research.)
+
+    Zasto me podseca na 'constraint programming'? Pa prosto - zadati su neki pocetni uslovi, treba naci resenje koje zadovoljava te uslove. Kako kombinovati alatke tako da se nadje resenje; 
+
+    - Osim toga da mi se pokazu same ploce koje se mogu postaviti, zeleo bih i tekstualni prikaz resenja; Ove stvari su skopcane jedna sa drugom, naravno, mada, ima malene razlike, odnosno ova druga na neki nacin prosiruje drugu jer uvodi moment 'serijalizacije plana' u pricu. Prva moze da predstavi plan u nekom dinamickom smislu, u obliku, ne znam - procesa.. Ali ova druga tacka zahteva kreiranje 'image'-a te izvedbe. 
+
+    - Zeleo bih da taj tekstualni prikaz pretocim u nesto sto se moze prikazati u 3d engineu. Dakle, da napravim nekakvu simulaciju, ako je moguce. 
+
+===============================================================================================================================
+
+Kako da izvedem ovo? Koje su mi primitive potrebne? Mogao bih da ne komplikujem mnogo, vec da kazem ovako - plocicu je moguce postaviti na svoje mesto, ukoliko je moguce 
+
+Kad je moguce postaviti plocicu? Moguce ju je postaviti ukoliko postoji put do nje, jel tako? Ukolio neka masina moze da joj pridje. A kad masina moze da pridje plocici? Pa, ukoliko moze da pridje nekoj oko nje, a onda jos moze i da skoci od te do koje moze da pridje.. Mada, to i nije neko generalno resenje.. Lici na neku rekurziju, na neki prolog.. i to je kao kul, medjutim, ako zelim da stvarno pametujem i imam to generalno resenje, ovo bas i nije. Ne mogu da kazem tek tako - ako mozes da pridjes ovoj plocici, onda mozes toj i toj i toj do nje.. Sta ako nemam dovoljno kanapa.. Prosto, to je problematika. Isto, ne treba cak ni da posmatram 'plocice' - da li mogu da postavim tu i tu 'plocicu', vec vise, da li mogu da dodjem na to i to mesto. To mogu da posmatram kao neki preduslov.. Da, mislim da ne treba jos uvek da idem toliko presiroko. Prosto ne znam kako ce se prica razvijati, bolje da krenem krljacki, pa cemo videti. Koji su sve nacini da se dodje do mesta. Sad idem sa jednim jedinim.. 
+
+Dakle, kako bi to izgledalo? Treba mi funkcija koja ce mi reci da li se odredjena tacka na mapi moze dosegnuti. To deluje kao lepa funkcija :) 
+
+Kako mozemo da nadjemo da li se to moze ili se ne moze? Hm, mozda je bolje ovako da uradimo? Da napravimo nekakvu mrezu oko zgrade (pa to je vec u stvari mreza plocica jel tako) i da posmatramo centre te mreze. A takodje, da uzmemo sve uredjaje i da pokusamo da ih apliciramo na zgradu te da vidimo sta oni tu mogu da dohvate? 
+
+Voleo bih da nadjem neko sredenje resenje. Ne zelim ni da bas narokam kod onako bez veze, a ne zelim ni da se udubljujem u neka ludila sa 'constraint programmingom'. Hocu nesto umereno lepo. Znaci da kazemo ovako. 
+
+Posmatramo sredista plocica, jel tako? Ok. To su nam ciljane tacke. Za te ciljane tacke, i odredjeni skup uredjaja, odredjujemo koje su tacke dostupne a koje nisu. One koje jesu oznacavamo jednom bojom, one koje nisu drugom, jel tako? :) Dobro. Kako se ovo odnosi na generisanje plana? Da li bi mogao veceras do osmice da napravim neku simulaciju? Da iscrtam neke uredjaje koji podizu i spustaju plocice? Hmhmhm, tesko, ali mogu da odradim nesto. Aha! Ok, ne moram nista pametno danas da smislim, hajde da vidim kako bi mi ta simulacija funkcionisala? Sta da posaljem pa da se to nesto tamo pomera :) 
+
+BTW, ovaj json je vec sad velik za medalju.. A male zgradice su u pitanju.. Mislim, dobro, on to kompresuje kad salje, mreza nije problem. 25MB pretvori u 1MB, medjutim, ne znam sta se desava posle u js-u, da li je to neki problem.. A mislim da nije ni to. Makar ne za sada.. Da li mi treba neki efikasniji 'wire' protokol od HTTP-a, moze ws, mada.. ne znam. Najveci mi je problem tu sto nisam sasvim siguran kako da tu simulaciju prikazem. Da li da drzim stvari u memoriji pa da streamujem, ili da posaljem sve odjednom na klijenta pa da tamo imam neki proces pomocu kojeg to prikazujem.. Nemam pojma. Znaci i to mi je zajebano. Aha, ok, otprilike se ocrtavaju faze i ovde: 
+
+    - Pronalazenje nekog ok nacina za pronalazenje plocica koje se mogu i koje se ne mogu postaviti. 
+    - Pronalazenje nekog ok nacina da se kreira demonstracija samog postavljanja. 
+    - Mislim da bi bilo skroz ok da se u rustu napravi samo plan, i to u nekim krupnijim komandama, nesto u smislu 'bice toliko tih masina i toliko ovih masina, one ce stajati tu tu i tu; zatim, one ce u tim momentima zapocinjati to, to i to.' U sustini, predstavljamo sve kao skup nekih komandi koje frontend onda ume da renderuje. E tako; To je poenta. Ne moze drugacije, sad da ja kreiram neki 3d film pa da to saljem, zauzimalo bi 10TB memorije. Kada 100_000 plocica (ukljucujuci i lepak), sto je oko 600k trouglova zauzme oko 300MB, sta bi 
+    bilo da imam 100k trouglova ali da ih predstavim u 10 sekundi na 25 frameova po sekundi?? 50MB x 10 x 25 = 12.5GB, samo za deset sekundi. Prosto, previse je to. 
+
+    E ok, sta dalje? Kako poslati plan za secenje ploca, kako referisati na te objekte? Ukoliko bih hteo da uzmem desktop i fyrox, mozda i ne bih morao toliko da brinem o tome, medjutim, mislim da ipak treba da brinem jer cu u svakom slucaju u jednom trenutku morati da namestim nekako da sa jednog racunara saljem na neki drugi te objekte i sta se s njima desava, tako da bolje to odmah da proucim. 
+
+    Deluje mi da je u celoj ovoj prici pojam 'komanda' vrlo bitan. 
+
+    Znaci imali bi ovako nesto mozda? 
+
+    {
+        "total_length": "1_500_000",
+        "commands": [
+            {
+                "command": "create",
+                "id": "some_guid",
+                "start_time": 0,
+                "object_type": "tile",
+                "specification": {
+                    "base": [
+                        {"x": ..., "y": ..., "z": ...},
+                        {"x": ..., "y": ..., "z": ...},
+                        {"x": ..., "y": ..., "z": ...},
+                    ],
+                    "surface": [
+                        {"x": ..., "y": ..., "z": ...},
+                        {"x": ..., "y": ..., "z": ...},
+                        {"x": ..., "y": ..., "z": ...},
+                    ]
+                }, 
+                "position": {"x": ..., "y": ..., "z": ...},
+                "coordinate_system": {
+                    "o": {"x": ..., "y": ..., "z": ...},
+                    "ox": {"x": ..., "y": ..., "z": ...},
+                    "oy": {"x": ..., "y": ..., "z": ...},
+                    "oz": {"x": ..., "y": ..., "z": ...},
+                }
+            },
+            {
+                "command": "move",
+                "start_time": 5_000,
+                "end_time": 10_000,
+                "id": "some_guid",
+                "translation": {"x": ..., "y": ..., "z": ...},
+                "rotation": "pitch, yaw, roll..???"
+            }
+        ]
+    }
+
+    Hmhmh, sad se postavlja pitanje, sta ja da radim sa ovim cudom? Treba raditi triangulaciju na frontu.. Deluje da sam dosta ovih stvari vec implementirao u rustu. Mada.. mozda nisam trebao??? Zasto sam triangulaciju radio u rustu? Nisam trebao. Trebalo je od starta da saljem granularnije objekte koje samo na kraju pretvorim u trouglove na frontu. Mada dobro, ni ovo nije lose - lako mogu da zamenim engine.. Treba imati i jedno i drugo. To je odgovor. E sad, dobro, ukoliko je to strategija, da vidimo sta mi ovde treba? Triangulacija, jel tako? Dobro, earcut to radi. Sta mi jos treba? Treba mi da websocket. Ok, to je isto relativno jednostavno. 
+
+
+
+    Ok, ovo deluje relativno ok, rekao bih? Medjutim, vrebaju strasna pitanja; Kako cu hendlovati odstupanja od plana? :) Kada jednom dodje trenutak da se to razmotri i implementira, kako cu to predstaviti? Jos nisam do toga stigao - jos uvek mastam; Medjutim, kako ce se ovo uklopititi u realnu pricu, kada do nje dodje? Da li cu moci da zadrzim ista od ovog plana? Koliko odstupanje od plana cu dozvoliti? Mislim da ce biti ok i da mi je plan na prvom mestu apsolutno neophodan. Trenutno je malo cudno jer sve izvrsavam na ovim jednostavnim gradjevinama. Medjutim, kada sredim algoritme i kada budem imao slozeniju situaciju, slozenije zgrade itd, i te kako ce biti smisleno videti ovo sto sada radim. Predstavu o tome kako ce se izvrsiti plan. A kada se krene sa samim izvrsavanjem, na pametan nacin moram da smislim kako da predstavim taj 'diff' izmedju plana i izvrsenog. 
+
+
+
+
+
+
+
+
+

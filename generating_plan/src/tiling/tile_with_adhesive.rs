@@ -30,4 +30,12 @@ impl TriangulizedTilesWithAdhesive {
             triangulized_adhesive: TriangulizedTiles::from_tiles(adhesive_tiles),
         }
     }
+
+    pub fn triangulized_tiles(&self) -> &TriangulizedTiles {
+        &self.triangulized_tiles       
+    }
+
+    pub fn triangulized_adhesive(&self) -> &TriangulizedTiles {
+        &self.triangulized_adhesive       
+    }
 }

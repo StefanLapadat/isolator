@@ -36,11 +36,35 @@ impl Tile {
         (PolygonPointsOnSides::new(base_polygon_res, vec![]), PolygonPointsOnSides::new(surface_polygon_res, vec![]))
     }
 
-    fn base_polygon(&self) -> &PolygonPointsOnSides {
+    pub fn from_base_polygon_and_width(base: PolygonPointsOnSides, width: Point) -> Self {
+        let surface = base.translate(&width);
+
+        Self::new(base, surface)
+    }
+
+    pub fn split_surface(&self, percent_width_from_base_to_surface: f64) -> PolygonPointsOnSides {
+        let res_rim = Self::split_surface_rim(self.base_polygon.rim(), self.surface_polygon.rim(), percent_width_from_base_to_surface);
+        let zipped_holes = self.base_polygon.holes().iter().zip(self.surface_polygon.holes().iter());
+        let res_holes = zipped_holes.map(|hole_pair| Self::split_surface_rim(hole_pair.0, hole_pair.1, percent_width_from_base_to_surface)).collect::<Vec<_>>();
+
+        PolygonPointsOnSides::new(res_rim, res_holes)
+    }
+
+    fn split_surface_rim(rim_base: &Vec<Point>, rim_surface: &Vec<Point>, percent_width_from_base_to_surface: f64) -> Vec<Point> {
+        let mut res = vec![];
+        let mut i = 0;
+        while i < rim_base.len() {
+            res.push(rim_base[i].add(&rim_surface[i].subtract(&rim_base[i]).multiply(percent_width_from_base_to_surface)));
+            i+=1;
+        }
+        res
+    }
+
+    pub fn base_polygon(&self) -> &PolygonPointsOnSides {
         &self.base_polygon
     }
 
-    fn surface_polygon(&self) -> &PolygonPointsOnSides {
+    pub fn surface_polygon(&self) -> &PolygonPointsOnSides {
         &self.surface_polygon
     }
 
@@ -56,7 +80,7 @@ impl Tile {
         (p1.d() - p2.d()).abs() / p1.normal_vector().modulo()
     }
 
-    fn width_vec(&self) -> Point {
+    pub fn width_vec(&self) -> Point {
         let p_args = self.base_polygon().to_polygon();
         Polygon::new(p_args.0, p_args.1).normal().normalize().multiply(self.width())
     }

@@ -1,48 +1,13 @@
 import * as BABYLON from '@babylonjs/core';
 import { FreeCamera, Plane } from '@babylonjs/core';
 
-import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
-    () => {
-        setTimeout(() => {
-            reloadApp();
-
-            document.getElementById("request-id")?.addEventListener('input', (event) => {
-                localStorage.setItem("requestId", (event as any).data);
-                reloadApp();
-            })
-
-            document.getElementById("tile-length")?.addEventListener('input', (event) => {
-                localStorage.setItem("tileLength", (event as any).data);
-                reloadApp();
-            })
-
-            document.getElementById("tile-height")?.addEventListener('input', (event) => {
-                localStorage.setItem("tileHeight", (event as any).data);
-                reloadApp();
-            })
-
-            document.getElementById("tile-width")?.addEventListener('input', (event) => {
-                localStorage.setItem("tileWidth", (event as any).data);
-                reloadApp();
-            })
-
-            document.getElementById("building")?.addEventListener('input', (event) => {
-                localStorage.setItem("building", (event as any).data);
-                reloadApp();
-            })
-
-            document.getElementById("isolation")?.addEventListener('input', (event) => {
-                localStorage.setItem("isolation", (event as any).data);
-                reloadApp();
-            })
-
-            document.getElementById("show-axes")?.addEventListener('input', (event) => {
-                localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
-                reloadApp();
-            })
-        }, 400);
-    }
-);
+// import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
+//     () => {
+//         setTimeout(() => {
+            
+//         }, 400);
+//     }
+// );
 
 function reloadApp() {
     let camera = ((window as any).babylonApp as any)?.getCamera();
@@ -60,6 +25,9 @@ class App {
     private buildingWireframeData: BABYLON.Vector3[][];
     private isolationMeshVertexData: BABYLON.VertexData;
     private isolationWireframeData: BABYLON.Vector3[][];
+    private adhesiveMeshVertexData: BABYLON.VertexData;
+    private adhesiveWireframeData: BABYLON.Vector3[][];
+    
 
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
@@ -79,12 +47,16 @@ class App {
             this.isolationMeshVertexData = this.getIsolationMeshVertexData();
             this.isolationWireframeData = this.getIsolationWireframeData();
 
+            this.adhesiveMeshVertexData = this.getAdhesiveMeshVertexData();
+            this.adhesiveWireframeData = this.getAdhesiveWireframeData();
+
             this.scene = this.createScene();
 
             this.connectCamera(camera);
             this.connectLights();
             this.showBuilding();
             this.showIsolation();
+            this.showAdhesive();
             if (this.getShowAxes()) {
                 this.showAxis(50);
             }
@@ -202,6 +174,28 @@ class App {
         isolationMesh.material = mat;
     }
 
+    showAdhesive() {
+        let mode = this.getShowIsolation();
+
+        var adhesiveMesh = new BABYLON.Mesh("adhesiveMesh", this.scene);
+        if(mode === ShowBuildingOrIsolation.Show){
+            this.adhesiveMeshVertexData.applyToMesh(adhesiveMesh);
+        }
+
+        if(mode === ShowBuildingOrIsolation.Wireframe || mode === ShowBuildingOrIsolation.Show) {
+            const adhesiveWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.adhesiveWireframeData}, this.scene); 
+            adhesiveWireframe.color = BABYLON.Color3.Black();
+        }
+
+        var mat = new BABYLON.StandardMaterial("mat", this.scene);
+        mat.wireframe = false;
+        mat.backFaceCulling = false;
+        mat.transparencyMode = 0;
+        mat.alpha = 1;
+        mat.diffuseColor = BABYLON.Color3.Green();
+        adhesiveMesh.material = mat;
+    }
+
     getBuildingMeshVertexData(): BABYLON.VertexData {
         var vertexData = new BABYLON.VertexData();
 
@@ -243,7 +237,7 @@ class App {
         let indices = [];
         let i = 0;
 
-        for(let tile of this.plan.tiles.tiles) {
+        for(let tile of this.plan.tiles.triangulized_tiles.tiles) {
             for(let wt of tile.triangles){
                 totalTriangles.push(...[wt.t1.x, wt.t1.z, wt.t1.y, wt.t2.x, wt.t2.z, wt.t2.y, wt.t3.x, wt.t3.z, wt.t3.y]);
                 indices.push(...[i++, i++, i++]);
@@ -259,7 +253,41 @@ class App {
     getIsolationWireframeData(): BABYLON.Vector3[][] {
         let wireframe: BABYLON.Vector3[][] = [];
 
-        for(let lineSeq of this.plan.tiles.wireframe) {
+        for(let lineSeq of this.plan.tiles.triangulized_tiles.wireframe) {
+            let lineSeqFront = [];
+            for (let point of lineSeq) {
+                lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
+            }
+            wireframe.push(lineSeqFront);
+        }
+
+        return wireframe;
+    }
+
+    getAdhesiveMeshVertexData(): BABYLON.VertexData {
+        var vertexData = new BABYLON.VertexData();
+
+        let totalTriangles = [];
+        let indices = [];
+        let i = 0;
+
+        for(let tile of this.plan.tiles.triangulized_adhesive.tiles) {
+            for(let wt of tile.triangles){
+                totalTriangles.push(...[wt.t1.x, wt.t1.z, wt.t1.y, wt.t2.x, wt.t2.z, wt.t2.y, wt.t3.x, wt.t3.z, wt.t3.y]);
+                indices.push(...[i++, i++, i++]);
+            }
+        }
+
+        vertexData.positions = totalTriangles;
+        vertexData.indices = indices;
+
+        return vertexData;
+    }
+
+    getAdhesiveWireframeData(): BABYLON.Vector3[][] {
+        let wireframe: BABYLON.Vector3[][] = [];
+
+        for(let lineSeq of this.plan.tiles.triangulized_adhesive.wireframe) {
             let lineSeqFront = [];
             for (let point of lineSeq) {
                 lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
@@ -350,12 +378,17 @@ class HttpBackend implements Backend {
 
 interface Plan {
     building: Building,
-    tiles: Tiles
+    tiles: TilesWithAdhesive
 }
 
 interface Building {
     walls: TriangulizedWall[],
     wireframe: Point [][] 
+}
+
+interface TilesWithAdhesive {
+    triangulized_tiles: Tiles,
+    triangulized_adhesive: Tiles
 }
 
 interface Tiles {
@@ -388,3 +421,40 @@ enum ShowBuildingOrIsolation {
     Wireframe,
     Hide
 }
+
+reloadApp();
+
+document.getElementById("request-id")?.addEventListener('input', (event) => {
+    localStorage.setItem("requestId", (event as any).data);
+    reloadApp();
+})
+
+document.getElementById("tile-length")?.addEventListener('input', (event) => {
+    localStorage.setItem("tileLength", (event as any).data);
+    reloadApp();
+})
+
+document.getElementById("tile-height")?.addEventListener('input', (event) => {
+    localStorage.setItem("tileHeight", (event as any).data);
+    reloadApp();
+})
+
+document.getElementById("tile-width")?.addEventListener('input', (event) => {
+    localStorage.setItem("tileWidth", (event as any).data);
+    reloadApp();
+})
+
+document.getElementById("building")?.addEventListener('input', (event) => {
+    localStorage.setItem("building", (event as any).data);
+    reloadApp();
+})
+
+document.getElementById("isolation")?.addEventListener('input', (event) => {
+    localStorage.setItem("isolation", (event as any).data);
+    reloadApp();
+})
+
+document.getElementById("show-axes")?.addEventListener('input', (event) => {
+    localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
+    reloadApp();
+})

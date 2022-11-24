@@ -34,7 +34,7 @@ fn polygon_walls_from_request(request: &Request) -> PolygonWalls {
     PolygonWalls::new(walls)
 }
 
-fn get_tiling(request: &Request) -> Vec<Tile> {
+fn get_tiling(request: &Request) -> Vec<TileWithAdhesive> {
     let mut tiles: Vec<Tile> = vec![];
     let mut i: usize = 0;
 
@@ -49,18 +49,26 @@ fn get_tiling(request: &Request) -> Vec<Tile> {
         i+=1;
     }
 
-    let res = tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>();
-    res
+    let splitted_tiles = tiles.into_iter().map(|t| tile::split_into_tiles(&t, &request.unit_tile()).unwrap()).flatten().collect::<Vec<_>>();
+    tiles_into_tiles_with_adhesive(splitted_tiles)
 }
 
-fn tiles_into_tiles_with_adhesive(mut tiles: Vec<Tile>) -> Vec<TileWithAdhesive> {
-    let mut res: Vec<TileWithAdhesive> = vec![];
-
-    res = tiles.iter().map(|tile| )
+fn tiles_into_tiles_with_adhesive(tiles: Vec<Tile>) -> Vec<TileWithAdhesive> {
+    tiles.iter().map(|tile| tile_into_tile_with_adhesive(tile)).collect::<Vec<_>>()
 }
 
-fn tile_into_tile_with_adhesive() {
+fn tile_into_tile_with_adhesive(tile: &Tile) -> TileWithAdhesive {
 
+    let adhesive_tile_base = tile.base_polygon().clone();
+    let styro_tile_surface = tile.surface_polygon().clone();
+
+    let adhesive_tile_surface = tile.split_surface(0.1);
+    let styro_tile_base = adhesive_tile_surface.clone();
+
+    let adhesive_tile = Tile::new(adhesive_tile_base, adhesive_tile_surface);
+    let styro_tile = Tile::new(styro_tile_base, styro_tile_surface);
+
+    TileWithAdhesive::new(styro_tile, adhesive_tile)
 }
 
 fn get_tiles_from_wall_in_building(ind: usize, request: &Request, isolation_width: f64) -> Vec<Tile> {
