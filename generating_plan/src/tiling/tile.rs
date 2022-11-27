@@ -133,19 +133,19 @@ pub struct TriangulizedTiles {
 }
 
 impl TriangulizedTiles {
-    pub fn from_tiles(tiles: Vec<Tile>) -> TriangulizedTiles {
+    pub fn from_tiles(tiles: &Vec<Tile>) -> TriangulizedTiles {
         let mut triangulized_tiles: Vec<TriangulizedTile> = vec![];
         let mut wireframe: Vec<Vec<Point>> = vec![];
 
         for tile in tiles {
-            let mut triangulized_tile_with_wireframe = tile_to_triangulized_tile(&tile);
+            let mut triangulized_tile_with_wireframe = tile_to_triangulized_tile(tile);
             triangulized_tiles.push(triangulized_tile_with_wireframe.0);
             wireframe.append(&mut triangulized_tile_with_wireframe.1);
         }
 
         TriangulizedTiles {
             tiles: triangulized_tiles,
-            wireframe: wireframe
+            wireframe
         }
     }
 
@@ -191,10 +191,7 @@ fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>)
     let mut wireframe: Vec<Vec<Point>> = vec![];
 
     for side in tile.to_polygons() {
-        for triangle in PolygonForTriangulation::from_polygon(&side).triangulate_3d() {
-            triangles.push(triangle)
-        }
-
+        triangles.append(&mut PolygonForTriangulation::from_polygon(&side).triangulate_3d());
         wireframe.append(&mut side.wireframe());
     }
 

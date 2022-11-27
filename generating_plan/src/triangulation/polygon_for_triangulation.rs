@@ -1,4 +1,4 @@
-use general_geometry::{Point, Polygon, Triangle};
+use general_geometry::{Point, Polygon, Triangle, Plane};
 use earcutr::earcut;
 
 pub struct PolygonForTriangulation { 
@@ -58,12 +58,14 @@ impl PolygonForTriangulation {
                 res.push(hole_point.clone());
             }
         }
-    
+        
         res
     }
 
     fn triangulate_3d_indices_result(&self) -> Vec<usize> {
-        let system = Polygon::new(self.points.clone(), vec![]).coordinate_system_xy_parallel_to_self();
+        let plane = Plane::from_points_vector(&self.points()).unwrap();
+        let system = plane.coordinate_system_normal_to_plane_origin_at_base();
+
         return earcut(&Polygon::flatten_points(&self.points, &system), &self.holes, 2);
     }
 }

@@ -26,8 +26,8 @@ impl TriangulizedTilesWithAdhesive {
         let adhesive_tiles = tiles.iter().map(|tile| tile.adhesive_tile.clone()).collect::<Vec<_>>();
 
         TriangulizedTilesWithAdhesive { 
-            triangulized_tiles: TriangulizedTiles::from_tiles(styro_tiles), 
-            triangulized_adhesive: TriangulizedTiles::from_tiles(adhesive_tiles),
+            triangulized_tiles: TriangulizedTiles::from_tiles(&styro_tiles), 
+            triangulized_adhesive: TriangulizedTiles::from_tiles(&adhesive_tiles),
         }
     }
 

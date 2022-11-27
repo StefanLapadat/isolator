@@ -1,17 +1,9 @@
 import * as BABYLON from '@babylonjs/core';
-import { FreeCamera, Plane } from '@babylonjs/core';
-
-// import (("./index.js") as any).catch(e => console.error("Error importing `index.js`:", e)).then(
-//     () => {
-//         setTimeout(() => {
-            
-//         }, 400);
-//     }
-// );
+import { FreeCamera } from '@babylonjs/core';
 
 function reloadApp() {
     let camera = ((window as any).babylonApp as any)?.getCamera();
-    ((window as any).babylonApp as any)?.dispose();
+    ((window as any).babylonApp as App)?.dispose();
     (window as any).babylonApp = new App(camera);
 }
 
@@ -21,14 +13,23 @@ class App {
     private readonly canvas: HTMLCanvasElement;
     private readonly engine: BABYLON.Engine;
     private scene: BABYLON.Scene;
+
     private buildingMeshVertexData: BABYLON.VertexData;
+    private buildingMesh: BABYLON.Mesh;
     private buildingWireframeData: BABYLON.Vector3[][];
+    private buildingWireframeMesh: BABYLON.LinesMesh;
+
+    private isolationMesh: BABYLON.Mesh;
     private isolationMeshVertexData: BABYLON.VertexData;
     private isolationWireframeData: BABYLON.Vector3[][];
+    private isolationWireframeMesh: BABYLON.LinesMesh;
+
+    private adhesiveMesh: BABYLON.Mesh;
     private adhesiveMeshVertexData: BABYLON.VertexData;
     private adhesiveWireframeData: BABYLON.Vector3[][];
-    
+    private adhesiveWireframeMesh: BABYLON.LinesMesh;
 
+    
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
         this.engine = new BABYLON.Engine(this.canvas, true);
@@ -56,7 +57,7 @@ class App {
             this.connectLights();
             this.showBuilding();
             this.showIsolation();
-            this.showAdhesive();
+
             if (this.getShowAxes()) {
                 this.showAxis(50);
             }
@@ -105,7 +106,7 @@ class App {
     }
 
     createScene() {
-        return new BABYLON.Scene(this.engine)
+        return new BABYLON.Scene(this.engine);
     }
 
     connectCamera(cam?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
@@ -136,64 +137,34 @@ class App {
         let mode = this.getShowBuilding();
 
         var buildingMesh = new BABYLON.Mesh("buildingMesh", this.scene);
-        if(mode === ShowBuildingOrIsolation.Show){
-            this.buildingMeshVertexData.applyToMesh(buildingMesh);
-        }
+        this.buildingMeshVertexData.applyToMesh(buildingMesh);
+        this.buildingMesh = buildingMesh;
 
-        if(mode === ShowBuildingOrIsolation.Wireframe || mode === ShowBuildingOrIsolation.Show) {
-            const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
-            buildingWireframe.color = BABYLON.Color3.Black();
-        }
-
+        const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
+        buildingWireframe.color = BABYLON.Color3.Black();
+        this.buildingWireframeMesh = buildingWireframe;
+        
         var mat = new BABYLON.StandardMaterial("matBuildingMesh", this.scene);
-        mat.wireframe = false;
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         buildingMesh.material = mat;
+
+        this.buildingMeshSetVisibility();
     }
 
-    showIsolation() {
-        let mode = this.getShowIsolation();
-
-        var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
-        if(mode === ShowBuildingOrIsolation.Show){
-            this.isolationMeshVertexData.applyToMesh(isolationMesh);
+    buildingMeshSetVisibility() {
+        let mode = this.getShowBuilding();
+        if (mode !== ShowBuildingOrIsolation.Show) {
+            this.buildingMesh.setEnabled(false);
+        } else {
+            this.buildingMesh.setEnabled(true);
         }
 
-        if(mode === ShowBuildingOrIsolation.Wireframe || mode === ShowBuildingOrIsolation.Show) {
-            const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
-            isolationWireframe.color = BABYLON.Color3.Black();
+        if(mode !== ShowBuildingOrIsolation.Hide) {
+            this.buildingWireframeMesh.setEnabled(true);
+        } else {
+            this.buildingWireframeMesh.setEnabled(false);
         }
-
-        var mat = new BABYLON.StandardMaterial("mat", this.scene);
-        mat.wireframe = false;
-        mat.backFaceCulling = false;
-        mat.transparencyMode = 0;
-        mat.alpha = 1;
-        mat.diffuseColor = BABYLON.Color3.Blue();
-        isolationMesh.material = mat;
-    }
-
-    showAdhesive() {
-        let mode = this.getShowIsolation();
-
-        var adhesiveMesh = new BABYLON.Mesh("adhesiveMesh", this.scene);
-        if(mode === ShowBuildingOrIsolation.Show){
-            this.adhesiveMeshVertexData.applyToMesh(adhesiveMesh);
-        }
-
-        if(mode === ShowBuildingOrIsolation.Wireframe || mode === ShowBuildingOrIsolation.Show) {
-            const adhesiveWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.adhesiveWireframeData}, this.scene); 
-            adhesiveWireframe.color = BABYLON.Color3.Black();
-        }
-
-        var mat = new BABYLON.StandardMaterial("mat", this.scene);
-        mat.wireframe = false;
-        mat.backFaceCulling = false;
-        mat.transparencyMode = 0;
-        mat.alpha = 1;
-        mat.diffuseColor = BABYLON.Color3.Green();
-        adhesiveMesh.material = mat;
     }
 
     getBuildingMeshVertexData(): BABYLON.VertexData {
@@ -230,6 +201,49 @@ class App {
         return wireframe;
     }
 
+
+    showIsolation() {
+        let mode = this.getShowIsolation();
+
+        var isolationMesh = new BABYLON.Mesh("isolationMesh", this.scene);
+        this.isolationMeshVertexData.applyToMesh(isolationMesh);
+        this.isolationMesh = isolationMesh;
+        
+        const isolationWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.isolationWireframeData}, this.scene); 
+        isolationWireframe.color = BABYLON.Color3.Black();
+        this.isolationWireframeMesh = isolationWireframe;
+
+        var mat = new BABYLON.StandardMaterial("mat", this.scene);
+        mat.backFaceCulling = false;
+        mat.transparencyMode = 0;
+        mat.alpha = 1;
+        mat.diffuseColor = BABYLON.Color3.Blue();
+        isolationMesh.material = mat;
+
+        this.showAdhesive();
+
+        this.isolationMeshSetVisibility();
+    }
+
+    isolationMeshSetVisibility() {
+        let mode = this.getShowIsolation();
+        if (mode !== ShowBuildingOrIsolation.Show) {
+            this.isolationMesh.setEnabled(false);
+            this.adhesiveMesh.setEnabled(false);
+        } else {
+            this.isolationMesh.setEnabled(true);
+            this.adhesiveMesh.setEnabled(true);
+        }
+
+        if(mode !== ShowBuildingOrIsolation.Hide) {
+            this.isolationWireframeMesh.setEnabled(true);
+            this.adhesiveWireframeMesh.setEnabled(true);
+        } else {
+            this.isolationWireframeMesh.setEnabled(false);
+            this.adhesiveWireframeMesh.setEnabled(false);
+        }
+    }
+
     getIsolationMeshVertexData(): BABYLON.VertexData {
         var vertexData = new BABYLON.VertexData();
 
@@ -262,6 +276,26 @@ class App {
         }
 
         return wireframe;
+    }
+
+
+    showAdhesive() {
+        let mode = this.getShowIsolation();
+
+        var adhesiveMesh = new BABYLON.Mesh("adhesiveMesh", this.scene);
+        this.adhesiveMeshVertexData.applyToMesh(adhesiveMesh);
+        this.adhesiveMesh = adhesiveMesh;
+
+        const adhesiveWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.adhesiveWireframeData}, this.scene); 
+        adhesiveWireframe.color = BABYLON.Color3.Black();
+        this.adhesiveWireframeMesh = adhesiveWireframe;
+
+        var mat = new BABYLON.StandardMaterial("mat", this.scene);
+        mat.backFaceCulling = false;
+        mat.transparencyMode = 0;
+        mat.alpha = 1;
+        mat.diffuseColor = BABYLON.Color3.Green();
+        adhesiveMesh.material = mat;
     }
 
     getAdhesiveMeshVertexData(): BABYLON.VertexData {
@@ -297,6 +331,7 @@ class App {
 
         return wireframe;
     }
+
 
     getCamera(): {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}} {
         let p =  this.scene.cameras[0].position;
@@ -446,15 +481,16 @@ document.getElementById("tile-width")?.addEventListener('input', (event) => {
 
 document.getElementById("building")?.addEventListener('input', (event) => {
     localStorage.setItem("building", (event as any).data);
-    reloadApp();
+    ((window as any).babylonApp as App).buildingMeshSetVisibility();
 })
 
 document.getElementById("isolation")?.addEventListener('input', (event) => {
     localStorage.setItem("isolation", (event as any).data);
-    reloadApp();
+    ((window as any).babylonApp as App).isolationMeshSetVisibility();
 })
 
 document.getElementById("show-axes")?.addEventListener('input', (event) => {
     localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
     reloadApp();
 })
+
