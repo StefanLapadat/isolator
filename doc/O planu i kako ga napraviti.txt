@@ -40,7 +40,7 @@ BTW, ovaj json je vec sad velik za medalju.. A male zgradice su u pitanju.. Misl
     Znaci imali bi ovako nesto mozda? 
 
     {
-        "total_length": "1_500_000",
+        "total_duration": "1_500_000",
         "commands": [
             {
                 "command": "create",
@@ -83,6 +83,22 @@ BTW, ovaj json je vec sad velik za medalju.. A male zgradice su u pitanju.. Misl
 
 
     Ok, ovo deluje relativno ok, rekao bih? Medjutim, vrebaju strasna pitanja; Kako cu hendlovati odstupanja od plana? :) Kada jednom dodje trenutak da se to razmotri i implementira, kako cu to predstaviti? Jos nisam do toga stigao - jos uvek mastam; Medjutim, kako ce se ovo uklopititi u realnu pricu, kada do nje dodje? Da li cu moci da zadrzim ista od ovog plana? Koliko odstupanje od plana cu dozvoliti? Mislim da ce biti ok i da mi je plan na prvom mestu apsolutno neophodan. Trenutno je malo cudno jer sve izvrsavam na ovim jednostavnim gradjevinama. Medjutim, kada sredim algoritme i kada budem imao slozeniju situaciju, slozenije zgrade itd, i te kako ce biti smisleno videti ovo sto sada radim. Predstavu o tome kako ce se izvrsiti plan. A kada se krene sa samim izvrsavanjem, na pametan nacin moram da smislim kako da predstavim taj 'diff' izmedju plana i izvrsenog. 
+
+
+===========================================================================
+
+Dobro, ok, sta mi treba da bih napravio tu animaciju? 
+
+- Prvo, treba mi da napravim prikaz toga sta se moze postaviti i sta se ne moze postaviti, jel tako? To je pre cele price. 
+- Takodje, treba da napravim u ovoj mojoj aplikaciji nekakve menije koji omogucavaju menjanje razlicitih pogleda. To bi isto bilo super. 
+
+
+- Zatim zelim pravu simulaciju postavljanja toga sto se moze postaviti; Sta mi je za to potrebno? 
+
+    - Prvo, generisanje tog plana, jel tako. 
+    - Drugo, potrebno je prikazati plan; 
+
+    To su dve celine; Odakle poceti? Mozda od ovog drugog - lepse je i lakse :) 
 
 
 

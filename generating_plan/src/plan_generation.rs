@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 use crate::building_representations::triangulized_walls::TrianguizedWalls;
 use crate::building_representations::polygon_walls::PolygonWalls;
+use crate::plan_execution::PlanExecutionEvent;
 use crate::request_for_isolation::Request;
 use crate::tiling::tile_with_adhesive::TriangulizedTilesWithAdhesive;
 use general_geometry::{Polygon, Point, PolygonPointsOnSides, Corner, LineSegment, Line3D, line3d, Plane};
@@ -8,11 +9,13 @@ use crate::building_representations::converters;
 use crate::tiling::{Tile, tile, TileWithAdhesive};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
 use std::cmp::Ordering;
+use crate::{PlanExecution};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Plan {
     pub building: TrianguizedWalls,
     pub tiles: TriangulizedTilesWithAdhesive,
+    pub planExecution: PlanExecution
 }
 
 pub fn generate_plan(request: &Request) -> Plan {
@@ -20,7 +23,8 @@ pub fn generate_plan(request: &Request) -> Plan {
 
     Plan {
         building: converters::polygon_walls_to_triangulized_walls(building),
-        tiles: TriangulizedTilesWithAdhesive::from_tiles(get_tiling(request))
+        tiles: TriangulizedTilesWithAdhesive::from_tiles(get_tiling(request)),
+        planExecution: PlanExecution::new(vec![PlanExecutionEvent::new(0, 2000), PlanExecutionEvent::new(3000, 6000), PlanExecutionEvent::new(8000, 18000)])
     }
 }
 
