@@ -9,9 +9,9 @@ pub fn create_request(request_id: i32, length: f64, height: f64, width: f64) -> 
     let unit_tile = UnitTile::new(Point::new(length, height, width)).unwrap();
     
     match request_id {
-        1 =>  Request::from_polygon_walls_building(&building1::create_building_polygon_walls(), width, unit_tile),
-        2 =>  Request::from_polygon_walls_building(&building2::create_building_polygon_walls(), width, unit_tile),
-        3 =>  Request::from_polygon_walls_building(&building3::create_building_polygon_walls(), width, unit_tile),
+        1 =>  Request::from_polygon_walls_building(&building1::create_building_polygon_walls(), width, unit_tile, building1::hooks()),
+        2 =>  Request::from_polygon_walls_building(&building2::create_building_polygon_walls(), width, unit_tile, building2::hooks()),
+        3 =>  Request::from_polygon_walls_building(&building3::create_building_polygon_walls(), width, unit_tile, building3::hooks()),
 
         _ => panic!("Not supported request id.")
     }

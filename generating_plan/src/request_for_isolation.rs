@@ -6,7 +6,8 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Request {
     data: Vec<PolygonWithIsolationDetails>,
-    unit_tile: UnitTile
+    unit_tile: UnitTile,
+    hooks: Vec<HookPair>
 }
 
 impl Request {
@@ -18,6 +19,15 @@ impl Request {
         &self.unit_tile
     }
 
+    pub fn hooks(&self) -> &Vec<HookPair> {
+        &self.hooks
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct HookPair {
+    robot_hook: Point,
+    carrier_hook: Point
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -48,7 +58,7 @@ impl IsolationDetails {
 }
 
 impl Request {
-    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile) -> Request {
+    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile, hooks: Vec<HookPair>) -> Request {
         let mut data: Vec<PolygonWithIsolationDetails> = vec![];
 
         for p in building.walls() {
@@ -69,7 +79,8 @@ impl Request {
 
         Request {
             data,
-            unit_tile
+            unit_tile,
+            hooks
         }
     }
 }

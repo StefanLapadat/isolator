@@ -1,0 +1,18 @@
+Dakle sta mi je vazno? Sta treba da gledam? 
+
+Treba da uzmem sve horizontalne povrsine slobodne za stajanje; Ok; To podrazumeva i zemlju naravno; I treba da projektujem; Postoji sansa da ima neka biblioteka za 'shortest path between points on meshes'? Da li bih mogao tako nesto da iskoristim? Ja imam neke rupe u ovim svojim meshovima; I meni trebaju tacno odredjeni pathovi izmedju tacaka na meshovima.. Odredjeni tipovi pathova;
+
+Deluje da bi mi nesto tako mozda moglo pomoci.. A opet, deluje da bih nesto jednostavno mozda mogao i sam da smislim.. Nesto specijalno za ovaj moj problem. 
+
+Dobro, ovo sto sam rekao deluje ok; Potrebne su mi projekcije svih zidova na XY ravan i iz toga pronalazenje.. 
+
+Znaci imam zgradu, onako kako sam je definisao; I posmatram iskljucivo horizontalne povrsine; Iz njih pustam nekakve linije pod uglovima i pomocu tih linija dolazim do plocica; Postavlja se pitanje da li je do plocice uopste moguce stici; Takodje, postavlja se pitanje da li ima vise resenja kojima se moze stici do plocice. Ovo je bitno jer mozda zelim odmah da u samom algoritmu trazenja resenja, isecam ona koja nisu dovoljno dobra odnosno ona koja se ne mogu implementirati; 
+
+Hmhmhm, hajde da se ne zajebavamo sa ovim sada, da kazemo ovako - unosim zgradu i unosim koordinate kuka? Aha!? To bi bilo skroz ok; To mi je skroz ok za pocetak, a algoritam pronalaska mesta za kuke neka bude odlozen za kasnije. Ovo za coveka nije previse posla da smisli i da unese, mozda ce cak biti i neophodno, jer grede itd.. ko ce se sa tim zajebavati da pise algoritam itd.. da ovaj to kao sam nesto radi i postavlja.. Ma jok. Ti uneses mesta za kuke i to je to; 
+
+=====================================================================
+
+
+
+
+

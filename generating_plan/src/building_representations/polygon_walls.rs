@@ -1,4 +1,4 @@
-use general_geometry::{Point, Polygon};
+use general_geometry::{Point, Polygon, Plane};
 use crate::building_representations::triangulized_walls::{TriangulizedWall};
 use crate::triangulation::PolygonForTriangulation;
 use serde::{Serialize, Deserialize};
@@ -41,5 +41,9 @@ impl PolygonWalls {
         }
 
         res
+    }
+
+    pub fn horizontal_walls(&self) -> Vec<Polygon> {
+        self.walls.iter().filter(|wall| wall.plane().parallel_to(&Plane::XY)).map(|e| e.clone()).collect::<Vec<_>>()
     }
 }

@@ -1,5 +1,6 @@
 use general_geometry::{Polygon};
-use generating_plan::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls, levels::Levels, levels::Level, converters};
+use generating_plan::building_representations::{polygon_walls::PolygonWalls, levels::Levels, levels::Level, converters};
+use generating_plan::{request_for_isolation::HookPair};
 
 pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
     let right0 = (5.0, 0.0);
@@ -16,4 +17,8 @@ pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
     ]);
 
     converters::levels_to_polygon_walls(levels)
+}
+
+pub(crate) fn hooks() -> Vec<HookPair> {
+    vec![]
 }

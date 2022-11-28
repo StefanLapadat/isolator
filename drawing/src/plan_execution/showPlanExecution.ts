@@ -1,7 +1,7 @@
 import * as BABYLON from '@babylonjs/core';
 import { FreeCamera } from '@babylonjs/core';
-import {Plan, ShowBuildingOrIsolation, } from './models';
-import {HttpBackend} from './backendService';
+import {Plan, PlanExecutionEvent, ShowBuildingOrIsolation, } from '../models';
+import {HttpBackend} from '../backendService';
 
 export function reloadApp() {
     let camera = ((window as any).babylonApp as any)?.getCamera();
@@ -18,6 +18,11 @@ class App {
     private readonly canvas: HTMLCanvasElement;
     private readonly engine: BABYLON.Engine;
     private scene: BABYLON.Scene;
+
+    private buildingMeshVertexData: BABYLON.VertexData;
+    private buildingMesh: BABYLON.Mesh;
+    private buildingWireframeData: BABYLON.Vector3[][];
+    private buildingWireframeMesh: BABYLON.LinesMesh;
     
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
@@ -28,10 +33,15 @@ class App {
         .then((data) => {
             this.plan = data as Plan;
             
+            this.buildingMeshVertexData = this.getBuildingMeshVertexData();
+            this.buildingWireframeData = this.getBuildingWireframeData();
+
+
             this.scene = this.createScene();
 
             this.connectCamera(camera);
             this.connectLights();
+            this.showBuilding();
 
             this.scheduleAnimations();
 
@@ -45,20 +55,35 @@ class App {
 
     scheduleAnimations() {
         for (let ev of this.plan.planExecution.events) {
-            this.scheduleAnimation(ev.start, ev.end);
+            this.scheduleAnimation(ev);
         }
     }
 
-    scheduleAnimation(start: number, end: number) {
+    scheduleAnimation(event: PlanExecutionEvent) {
         setTimeout(() => {
-            this.showAnimation(end - start);
-        }, start);
+            this.showAnimation(event);
+        }, event.start);
     }
 
-    showAnimation(duration: number) {
-        const box = BABYLON.MeshBuilder.CreateBox("box" + Math.random(), {});
-        console.log(duration + " *****************************");
-        box.position.x = 2;
+    showAnimation(event: PlanExecutionEvent) {
+
+        var customMesh = new BABYLON.Mesh("custom", this.scene);
+        
+        var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3];
+        var indices = [0, 1, 2, 3, 4, 5];
+        
+        var vertexData = new BABYLON.VertexData();
+
+        vertexData.positions = positions;
+        vertexData.indices = indices;	
+
+        vertexData.applyToMesh(customMesh);
+        var mat = new BABYLON.StandardMaterial("mat", this.scene);
+        mat.wireframe = false;
+        mat.backFaceCulling = false;
+        customMesh.material = mat;
+
+        customMesh.position.x = 2;
 
         const frameRate = 10;
 
@@ -71,6 +96,8 @@ class App {
             value: 2
         });
 
+        let duration = event.end - event.start;
+
         keyFrames.push({
             frame: duration / 1000 * frameRate,
             value: -2
@@ -78,10 +105,79 @@ class App {
 
         xSlide.setKeys(keyFrames);
 
-        box.animations.push(xSlide);
+        customMesh.animations.push(xSlide);
 
-        this.scene.beginAnimation(box, 0, duration / 1000 * frameRate, true);
+        this.scene.beginAnimation(customMesh, 0, duration / 1000 * frameRate, true);
     }
+
+    getBuildingMeshVertexData(): BABYLON.VertexData {
+        var vertexData = new BABYLON.VertexData();
+
+        let totalTriangles = [];
+        let indices = [];
+        let i = 0;
+
+        for(let wall of this.plan.building.walls) {
+            for(let wt of wall.triangles){
+                totalTriangles.push(...[wt.t1.x, wt.t1.z, wt.t1.y, wt.t2.x, wt.t2.z, wt.t2.y, wt.t3.x, wt.t3.z, wt.t3.y]);
+                indices.push(...[i++, i++, i++]);
+            }
+        }
+
+        vertexData.positions = totalTriangles;
+        vertexData.indices = indices;
+
+        return vertexData;
+    }
+
+    getBuildingWireframeData(): BABYLON.Vector3[][] {
+        let wireframe: BABYLON.Vector3[][] = [];
+
+        for(let lineSeq of this.plan.building.wireframe) {
+            let lineSeqFront = [];
+            for (let point of lineSeq) {
+                lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
+            }
+            wireframe.push(lineSeqFront);
+        }
+
+        return wireframe;
+    }
+
+    showBuilding() {
+        let mode = this.getShowBuilding();
+
+        var buildingMesh = new BABYLON.Mesh("buildingMesh", this.scene);
+        this.buildingMeshVertexData.applyToMesh(buildingMesh);
+        this.buildingMesh = buildingMesh;
+
+        const buildingWireframe = BABYLON.MeshBuilder.CreateLineSystem("linesystem", {lines: this.buildingWireframeData}, this.scene); 
+        buildingWireframe.color = BABYLON.Color3.Black();
+        this.buildingWireframeMesh = buildingWireframe;
+        
+        var mat = new BABYLON.StandardMaterial("matBuildingMesh", this.scene);
+        mat.backFaceCulling = false;
+        mat.transparencyMode = 0;
+        buildingMesh.material = mat;
+
+        this.buildingMeshSetVisibility();
+    }
+
+    buildingMeshSetVisibility() {
+        let mode = this.getShowBuilding();
+        if (mode !== ShowBuildingOrIsolation.Show) {
+            this.buildingMesh.setEnabled(false);
+        } else {
+            this.buildingMesh.setEnabled(true);
+        }
+
+        if(mode !== ShowBuildingOrIsolation.Hide) {
+            this.buildingWireframeMesh.setEnabled(true);
+        } else {
+            this.buildingWireframeMesh.setEnabled(false);
+        }
+    }
+
 
     dispose() {
         this.engine.dispose();
@@ -220,7 +316,13 @@ class App {
         document.getElementById("show-axes")?.addEventListener('input', (event) => {
             localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
             reloadApp();
-        })        
+        })  
+        
+        document.getElementById("building")?.addEventListener('input', (event) => {
+            localStorage.setItem("building", (event as any).data);
+            ((window as any).babylonApp as App).buildingMeshSetVisibility();
+        })
+        
     }
 
     initGeneralGameStuff() {

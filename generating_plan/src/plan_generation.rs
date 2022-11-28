@@ -9,7 +9,7 @@ use crate::building_representations::converters;
 use crate::tiling::{Tile, tile, TileWithAdhesive};
 use crate::request_for_isolation::PolygonWithIsolationDetails;
 use std::cmp::Ordering;
-use crate::{PlanExecution};
+use crate::{PlanExecution, PlanExecutionCreator};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Plan {
@@ -20,11 +20,14 @@ pub struct Plan {
 
 pub fn generate_plan(request: &Request) -> Plan {
     let building: PolygonWalls = polygon_walls_from_request(request);
+    let tiles: Vec<TileWithAdhesive> = get_tiling(request);
+    let planExecution = PlanExecutionCreator::create_plan(&building, &tiles, request.hooks());
 
     Plan {
         building: converters::polygon_walls_to_triangulized_walls(building),
-        tiles: TriangulizedTilesWithAdhesive::from_tiles(get_tiling(request)),
-        planExecution: PlanExecution::new(vec![PlanExecutionEvent::new(0, 2000), PlanExecutionEvent::new(3000, 6000), PlanExecutionEvent::new(8000, 18000)])
+        tiles: TriangulizedTilesWithAdhesive::from_tiles(tiles),
+        planExecution
+        //PlanExecution::new(vec![PlanExecutionEvent::new(0, 2000), PlanExecutionEvent::new(3000, 6000), PlanExecutionEvent::new(8000, 18000)])
     }
 }
 

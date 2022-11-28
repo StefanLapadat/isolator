@@ -8,6 +8,8 @@ pub mod tiling;
 pub mod plan_generation;
 
 pub use self::plan_execution::PlanExecution;
+pub use self::plan_execution::PlanExecutionCreator;
+
 mod plan_execution;
 
 pub fn create_plan(request: &Request) -> Plan {

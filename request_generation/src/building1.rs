@@ -1,5 +1,5 @@
 use general_geometry::{Polygon};
-use generating_plan::building_representations::{polygon_walls::PolygonWalls};
+use generating_plan::{building_representations::{polygon_walls::PolygonWalls}, request_for_isolation::HookPair};
 
 pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
     let house_whl = 25.0;
@@ -20,4 +20,8 @@ pub(crate) fn create_building_polygon_walls() -> PolygonWalls {
     ];
 
     PolygonWalls::new(walls)
+}
+
+pub(crate) fn hooks() -> Vec<HookPair> {
+    vec![]
 }
