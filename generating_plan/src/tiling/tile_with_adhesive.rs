@@ -2,6 +2,7 @@ use super::{Tile, TriangulizedTiles};
 use serde::{Serialize, Deserialize};
 use general_geometry::{Point};
 
+#[derive(Debug)]
 pub struct TileWithAdhesive {
     styro_tile: Tile,
     adhesive_tile: Tile

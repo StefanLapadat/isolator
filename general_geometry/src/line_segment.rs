@@ -84,7 +84,7 @@ impl LineSegment {
 
     pub fn point_in_segment_cylingder(&self, pt: &Point) -> bool {
         let ang1 = self.to_point().angle_to(&pt.subtract(&self.p1)).val();
-        let ang2 = self.invert().to_point().angle_to(&pt.subtract(&self.p1)).val();
+        let ang2 = self.invert().to_point().angle_to(&pt.subtract(&self.invert().p1)).val();
 
         let pi_half = std::f64::consts::PI/2.;
         let eps = 0.0001;

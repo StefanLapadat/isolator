@@ -21,13 +21,12 @@ pub struct Plan {
 pub fn generate_plan(request: &Request) -> Plan {
     let building: PolygonWalls = polygon_walls_from_request(request);
     let tiles: Vec<TileWithAdhesive> = get_tiling(request);
-    let planExecution = PlanExecutionCreator::new(1.0).create_plan(&building, &tiles, request.hooks(), 3., 1);
+    let planExecution = PlanExecutionCreator::new(0.1).create_plan(&building, &tiles, request.hooks(), 30., 1);
 
     Plan {
         building: converters::polygon_walls_to_triangulized_walls(building),
         tiles: TriangulizedTilesWithAdhesive::from_tiles(tiles),
         planExecution
-        //PlanExecution::new(vec![PlanExecutionEvent::new(0, 2000), PlanExecutionEvent::new(3000, 6000), PlanExecutionEvent::new(8000, 18000)])
     }
 }
 

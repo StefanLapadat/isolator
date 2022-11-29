@@ -56,6 +56,7 @@ class App {
     scheduleAnimations() {
         for (let ev of this.plan.planExecution.events) {
             this.scheduleAnimation(ev);
+            console.log(ev);
         }
     }
 

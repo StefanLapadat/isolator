@@ -7,7 +7,7 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlanExecution {
-    start: usize, 
+    start: usize,
     end: usize,
     events: Vec<PlanExecutionEvent>
 }
@@ -15,6 +15,18 @@ pub struct PlanExecution {
 impl PlanExecution {
     pub fn new(events: Vec<PlanExecutionEvent>, start: usize, end: usize) -> Self {
         Self {events, start, end}
+    }
+
+    pub fn start(&self) -> usize {
+        self.start
+    }
+
+    pub fn end(&self) -> usize {
+        self.end
+    }
+
+    pub fn events(&self) -> &Vec<PlanExecutionEvent> {
+        &self.events
     }
 }
 

@@ -241,9 +241,6 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let it = base_comps.iter().zip(surface_comps.iter());
     let mut res = vec![];
     for (i, (x, y)) in it.enumerate() {
-        if x.0.len() != y.0.len() {
-            println!("Well fuck it man!");
-        }
         let t = Tile::new(PolygonPointsOnSides::new(x.0.clone(), x.1.clone()),
         PolygonPointsOnSides::new(y.0.clone(), y.1.clone()));
         res.push(t);
