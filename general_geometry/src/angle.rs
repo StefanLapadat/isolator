@@ -13,5 +13,5 @@ impl Angle {
 
     pub fn val(&self) -> f64 {
         self.val
-    } 
+    }
 }

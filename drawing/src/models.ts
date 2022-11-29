@@ -6,12 +6,16 @@ export interface Plan {
 }
 
 export interface PlanExecution {
+    start: number, 
+    end: number,
     events: PlanExecutionEvent[]
 }
 
 export interface PlanExecutionEvent {
     start: number,
-    end: number
+    end: number,
+    start_position: Point,
+    end_position: Point
 }
 
 export interface Building {

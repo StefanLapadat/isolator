@@ -1,5 +1,6 @@
 use super::{Tile, TriangulizedTiles};
 use serde::{Serialize, Deserialize};
+use general_geometry::{Point};
 
 pub struct TileWithAdhesive {
     styro_tile: Tile,
@@ -11,6 +12,25 @@ impl TileWithAdhesive {
         Self {
             styro_tile, adhesive_tile
         }
+    }
+
+    pub fn surface_rim(&self) -> &Vec<Point> {
+        self.styro_tile.surface_polygon().rim()
+    }
+
+    pub fn base_rim(&self) -> &Vec<Point> {
+        self.adhesive_tile.base_polygon().rim()
+    }
+
+    pub fn average_point(&self) -> Point {
+        let mut p2 = Point::new(0., 0., 0.);
+        let mut i = 0;
+        while i < self.surface_rim().len() {
+            p2 = p2.add(&self.surface_rim()[i]);
+            i+=1;
+        }
+        
+        p2.divide(self.surface_rim().len() as f64)
     }
 }
 

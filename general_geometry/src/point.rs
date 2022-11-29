@@ -28,7 +28,7 @@ impl Point {
         Point::new(self.x * scalar, self.y * scalar, self.z * scalar)
     }
 
-    fn divide(&self, scalar: f64) -> Point {
+    pub fn divide(&self, scalar: f64) -> Point {
         Point::new(self.x / scalar, self.y / scalar, self.z / scalar)
     }
 

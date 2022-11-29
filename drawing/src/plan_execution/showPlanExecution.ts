@@ -1,7 +1,8 @@
 import * as BABYLON from '@babylonjs/core';
 import { FreeCamera } from '@babylonjs/core';
-import {Plan, PlanExecutionEvent, ShowBuildingOrIsolation, } from '../models';
+import {Plan, PlanExecutionEvent, Point, ShowBuildingOrIsolation, } from '../models';
 import {HttpBackend} from '../backendService';
+import {backendPlanToBabylonPlan} from '../util';
 
 export function reloadApp() {
     let camera = ((window as any).babylonApp as any)?.getCamera();
@@ -31,11 +32,10 @@ class App {
         new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth())
         .then((response) => response.json())
         .then((data) => {
-            this.plan = data as Plan;
+            this.plan = backendPlanToBabylonPlan(data as Plan);
             
             this.buildingMeshVertexData = this.getBuildingMeshVertexData();
             this.buildingWireframeData = this.getBuildingWireframeData();
-
 
             this.scene = this.createScene();
 
@@ -67,47 +67,60 @@ class App {
 
     showAnimation(event: PlanExecutionEvent) {
 
-        var customMesh = new BABYLON.Mesh("custom", this.scene);
+        // var customMesh = new BABYLON.Mesh("custom", this.scene);
         
-        var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3];
-        var indices = [0, 1, 2, 3, 4, 5];
+        // var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3];
+        // var indices = [0, 1, 2, 3, 4, 5];
         
-        var vertexData = new BABYLON.VertexData();
+        // var vertexData = new BABYLON.VertexData();
 
-        vertexData.positions = positions;
-        vertexData.indices = indices;	
+        // vertexData.positions = positions;
+        // vertexData.indices = indices;	
 
-        vertexData.applyToMesh(customMesh);
+        // vertexData.applyToMesh(customMesh);
+
+        var customMesh = BABYLON.MeshBuilder.CreateBox("box" + Math.random(), {});
+ 
         var mat = new BABYLON.StandardMaterial("mat", this.scene);
         mat.wireframe = false;
         mat.backFaceCulling = false;
         customMesh.material = mat;
 
-        customMesh.position.x = 2;
-
+        customMesh.position.x = event.start_position.x;
+        customMesh.position.y = event.start_position.y;
+        customMesh.position.z = event.start_position.z;
+        
         const frameRate = 10;
+        const duration = event.end - event.start;
 
-        const xSlide = new BABYLON.Animation("xSlide", "position.x", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let animations = this.createTranslationAnimation(event.start_position, event.end_position, duration, frameRate);
 
-        const keyFrames = []; 
+        this.scene.beginDirectAnimation(customMesh, animations, 0, duration / 1000 * frameRate, true);
+    }
 
-        keyFrames.push({
+    createTranslationAnimation(start_position: Point, end_position: Point, duration: number, frameRate: number): BABYLON.Animation[] {
+        return  [
+                this.createTranslationAnimationOnAxis("xSlide", "position.x", start_position.x, end_position.x, duration, frameRate),
+                this.createTranslationAnimationOnAxis("ySlide", "position.y", start_position.y, end_position.y, duration, frameRate),
+                this.createTranslationAnimationOnAxis("zSlide", "position.z", start_position.z, end_position.z, duration, frameRate),
+            ];
+    }
+
+    createTranslationAnimationOnAxis(name: string, axis: string, start_position: number, end_position: number, duration: number, frameRate: number): BABYLON.Animation {
+        const slide = new BABYLON.Animation(name, axis, frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+        const keyFrames = [{
             frame: 0,
-            value: 2
-        });
-
-        let duration = event.end - event.start;
-
-        keyFrames.push({
+            value: start_position
+        },
+        {
             frame: duration / 1000 * frameRate,
-            value: -2
-        });
+            value: end_position
+        }];
 
-        xSlide.setKeys(keyFrames);
+        slide.setKeys(keyFrames);
 
-        customMesh.animations.push(xSlide);
-
-        this.scene.beginAnimation(customMesh, 0, duration / 1000 * frameRate, true);
+        return slide;
     }
 
     getBuildingMeshVertexData(): BABYLON.VertexData {
@@ -119,7 +132,7 @@ class App {
 
         for(let wall of this.plan.building.walls) {
             for(let wt of wall.triangles){
-                totalTriangles.push(...[wt.t1.x, wt.t1.z, wt.t1.y, wt.t2.x, wt.t2.z, wt.t2.y, wt.t3.x, wt.t3.z, wt.t3.y]);
+                totalTriangles.push(...[wt.t1.x, wt.t1.y, wt.t1.z, wt.t2.x, wt.t2.y, wt.t2.z, wt.t3.x, wt.t3.y, wt.t3.z]);
                 indices.push(...[i++, i++, i++]);
             }
         }
@@ -136,7 +149,7 @@ class App {
         for(let lineSeq of this.plan.building.wireframe) {
             let lineSeqFront = [];
             for (let point of lineSeq) {
-                lineSeqFront.push(new BABYLON.Vector3(point.x, point.z, point.y));
+                lineSeqFront.push(new BABYLON.Vector3(point.x, point.y, point.z));
             }
             wireframe.push(lineSeqFront);
         }
@@ -341,4 +354,3 @@ class App {
         });
     }
 }
-

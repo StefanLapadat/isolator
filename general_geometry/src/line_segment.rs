@@ -1,4 +1,4 @@
-use crate::{Point, Simmilar};
+use crate::{Point, Simmilar, Angle};
 
 #[derive(Clone, Debug)]
 pub struct LineSegment {
@@ -61,6 +61,44 @@ impl LineSegment {
         None
     }
 
+    pub fn distance_from_point(&self, pt: &Point) -> f64 {
+        if self.point_on_a_line_segment(pt) {
+            return 0.;
+        }
+
+        if self.point_in_segment_cylingder(pt) {
+            let a = self.len();
+            let b_vec = pt.subtract(&self.p1);
+            let c_vec = pt.subtract(&self.p2);
+
+            return Self::triangle_height_on_first_side(a, b_vec.modulo(), c_vec.modulo(), &b_vec.angle_to(&c_vec));
+        } else {
+            return pt.subtract(&self.p1).modulo().min(pt.subtract(&self.p2).modulo());
+        }
+    }
+
+    fn triangle_height_on_first_side(a: f64, b: f64, c: f64, bc_angle: &Angle) -> f64 {
+        let twice_area = b * c * bc_angle.val().sin();
+        twice_area / a
+    }
+
+    pub fn point_in_segment_cylingder(&self, pt: &Point) -> bool {
+        let ang1 = self.to_point().angle_to(&pt.subtract(&self.p1)).val();
+        let ang2 = self.invert().to_point().angle_to(&pt.subtract(&self.p1)).val();
+
+        let pi_half = std::f64::consts::PI/2.;
+        let eps = 0.0001;
+
+        (ang1.simmilar_to(pi_half, eps) || ang1 < pi_half) && 
+        (ang1.simmilar_to(0., eps) || ang1 > 0.) && 
+        (ang2.simmilar_to(pi_half, eps) || ang2 < pi_half) && 
+        (ang2.simmilar_to(0., eps) || ang2 > 0.)
+    }
+
+    pub fn invert(&self) -> Self {
+        Self::new(self.p2.to_owned(), self.p1.to_owned())
+    }
+ 
     pub fn to_point(&self) -> Point {
         self.p2.subtract(&self.p1)
     }

@@ -1,6 +1,6 @@
-use general_geometry::{Polygon};
+use general_geometry::{Polygon, Point};
 use generating_plan::building_representations::{polygon_walls::PolygonWalls, triangulized_walls::TrianguizedWalls, levels::Levels, levels::Level, converters};
-use generating_plan::{request_for_isolation::HookPair};
+use generating_plan::{request_for_isolation::HookSystem};
 
 pub fn create_building_triangulized() -> TrianguizedWalls {
     converters::polygon_walls_to_triangulized_walls(create_building_polygon_walls())
@@ -27,6 +27,8 @@ fn create_building_levels() -> Levels {
     ])
 }
 
-pub(crate) fn hooks() -> Vec<HookPair> {
-    vec![]
+pub(crate) fn hooks() -> Vec<HookSystem> {
+    vec![
+        HookSystem::new(Point::new(-9., -11., 10.), Point::new(-10., -11., 10.), Point::new(-9., -11., 0.), Point::new(-10., -11., 0.))
+    ]
 }

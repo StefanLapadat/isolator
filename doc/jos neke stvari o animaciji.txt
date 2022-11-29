@@ -1,0 +1,21 @@
+- Idemo sada da vidimo da li se ovo pomeranje moze primeniti na bilo koji mesh; Moze. 
+
+- Da vidimo da li je moguce postaviti koordinatni sistem gde zelimo; To nam je poprilicno bitno; 
+
+- Medjutim, imamo i neke vaznije stvari. Koje su to stvari? Pa pitanje kako cu ovo da implementiram; Sta je konkretno u pitanju; Paaa.. treba nekako da vodim racuna o tome da ovi moji objekti treba da se ne sudaraju jedni sa drugima niti sa zgradom, jel tako? 
+
+Imam neka dva pristupa ovde; Prvi pristup mi je da sve objekte koliko toliko posmatram nezavisno - evo recimo imam samo zgradu i imam samo jednu masinu za secenje i imam jedno coveka i imam jednog robota koji bas postavlja; I dobro, oni rade kao jedan sistem jel tako; Oni se koordinisu i rade zajedno na zajednickom cilju; Medjutim, sta se desava kada ubacim nekoliko takvih sistema koji treba u paraleli da postavljaju? Aha, ok, ne treba da razmisljam o tome previse; Jer kretnje koje se desavaju na gradilistu su uglavnom vertikalne; Znas kako, ja cu da 'stvaram' vec isecene nafilovane tile-ove ispod mesta gde treba da budu. I onda cu samo da ih stavljam u ono sranjce i da ih podizem; To je poenta, jel tako; To je neki kostur cele price. Drugi pristup mi je bio da sve posmatram onako kako tece stvarno i da bukvalno imam algoritme koji govore sta ko radi u tom datom trenutku; Ali mislim da mi to za sada nije potrebno; 
+
+Ok, treba da napravim i neke 3d objektice jel tako? te dizalice i tako dalje..? Mada, sta znam, za sada mozda treba samo da napravim da se podizu gore i to je to; Stvore se, podizu se gore, i stavljaju se na mesto? Recimo da imam i neku akciju 'teleport', to bi isto bilo ok? 
+
+Treba da napravim i algoritam koji mi za zadate zidove izbacuje niz pozicija robota i uz svaku od tih pozicija mi prilaze i ploce koje ce se odatle postaviti. 
+
+Ovo je mozda i prva stvar koju treba da uradim. Nakon toga treba da napravim i deo koji mi daje niz akcija koje predstavljaju zaista poplocavanje; Malo mi je zajebano to za rotacije i taj sistem koji treba privezati nekako za objekat. Mislim da sada necu o tome brinuti; Imacu tu teleport akciju koja ce mi omoguciti to sto mi treba. U stvari sta cu imati za sada? Spustanje nosiljke dole; Stvaranje ploce dole; Nosenje ploce nosiljkom gore; Teleportovanje na krajnje odrediste; 
+
+U stvari pre ovoga moramo da podelimo tileove na one koje se mogu postaviti i na one koje se ne mogu postaviti. 
+
+
+
+
+
+

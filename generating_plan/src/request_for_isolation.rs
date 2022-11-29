@@ -7,7 +7,7 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 pub struct Request {
     data: Vec<PolygonWithIsolationDetails>,
     unit_tile: UnitTile,
-    hooks: Vec<HookPair>
+    hooks: Vec<HookSystem>
 }
 
 impl Request {
@@ -19,15 +19,42 @@ impl Request {
         &self.unit_tile
     }
 
-    pub fn hooks(&self) -> &Vec<HookPair> {
+    pub fn hooks(&self) -> &Vec<HookSystem> {
         &self.hooks
     }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct HookPair {
+pub struct HookSystem {
     robot_hook: Point,
-    carrier_hook: Point
+    carrier_hook: Point,
+    robot_hook_ground: Point,
+    carrier_hook_ground: Point
+}
+
+impl HookSystem {
+
+    pub fn new(robot_hook: Point, carrier_hook: Point, robot_hook_ground: Point, carrier_hook_ground: Point) -> Self {
+        Self {
+            robot_hook, carrier_hook, robot_hook_ground, carrier_hook_ground
+        }
+    }
+
+    pub fn robot_hook(&self) -> &Point {
+        &self.robot_hook
+    }
+
+    pub fn carrier_hook(&self) -> &Point {
+        &self.carrier_hook
+    }
+
+    pub fn robot_hook_ground(&self) -> &Point {
+        &self.robot_hook_ground
+    }
+
+    pub fn carrier_hook_ground(&self) -> &Point {
+        &self.carrier_hook_ground
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -58,7 +85,7 @@ impl IsolationDetails {
 }
 
 impl Request {
-    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile, hooks: Vec<HookPair>) -> Request {
+    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile, hooks: Vec<HookSystem>) -> Request {
         let mut data: Vec<PolygonWithIsolationDetails> = vec![];
 
         for p in building.walls() {
