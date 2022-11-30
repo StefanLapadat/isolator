@@ -21,7 +21,7 @@ pub struct Plan {
 pub fn generate_plan(request: &Request) -> Plan {
     let building: PolygonWalls = polygon_walls_from_request(request);
     let tiles: Vec<TileWithAdhesive> = get_tiling(request);
-    let planExecution = PlanExecutionCreator::new(0.1).create_plan(&building, &tiles, request.hooks(), 30., 1);
+    let planExecution = PlanExecutionCreator::new(10.).create_plan(&building, &tiles, request.hooks(), 50., 1);
 
     Plan {
         building: converters::polygon_walls_to_triangulized_walls(building),

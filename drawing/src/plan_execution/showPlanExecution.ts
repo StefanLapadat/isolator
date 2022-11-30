@@ -24,10 +24,32 @@ class App {
     private buildingMesh: BABYLON.Mesh;
     private buildingWireframeData: BABYLON.Vector3[][];
     private buildingWireframeMesh: BABYLON.LinesMesh;
+
+    private animationMesh: BABYLON.Mesh;
+    private animationMat: BABYLON.StandardMaterial;
     
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
         this.engine = new BABYLON.Engine(this.canvas, true);
+        this.scene = this.createScene();
+
+
+        this.animationMat = new BABYLON.StandardMaterial("mat", this.scene);
+        this.animationMat.backFaceCulling = false;
+        this.animationMesh = new BABYLON.Mesh("custom", this.scene);
+        
+        var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3,];
+        var indices = [0, 1, 2];
+        
+        var vertexData = new BABYLON.VertexData();
+
+        vertexData.positions = positions;
+        vertexData.indices = indices;
+
+        vertexData.applyToMesh(this.animationMesh);
+ 
+        this.animationMesh.material = this.animationMat;
+
 
         new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth())
         .then((response) => response.json())
@@ -37,7 +59,6 @@ class App {
             this.buildingMeshVertexData = this.getBuildingMeshVertexData();
             this.buildingWireframeData = this.getBuildingWireframeData();
 
-            this.scene = this.createScene();
 
             this.connectCamera(camera);
             this.connectLights();
@@ -68,25 +89,20 @@ class App {
 
     showAnimation(event: PlanExecutionEvent) {
 
-        // var customMesh = new BABYLON.Mesh("custom", this.scene);
+        let customMesh = new BABYLON.Mesh("custom", this.scene);
         
-        // var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3, 5, 2, 3, 7, -2, 3, 3, -2, 3];
-        // var indices = [0, 1, 2, 3, 4, 5];
+        var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3,];
+        var indices = [0, 1, 2];
         
-        // var vertexData = new BABYLON.VertexData();
+        var vertexData = new BABYLON.VertexData();
 
-        // vertexData.positions = positions;
-        // vertexData.indices = indices;	
+        vertexData.positions = positions;
+        vertexData.indices = indices;
 
-        // vertexData.applyToMesh(customMesh);
-
-        var customMesh = BABYLON.MeshBuilder.CreateBox("box" + Math.random(), {});
+        vertexData.applyToMesh(customMesh);
  
-        var mat = new BABYLON.StandardMaterial("mat", this.scene);
-        mat.wireframe = false;
-        mat.backFaceCulling = false;
-        customMesh.material = mat;
-
+        customMesh.material = this.animationMat;
+        
         customMesh.position.x = event.start_position.x;
         customMesh.position.y = event.start_position.y;
         customMesh.position.z = event.start_position.z;
@@ -96,7 +112,9 @@ class App {
 
         let animations = this.createTranslationAnimation(event.start_position, event.end_position, duration, frameRate);
 
-        this.scene.beginDirectAnimation(customMesh, animations, 0, duration / 1000 * frameRate, true);
+        this.scene.beginDirectAnimation(customMesh, animations, 0, duration / 1000 * frameRate, false, 1, () => {
+            this.animationMesh = BABYLON.Mesh.MergeMeshes([this.animationMesh, customMesh], true);
+        })
     }
 
     createTranslationAnimation(start_position: Point, end_position: Point, duration: number, frameRate: number): BABYLON.Animation[] {
