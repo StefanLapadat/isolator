@@ -38,6 +38,31 @@ class App {
         this.engine = new BABYLON.Engine(this.canvas, true);
         this.scene = this.createScene();
 
+        this.initAnimationMeshes();
+
+        new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth(), this.getVelocity())
+        .then((response) => response.json())
+        .then((data) => {
+            this.plan = backendPlanToBabylonPlan(data as Plan);
+            
+            this.buildingMeshVertexData = this.getBuildingMeshVertexData();
+            this.buildingWireframeData = this.getBuildingWireframeData();
+
+            this.connectCamera(camera);
+            this.connectLights();
+            this.showBuilding();
+
+            this.scheduleAnimations();
+
+            if (this.getShowAxes()) {
+                this.showAxis(50);
+            }
+
+            this.initGeneralGameStuff();
+        });
+    }
+
+    initAnimationMeshes() {
         this.styroMat = new BABYLON.StandardMaterial("mat", this.scene);
         this.styroMat.backFaceCulling = false;
 
@@ -71,35 +96,9 @@ class App {
 
         vertexData.applyToMesh(this.adhesiveUnionMesh);
  
-
-
         this.styroUnionMesh.material = this.styroMat;
         this.adhesiveUnionMesh.material = this.adhesiveMat;
 
-        console.log('**********')
-
-
-        new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth())
-        .then((response) => response.json())
-        .then((data) => {
-            this.plan = backendPlanToBabylonPlan(data as Plan);
-            
-            this.buildingMeshVertexData = this.getBuildingMeshVertexData();
-            this.buildingWireframeData = this.getBuildingWireframeData();
-
-
-            this.connectCamera(camera);
-            this.connectLights();
-            this.showBuilding();
-
-            this.scheduleAnimations();
-
-            if (this.getShowAxes()) {
-                this.showAxis(50);
-            }
-
-            this.initGeneralGameStuff();
-        });
     }
 
     scheduleAnimations() {
@@ -328,6 +327,10 @@ class App {
         return parseFloat((document.getElementById('tile-width') as any)?.value ?? localStorage.getItem('tileWidth') ?? '0.3');
     }
 
+    getVelocity(): number {
+        return parseFloat((document.getElementById('tile-setting-velocity') as any)?.value ?? localStorage.getItem('tileSettingVelocity') ?? '0.001');
+    }
+
     getShowBuilding(): ShowBuildingOrIsolation {
         return parseInt((document.getElementById('building') as any)?.value ?? localStorage.getItem('building') ?? '1');
     }
@@ -444,6 +447,11 @@ class App {
         
         document.getElementById("show-axes")?.addEventListener('input', (event) => {
             localStorage.setItem("showAxes", document.querySelector('#show-axes' as any).checked.toString());                
+            reloadApp();
+        })  
+
+        document.getElementById("tile-setting-velocity")?.addEventListener('input', (event) => {
+            localStorage.setItem("tileSettingVelocity", (event as any).data);
             reloadApp();
         })  
         

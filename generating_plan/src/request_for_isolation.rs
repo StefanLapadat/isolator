@@ -7,7 +7,8 @@ use crate::building_representations::polygon_walls::PolygonWalls;
 pub struct Request {
     data: Vec<PolygonWithIsolationDetails>,
     unit_tile: UnitTile,
-    hooks: Vec<HookSystem>
+    hooks: Vec<HookSystem>,
+    velocity: f64
 }
 
 impl Request {
@@ -21,6 +22,10 @@ impl Request {
 
     pub fn hooks(&self) -> &Vec<HookSystem> {
         &self.hooks
+    }
+
+    pub fn velocity(&self) -> f64 {
+        self.velocity
     }
 }
 
@@ -85,7 +90,7 @@ impl IsolationDetails {
 }
 
 impl Request {
-    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile, hooks: Vec<HookSystem>) -> Request {
+    pub fn from_polygon_walls_building(building: &PolygonWalls, width: f64, unit_tile: UnitTile, hooks: Vec<HookSystem>, velocity: f64) -> Request {
         let mut data: Vec<PolygonWithIsolationDetails> = vec![];
 
         for p in building.walls() {
@@ -107,7 +112,8 @@ impl Request {
         Request {
             data,
             unit_tile,
-            hooks
+            hooks,
+            velocity
         }
     }
 }

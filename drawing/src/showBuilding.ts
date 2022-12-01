@@ -39,7 +39,7 @@ class App {
         this.canvas = this.getCanvas();
         this.engine = new BABYLON.Engine(this.canvas, true);
 
-        new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth())
+        new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth(), this.getVelocity())
         .then((response) => response.json())
         .then((data) => {
             this.plan = data as Plan;
@@ -86,6 +86,10 @@ class App {
 
     getTileWidth(): number {
         return parseFloat((document.getElementById('tile-width') as any)?.value ?? localStorage.getItem('tileWidth') ?? '0.3');
+    }
+
+    getVelocity(): number {
+        return parseFloat((document.getElementById('tile-setting-velocity') as any)?.value ?? localStorage.getItem('tileSettingVelocity') ?? '0.001');
     }
 
     getShowBuilding(): ShowBuildingOrIsolation {
