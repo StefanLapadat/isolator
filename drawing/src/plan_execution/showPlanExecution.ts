@@ -1,6 +1,6 @@
 import * as BABYLON from '@babylonjs/core';
 import { FreeCamera } from '@babylonjs/core';
-import {Plan, PlanExecutionEvent, Point, ShowBuildingOrIsolation, } from '../models';
+import {Create, Fix, Plan, PlanExecutionEvent, Point, ShowBuildingOrIsolation, Teleport, Translate, } from '../models';
 import {HttpBackend} from '../backendService';
 import {backendPlanToBabylonPlan} from '../util';
 
@@ -25,18 +25,28 @@ class App {
     private buildingWireframeData: BABYLON.Vector3[][];
     private buildingWireframeMesh: BABYLON.LinesMesh;
 
-    private animationMesh: BABYLON.Mesh;
-    private animationMat: BABYLON.StandardMaterial;
+    private styroUnionMesh: BABYLON.Mesh;
+    private adhesiveUnionMesh: BABYLON.Mesh;
+
+    private styroMat: BABYLON.StandardMaterial;
+    private adhesiveMat: BABYLON.StandardMaterial;
+
+    private meshMap: Map<String, {adhesiveMesh: BABYLON.Mesh, styroMesh: BABYLON.Mesh}> = new Map();
     
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
         this.engine = new BABYLON.Engine(this.canvas, true);
         this.scene = this.createScene();
 
+        this.styroMat = new BABYLON.StandardMaterial("mat", this.scene);
+        this.styroMat.backFaceCulling = false;
 
-        this.animationMat = new BABYLON.StandardMaterial("mat", this.scene);
-        this.animationMat.backFaceCulling = false;
-        this.animationMesh = new BABYLON.Mesh("custom", this.scene);
+        this.adhesiveMat = new BABYLON.StandardMaterial("mat", this.scene);
+        this.adhesiveMat.backFaceCulling = false;
+        this.adhesiveMat.diffuseColor = BABYLON.Color3.Green();
+        
+
+        this.styroUnionMesh = new BABYLON.Mesh("custom", this.scene);
         
         var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3,];
         var indices = [0, 1, 2];
@@ -46,9 +56,27 @@ class App {
         vertexData.positions = positions;
         vertexData.indices = indices;
 
-        vertexData.applyToMesh(this.animationMesh);
+
+        vertexData.applyToMesh(this.styroUnionMesh);
+
+        positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3,];
+        indices = [0, 1, 2];
+        
+        vertexData = new BABYLON.VertexData();
+
+        vertexData.positions = positions;
+        vertexData.indices = indices;
+
+        this.adhesiveUnionMesh = new BABYLON.Mesh("custom", this.scene);
+
+        vertexData.applyToMesh(this.adhesiveUnionMesh);
  
-        this.animationMesh.material = this.animationMat;
+
+
+        this.styroUnionMesh.material = this.styroMat;
+        this.adhesiveUnionMesh.material = this.adhesiveMat;
+
+        console.log('**********')
 
 
         new HttpBackend().get_plan(this.getRequestId(), this.getTileLength(), this.getTileHeight(), this.getTileWidth())
@@ -75,46 +103,115 @@ class App {
     }
 
     scheduleAnimations() {
-        for (let ev of this.plan.planExecution.events) {
+        for (let ev of this.plan.planExecution.events.map(a => new PlanExecutionEvent(a))) {
             this.scheduleAnimation(ev);
-            console.log(ev);
         }
     }
 
     scheduleAnimation(event: PlanExecutionEvent) {
         setTimeout(() => {
             this.showAnimation(event);
-        }, event.start);
+        }, event.start());
     }
 
     showAnimation(event: PlanExecutionEvent) {
+        if ("Translate" in event.field) {
+            this.showTranslateAnimation(event.field);
+        } else if ("Create" in event.field) {
+            this.showCreateAnimation(event.field);
+        } else if ("Fix" in event.field) {
+            this.showFixAnimation(event.field);
+        } else {
+            this.showTeleportAnimation(event.field);
+        }
+    }
 
-        let customMesh = new BABYLON.Mesh("custom", this.scene);
+    showTranslateAnimation(event: Translate) {
+        let tileMesh = this.meshMap.get(event.Translate.tile_id);
         
-        var positions = [-5, 2, -3, -7, -2, -3, -3, -2, -3,];
-        var indices = [0, 1, 2];
+        tileMesh.adhesiveMesh.position.x = event.Translate.start_position.x;
+        tileMesh.adhesiveMesh.position.y = event.Translate.start_position.y;
+        tileMesh.adhesiveMesh.position.z = event.Translate.start_position.z;
         
-        var vertexData = new BABYLON.VertexData();
-
-        vertexData.positions = positions;
-        vertexData.indices = indices;
-
-        vertexData.applyToMesh(customMesh);
- 
-        customMesh.material = this.animationMat;
-        
-        customMesh.position.x = event.start_position.x;
-        customMesh.position.y = event.start_position.y;
-        customMesh.position.z = event.start_position.z;
+        tileMesh.styroMesh.position.x = event.Translate.start_position.x + 0.5;
+        tileMesh.styroMesh.position.y = event.Translate.start_position.y + 0.5;
+        tileMesh.styroMesh.position.z = event.Translate.start_position.z + 0.5;
         
         const frameRate = 10;
-        const duration = event.end - event.start;
+        const duration = event.Translate.end - event.Translate.start;
 
-        let animations = this.createTranslationAnimation(event.start_position, event.end_position, duration, frameRate);
+        let adhesiveAnimations = this.createTranslationAnimation(event.Translate.start_position, event.Translate.end_position, duration, frameRate);
+        let inc: Point = {x: 0.5, y: 0.5, z: 0.5};
+        let styroAnimations = this.createTranslationAnimation(
+            add_to_point(event.Translate.start_position, inc), add_to_point(event.Translate.end_position, inc), duration, frameRate);
 
-        this.scene.beginDirectAnimation(customMesh, animations, 0, duration / 1000 * frameRate, false, 1, () => {
-            this.animationMesh = BABYLON.Mesh.MergeMeshes([this.animationMesh, customMesh], true);
-        })
+        this.scene.beginDirectAnimation(tileMesh.adhesiveMesh, adhesiveAnimations, 0, duration / 1000 * frameRate, false, 1, () => {
+            this.adhesiveUnionMesh = BABYLON.Mesh.MergeMeshes([this.adhesiveUnionMesh, tileMesh.adhesiveMesh], true);
+        });
+
+        this.scene.beginDirectAnimation(tileMesh.styroMesh, styroAnimations, 0, duration / 1000 * frameRate, false, 1, () => {
+            this.styroUnionMesh = BABYLON.Mesh.MergeMeshes([this.styroUnionMesh, tileMesh.styroMesh], true); // Performance optimization for slower animations
+        });
+    }
+
+    showCreateAnimation(event: Create) {  
+        var vertexData = new BABYLON.VertexData();
+
+        let totalTriangles = [];
+        let indices = [];
+        let i = 0;
+
+        for(let wt of event.Create.adhesive_tile.triangles){
+            totalTriangles.push(...[wt.t1.x, wt.t1.y, wt.t1.z, wt.t2.x, wt.t2.y, wt.t2.z, wt.t3.x, wt.t3.y, wt.t3.z]);
+            indices.push(...[i++, i++, i++]);
+        }
+    
+        vertexData.positions = totalTriangles;
+        vertexData.indices = indices;
+
+        let adhesiveMesh = new BABYLON.Mesh("adhesiveMesh", this.scene);
+        vertexData.applyToMesh(adhesiveMesh);
+
+        adhesiveMesh.material = this.adhesiveMat;
+        
+        adhesiveMesh.position.x = event.Create.position.x;
+        adhesiveMesh.position.y = event.Create.position.y;
+        adhesiveMesh.position.z = event.Create.position.z;
+
+
+
+        vertexData = new BABYLON.VertexData();
+
+        totalTriangles = [];
+        indices = [];
+        i = 0;
+
+        for(let wt of event.Create.styro_tile.triangles){
+            totalTriangles.push(...[wt.t1.x, wt.t1.y, wt.t1.z, wt.t2.x, wt.t2.y, wt.t2.z, wt.t3.x, wt.t3.y, wt.t3.z]);
+            indices.push(...[i++, i++, i++]);
+        }
+    
+        vertexData.positions = totalTriangles;
+        vertexData.indices = indices;
+
+        let styroMesh = new BABYLON.Mesh("adhesiveMesh", this.scene);
+        vertexData.applyToMesh(styroMesh);
+
+        styroMesh.material = this.styroMat;
+        
+        styroMesh.position.x = event.Create.position.x;
+        styroMesh.position.y = event.Create.position.y;
+        styroMesh.position.z = event.Create.position.z;
+
+        this.meshMap.set(event.Create.tile_id, {styroMesh, adhesiveMesh});
+    }
+
+    showFixAnimation(event: Fix) {
+        
+    }
+
+    showTeleportAnimation(event: Teleport) {
+
     }
 
     createTranslationAnimation(start_position: Point, end_position: Point, duration: number, frameRate: number): BABYLON.Animation[] {
@@ -372,4 +469,8 @@ class App {
             }
         });
     }
+}
+
+function add_to_point(p: Point, inc: Point): Point {
+    return {x: p.x + inc.x, y: p.y + inc.y, z: p.z + inc.z};
 }

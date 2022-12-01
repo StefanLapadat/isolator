@@ -23,6 +23,14 @@ impl TileWithAdhesive {
         self.adhesive_tile.base_polygon().rim()
     }
 
+    pub fn styro_tile(&self) -> &Tile {
+        &self.styro_tile
+    }
+
+    pub fn adhesive_tile(&self) -> &Tile {
+        &self.adhesive_tile
+    }
+
     pub fn average_point(&self) -> Point {
         let mut p2 = Point::new(0., 0., 0.);
         let mut i = 0;

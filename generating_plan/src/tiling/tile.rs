@@ -186,7 +186,7 @@ fn base_seg_and_surface_seg_to_polygon(base_start: &Point, base_end: &Point, sur
     return Polygon::new(vec![b0.clone(), b1.clone(), s1.clone(), s0.clone()], vec![]);
 }
 
-fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>) {
+pub fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Point>>) {
     let mut triangles: Vec<Triangle> = vec![];
     let mut wireframe: Vec<Vec<Point>> = vec![];
 

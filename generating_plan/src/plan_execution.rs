@@ -1,9 +1,9 @@
 use general_geometry::{LineSegment, Point};
 use serde::{Serialize, Deserialize};
 use crate::request_for_isolation::HookSystem;
-use crate::tiling::{TileWithAdhesive};
+use crate::tiling::{TileWithAdhesive, TriangulizedTile, tile::tile_to_triangulized_tile};
 use crate::building_representations::polygon_walls::PolygonWalls;
-
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlanExecution {
@@ -31,20 +31,76 @@ impl PlanExecution {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PlanExecutionEvent {
+pub struct TranslateExecutionEventData {
+    tile_id: String,
     start: usize,
     end: usize,
     start_position: Point,
     end_position: Point
 }
 
-impl PlanExecutionEvent {
-    pub fn new(start: usize, end: usize, start_position: Point, end_position: Point) -> Self {
-        Self {start, end, start_position, end_position}
+impl TranslateExecutionEventData {
+    pub fn new(tile_id: String, start: usize, end: usize, start_position: Point, end_position: Point) -> Self {
+        Self {tile_id, start, end, start_position, end_position}
     }
 
     pub fn duration(&self) -> usize {
         self.end - self.start
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CreateExecutionEventData {
+    tile_id: String,
+    start: usize,
+    end: usize,
+    position: Point,
+    styro_tile: TriangulizedTile,
+    adhesive_tile: TriangulizedTile
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TeleportExecutionEventData {
+    tile_id: String,
+    start: usize,
+    end: usize,
+    end_position: Point,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FixExecutionEventData {
+    tile_id: String,
+    start: usize,
+    end: usize,
+    end_position: Point,
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum PlanExecutionEvent {
+    Create(CreateExecutionEventData),
+    Translate(TranslateExecutionEventData),
+    Teleport(TeleportExecutionEventData),
+    Fix(FixExecutionEventData)
+}
+
+impl PlanExecutionEvent {
+    pub fn start(&self) -> usize {
+        match self {
+            PlanExecutionEvent::Create(data) => data.start,
+            PlanExecutionEvent::Translate(data) => data.start,
+            PlanExecutionEvent::Teleport(data) => data.start,
+            PlanExecutionEvent::Fix(data) => data.start,
+        }
+    }
+
+    pub fn end(&self) -> usize {
+        match self {
+            PlanExecutionEvent::Create(data) => data.end,
+            PlanExecutionEvent::Translate(data) => data.end,
+            PlanExecutionEvent::Teleport(data) => data.end,
+            PlanExecutionEvent::Fix(data) => data.end,
+        }
     }
 }
 
@@ -73,7 +129,7 @@ impl PlanExecutionCreator {
             events.append(&mut tile_group_plan.events);
         }
 
-        let end: usize = if events.len() > 0 { events.iter().max_by(|a, b| a.end.cmp(&b.end)).unwrap().end } else { start };
+        let end: usize = if events.len() > 0 { events.iter().max_by(|a, b| a.end().cmp(&b.end())).unwrap().end() } else { start };
 
         PlanExecution { events, start, end }
     }
@@ -89,7 +145,7 @@ impl PlanExecutionCreator {
         }
 
         let start: usize = 0;
-        let end: usize = if events.len() > 0 { events.iter().max_by(|a, b| a.end.cmp(&b.end)).unwrap().end } else { start };
+        let end: usize = if events.len() > 0 { events.iter().max_by(|a, b| a.end().cmp(&b.end())).unwrap().end() } else { start };
 
         PlanExecution { events, start, end }
     }
@@ -100,11 +156,25 @@ impl PlanExecutionCreator {
         let distance = Self::distance_between_base_of_hook_system_and_tile_end_position(hook_system, tile);
         let duration = (distance / self.velocity) as usize;
         let end: usize = start + duration;
+        let id = Uuid::new_v4().to_string();
 
-        events.push(PlanExecutionEvent::new(start, end,
-             hook_system.carrier_hook_ground().to_owned(), 
-             tile.average_point()
-            )
+        events.push(PlanExecutionEvent::Create(CreateExecutionEventData { 
+                tile_id: id.to_owned(), 
+                start, 
+                end, 
+                position: hook_system.carrier_hook_ground().to_owned(), 
+                styro_tile: tile_to_triangulized_tile(tile.styro_tile()).0, 
+                adhesive_tile: tile_to_triangulized_tile(tile.adhesive_tile()).0,
+            })
+        );
+
+        events.push(PlanExecutionEvent::Translate(TranslateExecutionEventData { 
+                tile_id: id.to_owned(), 
+                start, 
+                end, 
+                start_position: hook_system.carrier_hook_ground().to_owned(), 
+                end_position: tile.average_point() 
+            })
         );
 
         PlanExecution { events, start, end }

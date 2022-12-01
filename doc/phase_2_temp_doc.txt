@@ -1,0 +1,24 @@
+Dobrooo, sta sad? 
+
+Koja je ideja? Sta da radim? Odnosno, sta zelim? Zelim da umesto box-a renderujem plocice; E sad, da bih to uradio, moram prvo da posaljem plocice i nekako da provalim sta ce biti pozicija za taj mesh. Hajde isprobacemo prvo sa trouglom; Ovo ce da bude malo zajebano zbog rotacija itd..? 
+
+Ja sam do sada radio sa trouglovima, medjutim, ovo sad nije sa trouglovima.. Mozda bih mogao i to da probam, ali lakse mi je da koristim gotov babylonov kod? Ali zaista, kako cu sa rotacijama da radim? hmhmhm, ovako cemo; imacemo tu telepoprtaciju koja ce da stavi plocicu bas gde treba.. Mozda cu moci da iskoristim i physics engine pa da stvarno u samoj simulaciji 'nosim' tu plocicu? Nisam bas siguran, ali ok, vredi razmisliti. 
+
+
+- trebalo bi da posaljem zajedno sa eventom i tile; 
+- trebalo bi da uvedem i teleport event;
+- trebalo bi da na frontendu razlicito hendlujem razlicite evente; 
+- trebalo bi na frontu da razdvojim na dva dela posto su razliciti materijali sam tile i tile adhesive;
+- da razmislim o wireframe-u; Ok, to sam razmislio, ne treba mi :) 
+
+========================================
+
+da sredim malo menije; ubacim sta treba preko parametara; 
+da napravim 'editor' za ubacivanje pozicija masina; 
+da ubacim paralelnu obradu na osnovu broja masina; 
+da ubacim i podrsku za same masine; 
+
+========================================
+
+Ali glavna stvar od svega ovde su mi te rotacije.. A mozda i nisu; Mozda kada implementiram sve ovo od gore, kazem da je to to i kraj? A da onda o 'uglovima' rotacijama itd razmisljam zaista onda kada budem krenuo sa pravim stvarima? Sa konkretnim realnim masinama itd? Jer jebiga, simulacija je jedno, a praksa je drugo zaista; Medjutim, kada vidim kako sta sljaka u praksi, onda mogu i da vratim u simulaciju ono sto ima smisla. 
+

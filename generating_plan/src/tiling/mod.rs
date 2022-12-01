@@ -1,5 +1,6 @@
 pub use self::tile::Tile;
 pub use self::tile::TriangulizedTiles;
+pub use self::tile::TriangulizedTile;
 pub use self::tile::UnitTile;
 
 
