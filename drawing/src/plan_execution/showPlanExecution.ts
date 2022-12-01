@@ -31,7 +31,7 @@ class App {
     private styroMat: BABYLON.StandardMaterial;
     private adhesiveMat: BABYLON.StandardMaterial;
 
-    private meshMap: Map<String, {adhesiveMesh: BABYLON.Mesh, styroMesh: BABYLON.Mesh}> = new Map();
+    private meshMap: Map<String, {adhesiveMesh: BABYLON.Mesh, styroMesh: BABYLON.Mesh, }> = new Map();
     
     constructor(camera?: {position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}}) {
         this.canvas = this.getCanvas();
@@ -65,6 +65,7 @@ class App {
     initAnimationMeshes() {
         this.styroMat = new BABYLON.StandardMaterial("mat", this.scene);
         this.styroMat.backFaceCulling = false;
+        this.styroMat.diffuseColor = BABYLON.Color3.Blue();
 
         this.adhesiveMat = new BABYLON.StandardMaterial("mat", this.scene);
         this.adhesiveMat.backFaceCulling = false;
@@ -127,29 +128,25 @@ class App {
 
     showTranslateAnimation(event: Translate) {
         let tileMesh = this.meshMap.get(event.Translate.tile_id);
-        
-        tileMesh.adhesiveMesh.position.x = event.Translate.start_position.x;
-        tileMesh.adhesiveMesh.position.y = event.Translate.start_position.y;
-        tileMesh.adhesiveMesh.position.z = event.Translate.start_position.z;
-        
-        tileMesh.styroMesh.position.x = event.Translate.start_position.x + 0.5;
-        tileMesh.styroMesh.position.y = event.Translate.start_position.y + 0.5;
-        tileMesh.styroMesh.position.z = event.Translate.start_position.z + 0.5;
+
+        let adhesiveStartP = event.Translate.adhesive_start_position;
+        tileMesh.adhesiveMesh.position = new BABYLON.Vector3(adhesiveStartP.x, adhesiveStartP.y, adhesiveStartP.z);
+
+        let styroStartP = add_to_point(adhesiveStartP, {x: 0.5, y: 0.5, z: 0.5});
+        tileMesh.styroMesh.position = new BABYLON.Vector3(styroStartP.x, styroStartP.y, styroStartP.z);
         
         const frameRate = 10;
         const duration = event.Translate.end - event.Translate.start;
 
-        let adhesiveAnimations = this.createTranslationAnimation(event.Translate.start_position, event.Translate.end_position, duration, frameRate);
-        let inc: Point = {x: 0.5, y: 0.5, z: 0.5};
-        let styroAnimations = this.createTranslationAnimation(
-            add_to_point(event.Translate.start_position, inc), add_to_point(event.Translate.end_position, inc), duration, frameRate);
+        let adhesiveAnimations = this.createTranslationAnimation(event.Translate.adhesive_start_position, event.Translate.adhesive_end_position, duration, frameRate);
+        let styroAnimations = this.createTranslationAnimation(event.Translate.styro_start_position, event.Translate.styro_end_position, duration, frameRate);
 
         this.scene.beginDirectAnimation(tileMesh.adhesiveMesh, adhesiveAnimations, 0, duration / 1000 * frameRate, false, 1, () => {
             this.adhesiveUnionMesh = BABYLON.Mesh.MergeMeshes([this.adhesiveUnionMesh, tileMesh.adhesiveMesh], true);
         });
 
         this.scene.beginDirectAnimation(tileMesh.styroMesh, styroAnimations, 0, duration / 1000 * frameRate, false, 1, () => {
-            this.styroUnionMesh = BABYLON.Mesh.MergeMeshes([this.styroUnionMesh, tileMesh.styroMesh], true); // Performance optimization for slower animations
+            this.styroUnionMesh = BABYLON.Mesh.MergeMeshes([this.styroUnionMesh, tileMesh.styroMesh], true);
         });
     }
 
@@ -172,13 +169,10 @@ class App {
         vertexData.applyToMesh(adhesiveMesh);
 
         adhesiveMesh.material = this.adhesiveMat;
+
+        let createAt = event.Create.adhesive_position;
+        adhesiveMesh.position = new BABYLON.Vector3(createAt.x, createAt.y, createAt.z);
         
-        adhesiveMesh.position.x = event.Create.position.x;
-        adhesiveMesh.position.y = event.Create.position.y;
-        adhesiveMesh.position.z = event.Create.position.z;
-
-
-
         vertexData = new BABYLON.VertexData();
 
         totalTriangles = [];
@@ -198,9 +192,8 @@ class App {
 
         styroMesh.material = this.styroMat;
         
-        styroMesh.position.x = event.Create.position.x;
-        styroMesh.position.y = event.Create.position.y;
-        styroMesh.position.z = event.Create.position.z;
+        createAt = event.Create.styro_position;
+        styroMesh.position = new BABYLON.Vector3(createAt.x, createAt.y, createAt.z);
 
         this.meshMap.set(event.Create.tile_id, {styroMesh, adhesiveMesh});
     }
@@ -412,7 +405,7 @@ class App {
         var yChar = makeTextPlane("Y", "green", size / 10);
         yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
         var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-            new BABYLON.Vector3(0, -0.5, 0), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+            new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
             new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
         ], scene, true);
         axisZ.color = new BABYLON.Color3(0, 0, 1);

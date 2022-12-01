@@ -51,8 +51,10 @@ export interface Translate {
         tile_id: String,
         start: number,
         end: number,
-        start_position: Point,
-        end_position: Point
+        styro_start_position: Point,
+        styro_end_position: Point,
+        adhesive_start_position: Point,
+        adhesive_end_position: Point
     }
 }
 
@@ -61,9 +63,10 @@ export interface Create {
         tile_id: String,
         start: number, 
         end: number,
-        position: Point,
+        styro_position: Point,
+        adhesive_position: Point,
         styro_tile: TriangulizedTile,
-        adhesive_tile: TriangulizedTile
+        adhesive_tile: TriangulizedTile,
     }
 }
 

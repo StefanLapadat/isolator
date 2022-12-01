@@ -35,13 +35,15 @@ pub struct TranslateExecutionEventData {
     tile_id: String,
     start: usize,
     end: usize,
-    start_position: Point,
-    end_position: Point
+    styro_start_position: Point,
+    styro_end_position: Point,
+    adhesive_start_position: Point,
+    adhesive_end_position: Point
 }
 
 impl TranslateExecutionEventData {
-    pub fn new(tile_id: String, start: usize, end: usize, start_position: Point, end_position: Point) -> Self {
-        Self {tile_id, start, end, start_position, end_position}
+    pub fn new(tile_id: String, start: usize, end: usize, styro_start_position: Point, styro_end_position: Point, adhesive_start_position: Point, adhesive_end_position: Point) -> Self {
+        Self {tile_id, start, end, styro_end_position, styro_start_position, adhesive_end_position, adhesive_start_position}
     }
 
     pub fn duration(&self) -> usize {
@@ -54,7 +56,8 @@ pub struct CreateExecutionEventData {
     tile_id: String,
     start: usize,
     end: usize,
-    position: Point,
+    styro_position: Point,
+    adhesive_position: Point,
     styro_tile: TriangulizedTile,
     adhesive_tile: TriangulizedTile
 }
@@ -158,13 +161,17 @@ impl PlanExecutionCreator {
         let end: usize = start + duration;
         let id = Uuid::new_v4().to_string();
 
+        let avg = tile.average_point();
+        let tile_translated_to_origin = tile.translate(&avg.multiply(-1.));
+
         events.push(PlanExecutionEvent::Create(CreateExecutionEventData { 
                 tile_id: id.to_owned(), 
                 start, 
                 end, 
-                position: hook_system.carrier_hook_ground().to_owned(), 
-                styro_tile: tile_to_triangulized_tile(tile.styro_tile()).0, 
-                adhesive_tile: tile_to_triangulized_tile(tile.adhesive_tile()).0,
+                styro_position: hook_system.carrier_hook_ground().to_owned(),
+                adhesive_position: hook_system.carrier_hook_ground().to_owned(),
+                styro_tile: tile_to_triangulized_tile(tile_translated_to_origin.styro_tile()).0,
+                adhesive_tile: tile_to_triangulized_tile(tile_translated_to_origin.adhesive_tile()).0,
             })
         );
 
@@ -172,8 +179,10 @@ impl PlanExecutionCreator {
                 tile_id: id.to_owned(), 
                 start, 
                 end, 
-                start_position: hook_system.carrier_hook_ground().to_owned(), 
-                end_position: tile.average_point() 
+                styro_start_position: hook_system.carrier_hook_ground().to_owned(), 
+                styro_end_position: tile.styro_tile().average_point().to_owned(),
+                adhesive_start_position: hook_system.carrier_hook_ground().to_owned(), 
+                adhesive_end_position: tile.adhesive_tile().average_point().to_owned(),
             })
         );
 

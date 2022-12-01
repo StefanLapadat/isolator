@@ -9,18 +9,24 @@ export function backendPlanExecutionToBabylonPlanExecution(pe: PlanExecution): P
 }
 
 export function backendPlanToBabylonPlan(p: Plan): Plan {
-    return {...p, planExecution: backendPlanExecutionToBabylonPlanExecution(p.planExecution)};
+    return {...p, building: backendBuildingToBabylonBuilding(p.building), planExecution: backendPlanExecutionToBabylonPlanExecution(p.planExecution)};
 }
 
 export function backendPlanExecutionEventToBabylonPlanExecutionEvent(peev: PlanExecutionEvent): PlanExecutionEvent {
     if ("Translate" in peev.field) {
         return new PlanExecutionEvent(({
-            "Translate": {...peev.field.Translate, start_position: backendPointToBabylonPoint(peev.field.Translate.start_position), end_position: backendPointToBabylonPoint(peev.field.Translate.end_position)}
+            "Translate": {...peev.field.Translate, 
+                styro_start_position: backendPointToBabylonPoint(peev.field.Translate.styro_start_position), 
+                styro_end_position: backendPointToBabylonPoint(peev.field.Translate.styro_end_position), 
+                adhesive_start_position: backendPointToBabylonPoint(peev.field.Translate.adhesive_start_position),
+                adhesive_end_position: backendPointToBabylonPoint(peev.field.Translate.adhesive_end_position)
+            }
         }));
     } else if ("Create" in peev.field) {
         return new PlanExecutionEvent(({
             "Create": {...peev.field.Create, 
-                position: backendPointToBabylonPoint(peev.field.Create.position), 
+                styro_position: backendPointToBabylonPoint(peev.field.Create.styro_position), 
+                adhesive_position: backendPointToBabylonPoint(peev.field.Create.adhesive_position), 
                 adhesive_tile: backendTriangulizedTileToBabylongTriangulizedTile(peev.field.Create.adhesive_tile),
                 styro_tile: backendTriangulizedTileToBabylongTriangulizedTile(peev.field.Create.styro_tile),
             }

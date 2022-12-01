@@ -85,11 +85,21 @@ impl Tile {
         Polygon::new(p_args.0, p_args.1).normal().normalize().multiply(self.width())
     }
 
-    pub fn translate(&self) -> Tile {
-        let inc = self.base_polygon().to_polygon_true_type().normal().normalize().multiply(3.0);
-    
-        Tile::new(self.base_polygon().translate(&inc), self.surface_polygon().translate(&inc))
+    pub fn translate(&self, inc: &Point) -> Tile {    
+        Tile::new(self.base_polygon().translate(inc), self.surface_polygon().translate(inc))
     }
+
+    pub fn average_point(&self) -> Point {
+        let mut p2 = Point::new(0., 0., 0.);
+        let mut i = 0;
+        while i < self.surface_polygon.rim().len() {
+            p2 = p2.add(&self.surface_polygon.rim()[i]);
+            i+=1;
+        }
+        
+        p2.divide(self.surface_polygon.rim().len() as f64)
+    }
+
 
     fn to_polygons(&self) -> Vec<Polygon> {
         let mut res = vec![];

@@ -41,6 +41,10 @@ impl TileWithAdhesive {
         
         p2.divide(self.surface_rim().len() as f64)
     }
+
+    pub fn translate(&self, inc: &Point) -> Self {
+        Self::new(self.styro_tile.translate(inc), self.adhesive_tile.translate(inc))
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -220,7 +220,7 @@ class App {
         mat.backFaceCulling = false;
         mat.transparencyMode = 0;
         mat.alpha = 1;
-        mat.diffuseColor = BABYLON.Color3.Blue();
+        mat.diffuseColor = BABYLON.Color3.Yellow();
         isolationMesh.material = mat;
 
         this.showAdhesive();
@@ -373,7 +373,7 @@ class App {
         var yChar = makeTextPlane("Y", "green", size / 10);
         yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
         var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
-            new BABYLON.Vector3(0, -0.5, 0), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+            new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
             new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
         ], scene, true);
         axisZ.color = new BABYLON.Color3(0, 0, 1);
