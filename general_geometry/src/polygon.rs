@@ -1,5 +1,6 @@
+use geo_types::Line;
 use serde::{Serialize, Deserialize};
-use crate::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D};
+use crate::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D, Line3D};
 use petgraph::graph::{UnGraph};
 use petgraph::algo;
 
@@ -141,7 +142,7 @@ impl Polygon {
         res
     }
 
-    pub fn flatten_points(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<f64> {
+    pub fn flatten_points(points: &Vec<&Point>, system: &CoordinateSystem3D) -> Vec<f64> {
         Self::remove_constant_coordinate(&Self::flatten_points_no_removal_of_constant_coordinate(points, system))
     }
 
@@ -153,8 +154,8 @@ impl Polygon {
         self.plane().distance_from_origin()
     }
 
-    pub fn flatten_points_no_removal_of_constant_coordinate(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<Point> {
-        points.into_iter().map(
+    pub fn flatten_points_no_removal_of_constant_coordinate(points: &Vec<&Point>, system: &CoordinateSystem3D) -> Vec<Point> {
+        points.iter().map(
             |p| p.coordinates_in_different_coordinate_system_original_base(system))
             .collect::<Vec<_>>()
     }
@@ -321,7 +322,7 @@ impl Polygon {
     }
 
     fn flatten_points_to_points_2d(points: &Vec<Point>, system: &CoordinateSystem3D) -> Vec<Point2D> {
-        Self::from_raw_vals_to_points(Self::flatten_points(points, system))
+        Self::from_raw_vals_to_points(Self::flatten_points(&points.iter().collect::<Vec<_>>(), system))
     }
 
 
@@ -541,6 +542,30 @@ impl Polygon {
         }
 
         res
+    }
+
+    pub fn is_convex_polygon_with_no_holes(&self) -> bool {
+        self.holes().is_empty() && self.is_convex() 
+    }
+
+    fn is_convex(&self) -> bool {
+        let mut i = 0;
+        let len = self.rim().len();
+        let normal = &self.normal();
+
+        while i < len {
+            let t1 = &self.rim()[i];
+            let t2 = &self.rim()[(i+1)%len];
+            let t3 = &self.rim()[(i+2)%len];
+
+            if !LineSegment::point_left_from_line_segment_or_colinear(t3, t1, t2, normal) {
+                return false;
+            }
+
+            i+=1;
+        }
+
+        true
     }
 }
 

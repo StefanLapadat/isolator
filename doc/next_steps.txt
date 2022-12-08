@@ -30,15 +30,19 @@ Implementiranje svega navedenog, ali za gletovanje (ili sta vec treba, sta se ra
 
 Prolazak kroz sve prethodne faze, ali se prica usloznjava - nije vise prototip, nego se realizuje ozbiljniji proizvod.
 
-
-
-
-
-
 ============= FAZA 8 ================
 
 Dodatni slojevi, busenja rupa, slojevi imitacije cigle, oluci itd itd.. Mozda tu malo i VR moze da pomogne, tako sto bi covek neke stvari mogao da radi 'iz daljine'.. U sustini, ovde ce biti svega, ali je pitanje koliko ce se od ove faze inicijalno odraditi. Ona je vise onako - ako bude i sta bude, ok, ako ne, bice kasnije. 
 
+=====================================================================================
 
+- da namestim da adhesive ne strci
+- da, naravno, da ubacim u paraleli da radi vise masina, to nije tesko uopste.. 
 
+- da namestim da se vide i alatke, mozda da kao namestim i da zapravo podize.. Mada, jebes to, nije bitno da bude bas bas tako detaljna animacija. Treba da prikaze sustinu.. Mozda mi ni ne treba da se vide alatke uopste.. Moze delimicno, ali ne skroz.. Mogao bih da namestim samo da se vide pozicije alatki, recimo kanapi ili tako nesto.. To bi bilo ok.. 
 
+- da podesim da se lepo vidi wireframe.. Ovo je nebitno.. 
+
+=====================================================================================
+
+Ali moram malo da se uozbiljim, nije mi dobro sto ovako radim.. Valjda ce biti bolje na prolece/leto.. Tamo od prvog maja do prvog septembra.. To je neko lepo vreme, tada mogu da pokidam :) 

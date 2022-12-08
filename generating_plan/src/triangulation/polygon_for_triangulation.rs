@@ -1,21 +1,17 @@
 use general_geometry::{Point, Polygon, Triangle, Plane};
 use earcutr::earcut;
 
-pub struct PolygonForTriangulation { 
-    points: Vec<Point>,
+struct PolygonForTriangulation<'a> { 
+    points: Vec<&'a Point>,
     holes: Vec<usize>
 }
 
-impl PolygonForTriangulation {
+impl PolygonForTriangulation<'_> {
     pub fn from_polygon(polygon: &Polygon) -> PolygonForTriangulation{
         PolygonForTriangulation {
             holes: PolygonForTriangulation::indices_of_holes_in_merged_points_and_holes(polygon),
             points: PolygonForTriangulation::merge_points_and_holes(polygon)
         }
-    }
-
-    pub fn points<'a>(&'a self) -> &'a Vec<Point> {
-        &self.points
     }
 
     pub fn triangulate_3d(&self) -> Vec<Triangle> {
@@ -25,7 +21,7 @@ impl PolygonForTriangulation {
         
         let mut i = 0;
         while i<tri.len() {
-            let pts = self.points();
+            let pts = &self.points;
             triangles.push(Triangle::new(&pts[tri[i]], &pts[tri[i+1]], &pts[tri[i+2]]));
             i += 3;
         }
@@ -36,36 +32,41 @@ impl PolygonForTriangulation {
     fn indices_of_holes_in_merged_points_and_holes(polygon: &Polygon) -> Vec<usize> {
         let mut res = vec![];
     
-        let mut acc: usize = 0;
+        let mut acc: usize = polygon.rim().len();
     
         for hole in polygon.holes() {
-            res.push(polygon.rim().len() + acc);
+            res.push(acc);
             acc+=hole.len();
         }
     
         res
     }
 
-    fn merge_points_and_holes(polygon: &Polygon) -> Vec<Point> {
-        let mut res: Vec<Point> = vec![];
+    fn merge_points_and_holes(polygon: &Polygon) -> Vec<&Point> {
+        let mut res: Vec<&Point> = vec![];
     
         for point in polygon.rim() {
-            res.push(point.clone());
+            res.push(point);
         }
     
         for hole in polygon.holes() {
             for hole_point in hole {
-                res.push(hole_point.clone());
+                res.push(hole_point);
             }
         }
-        
+
         res
     }
 
     fn triangulate_3d_indices_result(&self) -> Vec<usize> {
-        let plane = Plane::from_points_vector(&self.points()).unwrap();
+        let plane = Plane::from_points_references_vector(&self.points).unwrap();
         let system = plane.coordinate_system_normal_to_plane_origin_at_base();
 
         return earcut(&Polygon::flatten_points(&self.points, &system), &self.holes, 2);
     }
+}
+
+
+pub fn triangulate_polygon(poly: &Polygon) -> Vec<Triangle> {
+    PolygonForTriangulation::from_polygon(poly).triangulate_3d()
 }

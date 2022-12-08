@@ -56,7 +56,15 @@ impl Plane {
     }
 
     pub fn from_points_vector(points: &Vec<Point>) -> Option<Plane> {
-        let noncolinear_points = Plane::get_three_noncolinear_points_from_vector_of_points(&points);
+        let noncolinear_points = Plane::get_three_noncolinear_points_from_vector_of_points(points);
+        match noncolinear_points {
+            Option::Some(pts) => Option::Some(Plane::from_three_noncolinear_points(pts.0, pts.1, pts.2)),
+            Option::None => Option::None
+        }
+    }
+
+    pub fn from_points_references_vector(points: &Vec<&Point>) -> Option<Plane> {
+        let noncolinear_points = Plane::get_three_noncolinear_points_from_vector_of_points_references(points);
         match noncolinear_points {
             Option::Some(pts) => Option::Some(Plane::from_three_noncolinear_points(pts.0, pts.1, pts.2)),
             Option::None => Option::None
@@ -74,6 +82,24 @@ impl Plane {
     }
 
     fn get_three_noncolinear_points_from_vector_of_points<'a>(points: &'a Vec<Point>) -> Option<(&'a Point, &'a Point, &'a Point)> {
+        if points.len() < 3 {
+            Option::None
+        } else {
+            let mut i = 2;
+
+            while i < points.len() {
+                if !Point::are_points_colinear(&points[0], &points[1], &points[i]) {
+                    return Option::Some((&points[0], &points[1], &points[i]));
+                }
+
+                i = i + 1;
+            }
+        
+            Option::None
+        }
+    }
+
+    fn get_three_noncolinear_points_from_vector_of_points_references<'a>(points: &'a Vec<&Point>) -> Option<(&'a Point, &'a Point, &'a Point)> {
         if points.len() < 3 {
             Option::None
         } else {

@@ -1,6 +1,6 @@
 use general_geometry::{Point, Polygon, Plane};
 use crate::building_representations::triangulized_walls::{TriangulizedWall};
-use crate::triangulation::PolygonForTriangulation;
+use crate::triangulation::polygon_for_triangulation;
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,7 +26,7 @@ impl PolygonWalls {
         let mut res: Vec<TriangulizedWall> = vec![];
 
         for wall in &self.walls {
-            res.push(TriangulizedWall::new(PolygonForTriangulation::from_polygon(wall).triangulate_3d()));
+            res.push(TriangulizedWall::new(polygon_for_triangulation::triangulate_polygon(wall)));
         }
     
         res

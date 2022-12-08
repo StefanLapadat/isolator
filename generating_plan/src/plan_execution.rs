@@ -162,7 +162,12 @@ impl PlanExecutionCreator {
         let id = Uuid::new_v4().to_string();
 
         let avg = tile.average_point();
-        let tile_translated_to_origin = tile.translate(&avg.multiply(-1.));
+        // let avg_styro = tile.styro_tile().average_point();
+        // let avg_adhesive = tile.adhesive_tile().average_point();
+
+        // let tile_translated_to_origin_styro = tile.translate(&avg_styro.multiply(-1.));
+        // let tile_translated_to_origin_adhesive = tile.translate(&avg_adhesive.multiply(-1.));
+        let tile_translated = tile.translate(&avg.multiply(-1.));
 
         events.push(PlanExecutionEvent::Create(CreateExecutionEventData { 
                 tile_id: id.to_owned(), 
@@ -170,8 +175,8 @@ impl PlanExecutionCreator {
                 end, 
                 styro_position: hook_system.carrier_hook_ground().to_owned(),
                 adhesive_position: hook_system.carrier_hook_ground().to_owned(),
-                styro_tile: tile_to_triangulized_tile(tile_translated_to_origin.styro_tile()).0,
-                adhesive_tile: tile_to_triangulized_tile(tile_translated_to_origin.adhesive_tile()).0,
+                styro_tile: tile_to_triangulized_tile(tile_translated.styro_tile()).0,
+                adhesive_tile: tile_to_triangulized_tile(tile_translated.adhesive_tile()).0,
             })
         );
 
@@ -180,9 +185,9 @@ impl PlanExecutionCreator {
                 start, 
                 end, 
                 styro_start_position: hook_system.carrier_hook_ground().to_owned(), 
-                styro_end_position: tile.styro_tile().average_point().to_owned(),
+                styro_end_position: tile.average_point().to_owned(), 
                 adhesive_start_position: hook_system.carrier_hook_ground().to_owned(), 
-                adhesive_end_position: tile.adhesive_tile().average_point().to_owned(),
+                adhesive_end_position: tile.average_point().to_owned(), 
             })
         );
 

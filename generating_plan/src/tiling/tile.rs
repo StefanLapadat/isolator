@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use general_geometry::polygon2d::Rectangle;
 use general_geometry::{Point, Triangle, Polygon, PolygonPointsOnSides, Simmilar, Polygon2D, Point2D, Plane};
-use crate::triangulation::PolygonForTriangulation;
+use crate::triangulation::polygon_for_triangulation;
 
 #[derive(Debug, Clone)]
 pub struct Tile {
@@ -201,13 +201,29 @@ pub fn tile_to_triangulized_tile(tile: &Tile) -> (TriangulizedTile, Vec<Vec<Poin
     let mut wireframe: Vec<Vec<Point>> = vec![];
 
     for side in tile.to_polygons() {
-        triangles.append(&mut PolygonForTriangulation::from_polygon(&side).triangulate_3d());
+        if side.is_convex_polygon_with_no_holes() {
+            triangles.append(&mut triangulate_convex_polygon_with_no_holes(&side));
+        } else {
+            triangles.append(&mut polygon_for_triangulation::triangulate_polygon(&side));
+        }
+
         wireframe.append(&mut side.wireframe());
     }
 
     (TriangulizedTile::new(triangles), wireframe)
 }
 
+pub fn triangulate_convex_polygon_with_no_holes(polygon: &Polygon) -> Vec<Triangle> {
+    let mut res = vec![];
+    let mut i = 1;
+
+    while i < polygon.rim().len() - 1 {
+        res.push(Triangle::new(&polygon.rim()[0], &polygon.rim()[i], &polygon.rim()[i+1]));
+        i+=1;
+    }
+
+    res
+}
 
 pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> {
     let (unit_tile_width, unit_tile_height);

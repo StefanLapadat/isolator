@@ -19,13 +19,28 @@ pub struct Plan {
 }
 
 pub fn generate_plan(request: &Request) -> Plan {
+    use std::time::Instant;
+
     let building: PolygonWalls = polygon_walls_from_request(request);
+
+    let now = Instant::now();
     let tiles: Vec<TileWithAdhesive> = get_tiling(request);
+    let elapsed = now.elapsed();
+    println!("For getting tiles: {:.5?}", elapsed);
+
+    let now = Instant::now();
     let planExecution = PlanExecutionCreator::new(request.velocity()).create_plan(&building, &tiles, request.hooks(), 50., 1);
+    let elapsed = now.elapsed();
+    println!("For plan execution: {:.5?}", elapsed);
+
+    let now = Instant::now();
+    let triangulized_tiles = TriangulizedTilesWithAdhesive::from_tiles(tiles);
+    let elapsed = now.elapsed();
+    println!("For triangulation: {:.5?}", elapsed);
 
     Plan {
         building: converters::polygon_walls_to_triangulized_walls(building),
-        tiles: TriangulizedTilesWithAdhesive::from_tiles(tiles),
+        tiles: triangulized_tiles,
         planExecution
     }
 }

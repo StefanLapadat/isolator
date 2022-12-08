@@ -33,6 +33,11 @@ impl LineSegment {
         false   
     }
 
+    pub fn point_left_from_line_segment_or_colinear(pt: &Point, ls_start: &Point, ls_end: &Point, normal: &Point) -> bool {
+        let cp = Point::cross_prod(&ls_end.subtract(ls_start), &pt.subtract(ls_start));
+        cp.modulo().simmilar_to(0., 0.0001) || cp.same_oktant(normal)
+    }
+
     pub fn shared_segment_no_len0(ls1: &LineSegment, ls2: &LineSegment) -> Option<LineSegment> {
         if ls2.point_on_a_line_segment(&ls1.p1) && ls2.point_on_a_line_segment(&ls1.p2) {
             return Some(ls1.clone());
