@@ -12,3 +12,7 @@
 - Napraviti desetak razlicitih zgrada i testirati na njima. 
 
 
+- da namestim da se vide i alatke, mozda da kao namestim i da zapravo podize.. Mada, jebes to, nije bitno da bude bas bas tako detaljna animacija. Treba da prikaze sustinu.. Mozda mi ni ne treba da se vide alatke uopste.. Moze delimicno, ali ne skroz.. Mogao bih da namestim samo da se vide pozicije alatki, recimo kanapi ili tako nesto.. To bi bilo ok.. 
+
+- da podesim da se lepo vidi wireframe.. Ovo je nebitno.. 
+ 

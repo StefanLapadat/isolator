@@ -36,13 +36,5 @@ Dodatni slojevi, busenja rupa, slojevi imitacije cigle, oluci itd itd.. Mozda tu
 
 =====================================================================================
 
-- da namestim da adhesive ne strci
-- da, naravno, da ubacim u paraleli da radi vise masina, to nije tesko uopste.. 
+- da ubacim u paraleli da radi vise masina, to nije tesko uopste.. 
 
-- da namestim da se vide i alatke, mozda da kao namestim i da zapravo podize.. Mada, jebes to, nije bitno da bude bas bas tako detaljna animacija. Treba da prikaze sustinu.. Mozda mi ni ne treba da se vide alatke uopste.. Moze delimicno, ali ne skroz.. Mogao bih da namestim samo da se vide pozicije alatki, recimo kanapi ili tako nesto.. To bi bilo ok.. 
-
-- da podesim da se lepo vidi wireframe.. Ovo je nebitno.. 
-
-=====================================================================================
-
-Ali moram malo da se uozbiljim, nije mi dobro sto ovako radim.. Valjda ce biti bolje na prolece/leto.. Tamo od prvog maja do prvog septembra.. To je neko lepo vreme, tada mogu da pokidam :) 

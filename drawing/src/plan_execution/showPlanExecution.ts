@@ -2,7 +2,7 @@ import * as BABYLON from '@babylonjs/core';
 import { FreeCamera } from '@babylonjs/core';
 import {Create, Fix, Plan, PlanExecutionEvent, Point, ShowBuildingOrIsolation, Teleport, Translate, } from '../models';
 import {HttpBackend} from '../backendService';
-import {backendPlanToBabylonPlan} from '../util';
+import {backendPlanToBabylonPlan} from '../util/util';
 
 export function reloadApp() {
     let camera = ((window as any).babylonApp as any)?.getCamera();
