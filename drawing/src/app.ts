@@ -27,5 +27,7 @@ function showContent() {
         } else if (mode === 1) {
             showBuilding();
         }
+    } else {
+        alert('nece moci ove noci')
     }
 }

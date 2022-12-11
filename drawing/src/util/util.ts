@@ -40,7 +40,7 @@ function objectIsPoint(obj: any) {
 }
 
 export function allInputFieldsCorrect() {
-    return Number.isInteger(getRequestId()) && typeof getTileLength() === "number" && getTileLength() > 0 && 
+    return Number.isInteger(getRequestId()) && getRequestId() > 0 && getRequestId() < 3 && typeof getTileLength() === "number" && getTileLength() > 0 && 
     typeof getTileHeight() === "number" && getTileHeight() > 0 && typeof getTileWidth() === "number" && getTileWidth() > 0 && 
     typeof getVelocity() === "number" && getVelocity() > 0;
 }
@@ -179,12 +179,14 @@ export function addEventListeners(reloadApp: any, building: BuildingWithVisibili
     document.getElementById("building")?.addEventListener('input', (event) => {
         if(allInputFieldsCorrect()){
             localStorage.setItem("building", getShowBuilding().toString());
-            building.buildingMeshSetVisibility();
+            ((window as any).babylonApp as BuildingWithVisibility).buildingMeshSetVisibility();
         }
     })
 
     document.getElementById("isolation")?.addEventListener('input', (event) => {
-        localStorage.setItem("isolation", getShowIsolation().toString());
-        building.isolationMeshSetVisibility();
+        if(allInputFieldsCorrect()){
+            localStorage.setItem("isolation", getShowIsolation().toString());
+            ((window as any).babylonApp as BuildingWithVisibility).isolationMeshSetVisibility();
+        }
     })
 }
