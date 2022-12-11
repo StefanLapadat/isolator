@@ -1,0 +1,19 @@
+Sa rc smart pointerom mozes fakticki da malo sjebes ono sto se meni svidja kod osnovnog rusta u odnosu na javu, ts, js, python itd.. 
+Dobro, mozes imati samo imutabilne pointere, to je malo bolje. Zapravo, to je mnogo bolje; Medjutim, onda imamo i ovaj drugi RefCell, koji je bas pravo sranje cini mi se. Sa njim verovatno treba oprezno, nisam ga jos citao. Mada je i rc vec doooosta dobar. Bas cu da ga isprobam sada. 
+
+mada izgleda meni najvise vremena odnosi triangulacija u ovom cudu sto koristim? Ako sve traje 1000ms, onda pola mi ode na triangulaciju.. Aha.. Mozda mi je to malo glup nacin kako trenutno radim? Mozda ne treba da radim triangulaciju svih povrsina, vec treba da nadjem rezultujucu omotavajucu povrsinu, nju da triangulisem i onda ce biti ok? Mada mi je ovaj pristup trenutno i ok donekle, jer je jednostavniji. 
+
+Sta znam, mozda bih mogao da umesto pointa za pocetak koristim Box<Point>.. Na taj nacin bih mooozda nesto ustedeo, znaci ne bi bio prvi deo koji racuna tileove 500ms, vec bi bio 300ms.. I to je mooozda. Takodje, ne bi bilo lose da koristim uniranje kako treba, a ne ono moje sranje koje cak ni ne radi kako treba. Medjutim, kako bih to uradio, trebalo bi da prvo pripremim podatke.. To bih uradio tako sto bih za sve poligone koje pokusavam da uniram, tacke koje su slicne pretvorio u iste tacke, a tacke koje leze na linijama bih ubacio malo 'u poligon na kojem leze'. Sa druge strane, ja sam poprilicno siguran da u ovom mom slucaju ja ne smem imati poligone koji se seku; Ne bih smeo da ubacim takve podatke u aplikaciju gde se neka dva poligona seku. Hm, ovo je interesantno ogranicenje. Da li bih mozda mogao i da napravim neku funkciju koja bi za set poligona vratila da li se neki medjusobno seku? 
+
+============================================================================================================================================
+
+Mislim da cu odloziti taj smart pointer za neki drugi put, nisam sasvim siguran da cu dobiti ne znam sta od toga.. 
+
+============================================================================================================================================
+
+Interesantno pitanje oko ownershipa.. Posmatrajmo problem triangulacije; Nekako mi deluje da nekada zelim da imam triangulaciju koja je nezavisna od 
+origanlnog objekta koji je triangulisan, a nekada mi deluje da mi je ok da triangulacija bude nekakav rep tog osnovnog objekta i da mu zivotni vek 
+ne bude ni tren duzi od zivotnog veka osnovnog objekta; 
+
+Kako u kontekstu takvog nepoznavanja situacije dizajnirati sistem? 
+

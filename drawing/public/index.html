@@ -4,36 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <title>Title of Your Project</title>
+    <style>
+        .field-wrapper {
+            padding: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
 </head>
 
 <body>
     <div id="controls" style="padding-bottom: 8px;">
-        <input id="request-id" type="number" start="1" step="1" value="1" />
-        <input id="tile-length" type="number" start="1" step="0.1" value="4" min="0.1" />
-        <input id="tile-height" type="number" start="1" step="0.1" value="2" min="0.1" />
-        <input id="tile-width" type="number" start="0.1" step="0.1" value="0.1" min="0.1" />
-        <input id="tile-setting-velocity" type="number" start="0.001" step="0.001" value="0.001" min="0.001" />
 
-        <label>Building
-            <select id="building">
-                <option value="0">Show</option>
-                <option value="1">Wireframe</option>
-                <option value="2">Hide</option>
-            </select>
-        </label>
-        <label>Isolation
-            <select id="isolation">
-                <option value="0">Show</option>
-                <option value="1">Wireframe</option>
-                <option value="2">Hide</option>
-            </select>
-        </label>
-
-        <input type="checkbox" id="show-axes" checked name="show-axes"><label for="show-axes">Show Axes</label>
+        <div id='slider' style="padding-left: 8px; padding-top:8px;">
+            <div class="field-wrapper"><label>Building Id</label><input id="request-id" type="number" start="1" step="1" value="1" /></div>
+            <div class="field-wrapper">
+                <label>Mode
+                    <select id="mode">
+                        <option value="0">Animation</option>
+                        <option value="1">Finished State</option>
+                    </select>
+                </label>
+            </div>
+            <div class="field-wrapper"><label>Tile Length</label><input id="tile-length" type="number" start="1" step="0.1" value="4" min="0.1" /></div>
+            <div class="field-wrapper"><label>Tile Height</label><input id="tile-height" type="number" start="1" step="0.1" value="2" min="0.1" /></div>
+            <div class="field-wrapper"><label>Tile Width</label><input id="tile-width" type="number" start="0.1" step="0.1" value="0.1" min="0.1" /></div>
+            <div class="field-wrapper"><label>Tiling Velocity</label><input id="tile-setting-velocity" type="number" start="0.001" step="0.001" value="0.001" min="0.001" /></div>
+            <div class="field-wrapper">
+                <label>Building
+                    <select id="building">
+                        <option value="0">Show</option>
+                        <option value="1">Wireframe</option>
+                        <option value="2">Hide</option>
+                    </select>
+                </label>
+            </div>
+            <div class="field-wrapper">
+                <label>Isolation
+                    <select id="isolation">
+                        <option value="0">Show</option>
+                        <option value="1">Wireframe</option>
+                        <option value="2">Hide</option>
+                    </select>
+                </label>
+            </div>
+            <div class="field-wrapper">
+                <input type="checkbox" id="show-axes" checked name="show-axes"><label for="show-axes">Show Axes</label>
+            </div>
+        </div>
+        <button id='trigger'>Settings <i class="fa-solid fa-gear"></i></button>
     </div>
 
     <canvas style="width: 100%; height: 90%;" id="canvas"></canvas>
-
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="./slider.js"></script>
+    <script>
+        $('#slider').slideReveal({
+            trigger: $("#trigger")
+        });
+    </script>
 </body>
 
 </html>
