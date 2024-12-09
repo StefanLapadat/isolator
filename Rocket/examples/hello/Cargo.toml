@@ -1,0 +1,14 @@
+[package]
+name = "hello"
+version = "0.0.0"
+workspace = "../"
+edition = "2021"
+publish = false
+
+[dependencies]
+rocket = { path = "../../core/lib" }
+request_generation = { path = "../../../request_generation" }
+generating_plan = { path = "../../../generating_plan" }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
