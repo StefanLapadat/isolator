@@ -1,8 +1,12 @@
+
+
+use derive_more::derive::Display;
 use serde::{Serialize, Deserialize};
 use nalgebra::Matrix3;
 use crate::{Angle, Simmilar, CoordinateSystem3D};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Display)]
+#[display("({}, {}, {})", x, y, z)]
 pub struct Point {
     pub x: f64,
     pub y: f64,

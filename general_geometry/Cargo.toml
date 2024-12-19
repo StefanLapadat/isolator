@@ -12,3 +12,5 @@ petgraph = "0.6.2"
 nalgebra = "0.31.3"
 geo-clipper = "0.7.3"
 geo-types = "0.7.8"
+itertools = "0.13.0"
+derive_more = { version = "1.0.0", features = ["full"] }

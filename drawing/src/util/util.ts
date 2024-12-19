@@ -40,7 +40,7 @@ function objectIsPoint(obj: any) {
 }
 
 export function allInputFieldsCorrect() {
-    return Number.isInteger(getRequestId()) && getRequestId() > 0 && getRequestId() < 3 && typeof getTileLength() === "number" && getTileLength() > 0 && 
+    return Number.isInteger(getRequestId()) && getRequestId() > 0 && typeof getTileLength() === "number" && getTileLength() > 0 && 
     typeof getTileHeight() === "number" && getTileHeight() > 0 && typeof getTileWidth() === "number" && getTileWidth() > 0 && 
     typeof getVelocity() === "number" && getVelocity() > 0;
 }

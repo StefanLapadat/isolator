@@ -261,7 +261,8 @@ pub fn split_into_tiles(tile: &Tile, unit_tile: &UnitTile) -> Option<Vec<Tile>> 
     let surface_comps = surface_mini_tiles_3d.into_iter().map(|b| b.destruct_to_components()).collect::<Vec<_>>();
 
     if base_comps.len() != surface_comps.len() {
-        panic!("Somethings fishy here");
+        return Option::Some(vec![]);
+        //panic!("Somethings fishy here");
     }
 
     let it = base_comps.iter().zip(surface_comps.iter());

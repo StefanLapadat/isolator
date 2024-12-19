@@ -1,7 +1,6 @@
-use geo_types::Line;
 use serde::{Serialize, Deserialize};
-use crate::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D, Line3D};
-use petgraph::graph::{UnGraph};
+use crate::{Point, Plane, Simmilar, PolygonPointsOnSides, LineSegment, CoordinateSystem3D, Point2D};
+use petgraph::graph::UnGraph;
 use petgraph::algo;
 
 use super::Polygon2D;
@@ -59,6 +58,10 @@ impl Polygon {
         }
 
         Self::from_triplets(rim, holes)
+    }
+
+    pub fn in_xy_plane_no_holes_from_increments_points(start_rim: (f64, f64), increments_rim: Vec<Point>) -> Polygon {
+        Self::in_xy_plane_no_holes_from_increments(start_rim, increments_rim.iter().map(|x| { (x.x, x.y) }).collect())
     }
 
     pub fn rim(&self) -> &Vec<Point> {
@@ -364,7 +367,6 @@ impl Polygon {
 
             tmp = Self::pick_next_point_for_merging(tmp, poly1, poly2, &result_rim);
             tmp_poly = if tmp.0 { poly1 } else { poly2 };
-                        
             if Point::are_points_simmilar(&tmp_poly.rim()[tmp.1], &start_poly.rim()[start.1]) {
                 break;
             }
